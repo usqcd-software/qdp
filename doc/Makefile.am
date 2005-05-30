@@ -32,7 +32,7 @@ ${HTMLDIR}: ${SRCDEP}
 	mkdir $@
 	${MAKEINFO} --html -o ${HTMLDIR} ${SRC}
 
-${FUNC}: ${MFUNC} ${FUNCSRC}
+${FUNC}:
 	${PERL} ${MFUNC}
 
 # Removes TeXinfo debris
