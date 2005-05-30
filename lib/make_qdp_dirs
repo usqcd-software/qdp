@@ -1,0 +1,133 @@
+#!/bin/sh
+
+len=500
+outfile=Makefile.am
+
+dirs="qdp_int \
+ qdp_f qdp_f2 qdp_f3 qdp_fn \
+ qdp_d qdp_d2 qdp_d3 qdp_dn \
+ qdp_df qdp_df2 qdp_df3 qdp_dfn"
+
+incdir="\$(top_builddir)/include"
+
+rm -rf $dirs
+
+for dir in $dirs; do
+  lib="lib$dir"
+  tag=`echo $dir |sed s/qdp_//`
+  idir="$incdir/$dir"
+  hdr="${idir}.h ${dir}_internal.h"
+  case $dir in
+    qdp_[fd])      hdrs="$hdr ${idir}_generic.h";;
+    qdp_[fd][23n]) hdrs="$hdr ${idir}_generic.h ${idir}_color_generic.h";;
+    qdp_d[f][23n]) hdrs="$hdr ${idir}_color_generic.h";;
+    *)             hdrs="$hdr";;
+  esac
+  hdrs="$hdrs ${idir}_profile.h"
+  mkdir $dir
+
+  echo $dir
+  cd $dir
+  ../generate/generate_sources ${tag}
+  \ls -1 | grep 'QDP.*\.c' > src_list
+  nl=`wc src_list | sed 's/^[^0-9]*\([0-9]*\)[^0-9].*/\1/'`
+  nf=`expr \( $nl + $len - 1 \) / $len`
+  src1=`head -n1 src_list`
+
+###  start output
+  cat > $outfile <<EOF
+# $outfile for building the $dir library
+
+AUTOMAKE_OPTIONS = no-dependencies
+
+EOF
+###  make list of sources
+
+  i=1
+  line0=1
+  line1=$len
+  while [ $i -le $nf ]; do
+    echo "QDPSRC$i = \\" >> $outfile
+    cat src_list | sed "$line0,$line1!d" | sed '$!s/$/ \\/' >> $outfile
+    echo >> $outfile
+    echo "QDPOBJ$i = \\" >> $outfile
+    cat src_list | sed "$line0,$line1!d" | sed 's/\.c/\.o/' |sed '$!s/$/ \\/' >> $outfile
+    echo >> $outfile
+    line0=`expr $line0 + $len`
+    line1=`expr $line1 + $len`
+    i=`expr $i + 1`
+  done
+  qdpsrc="\$(QDPSRC1)"
+  qdpobj="\$(QDPOBJ1)"
+  i=2
+  while [ $i -le $nf ]; do
+    qdpsrc="$qdpsrc \$(QDPSRC$i)"
+    qdpobj="$qdpobj \$(QDPOBJ$i)"
+    i=`expr $i + 1`
+  done
+
+###  continue output
+  cat >> $outfile <<EOF
+QDPSRC = $qdpsrc
+QDPOBJ = $qdpobj
+QDPHDR = $hdrs
+
+BUILD_SCRIPT_DIR = \$(top_srcdir)/lib/generate
+
+BUILD_SCRIPT_C = \$(BUILD_SCRIPT_DIR)/generate_sources
+BUILD_SCRIPT_H = \$(BUILD_SCRIPT_DIR)/generate_headers
+
+BUILD_DEPS = \\
+	\$(BUILD_SCRIPT_DIR)/generate_qdp.pl \\
+	\$(BUILD_SCRIPT_DIR)/datatypes.pl \\
+	\$(BUILD_SCRIPT_DIR)/functions.pl \\
+	\$(BUILD_SCRIPT_DIR)/generate_types.pl \\
+	\$(BUILD_SCRIPT_DIR)/generic.pl \\
+	\$(BUILD_SCRIPT_DIR)/profile.pl
+
+lib_LIBRARIES = ../${lib}.a
+
+AM_CFLAGS = -I\$(top_srcdir)/include -I\$(top_builddir)/include -I\$(QLADIR)/include -I\$(QIODIR)/include -I\$(QMPDIR)/include
+
+# this is just to force automake to include the .c.o rule
+nodist____${lib}_a_SOURCES = $src1
+
+nodist_include_HEADERS = \$(QDPHDR)
+
+\$(QDPSRC): \$(BUILD_SCRIPT_C) \$(BUILD_DEPS)
+	\$(BUILD_SCRIPT_C) $tag
+
+\$(QDPHDR): \$(BUILD_SCRIPT_H) \$(BUILD_DEPS)
+	\$(BUILD_SCRIPT_H) $tag $incdir
+
+../${lib}.a: \$(QDPHDR) \$(QDPOBJ) ../optimized/Makefile
+	-rm -f ../${lib}.a
+EOF
+###  make archive commands
+
+  i=1
+  while [ $i -le $nf ]; do
+    echo "	\$(AR) \$(ARFLAGS) ../${lib}.a \$(QDPOBJ${i})" >> $outfile
+    i=`expr $i + 1`
+  done
+
+###  continue output
+  cat >> $outfile <<EOF
+	\$(RANLIB) ../${lib}.a
+
+clean-local:
+	-rm -f \$(QDPHDR)
+EOF
+###  make clean commands
+
+  i=1
+  while [ $i -le $nf ]; do
+    echo "	-rm -f \$(QDPSRC${i})" >> $outfile
+    echo "	-rm -f \$(QDPOBJ${i})" >> $outfile
+    i=`expr $i + 1`
+  done
+
+  rm -f *.c *.h src_list
+  cd ..
+
+done

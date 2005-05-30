@@ -1,0 +1,5 @@
+This directory contains some very simple codes used to test the release.
+They do not test every case and are just used to test basic functionality
+of the library at the moment.  They are not polished and don't provide any
+verification of correct output, but if you can get them to link and run
+without crashing then chances are the libraries built correctly.

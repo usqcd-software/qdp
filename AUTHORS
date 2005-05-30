@@ -1,0 +1,10 @@
+Authors of QDP
+==============
+
+The QDP API was designed as a part of the National Computational
+Infrastructure for Lattice Gauge Theory (http://www.lqcd.org/).
+Many members of the Software Committee contributed to the design.
+
+The libraries, example programs and some of the documentation were written
+by James Osborn <josborn@physics.bu.edu>.  Much of the documentation was
+written by Carleton Detar <detar@physics.utah.edu>.

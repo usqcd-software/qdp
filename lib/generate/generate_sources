@@ -1,0 +1,10 @@
+#!/bin/sh
+
+thisdir=`echo $0 |sed 's/[^/]*$//'`
+gen_types="${thisdir}generate_types.pl"
+gen_qdp="${thisdir}generate_qdp.pl"
+
+echo perl $gen_types -c $1 . ${thisdir}*.c
+perl $gen_types -c $1 . ${thisdir}*.c
+echo perl $gen_qdp -s -l$1 -d .
+perl $gen_qdp -s -l$1 -d .

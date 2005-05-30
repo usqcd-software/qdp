@@ -1,0 +1,2789 @@
+% -*-LaTeX-*- document QDP API (C Language Binding) version 1.1
+%
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Math ops
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\Re}{\mathop{\rm Re}}
+\renewcommand{\Im}{\mathop{\rm Im}}
+\newcommand{\integer}{\mathop{\rm int}}
+\newcommand{\Tr}{\mathop{\rm Tr}}
+\newcommand{\diag}{\mathop{\rm diag}}
+\newcommand{\op}{\mathop{\rm op}}
+\renewcommand{\not}{\mathop{\rm not}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Names of types
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\tReal}{QDP\ttdash Real }
+\newcommand{\tComplex}{QDP\ttdash Complex }
+\newcommand{\tInt}{QDP\ttdash Int }
+\newcommand{\tColorMatrix}{QDP\ttdash ColorMatrix }
+\newcommand{\tHalfFermion}{QDP\ttdash HalfFermion }
+\newcommand{\tDiracFermion}{QDP\ttdash DiracFermion }
+\newcommand{\tColorVector}{QDP\ttdash ColorVector }
+\newcommand{\tDiracPropagator}{QDP\ttdash DiracPropagator }
+\newcommand{\tRandomState}{QDP\ttdash RandomState }
+\newcommand{\tqlaReal}{QLA\ttdash Real }
+\newcommand{\tqlaColorMatrix}{QLA\ttdash ColorMatrix }
+\newcommand{\tqlaComplex}{QLA\ttdash Complex }
+\newcommand{\tqlaInt}{QLA\ttdash Int }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Prototype elements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\namespace}{QDP}
+\newcommand{\allEqOps}{{\tt eq, peq, meq, eqm}}
+\newcommand{\allTypes}{{\tt S, I, R, C, V, H, D, M, P}}
+\newcommand{\allNumericTypes}{{\tt I, R, C, V, H, D, M, P}}
+\newcommand{\allFloatTypes}{{\tt R, C, V, H, D, M, P}}
+\newcommand{\allComplexTypes}{{\tt C, V, H, D, M, P}}
+\newcommand{\ttdash}{{\tt \_}}
+\newcommand{\itt}{\it T}
+\newcommand{\extraarg}{, Subset s}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Patterns for prototypes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\protoUnarySingleTypesCR}{{\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt R}{\tt ( \tComplex *restrict r, \tReal *a\extraarg)}}
+\newcommand{\protoUnarySingleTypesRI}{{\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt I}{\tt ( \tReal *restrict r, \tInt *a\extraarg)}}
+\newcommand{\protoUnarySingleTypesQual}[5]{{\tt void \namespace}\ttdash{\tt #1}\ttdash{\it eqop}\ttdash#2\ttdash{\tt #3}{\tt ( #4 *restrict r, }\\
+  & {\tt #5 *a\extraarg)}}
+\newcommand{\protoUnaryQual}[1]{{\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash#1\ttdash\itt{\tt (}{\it Type }{\tt *restrict r,}\\
+ & {\it Type }{\tt *a\extraarg)}}
+\newcommand{\protoUnaryQualCR}[1]{{\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash#1\ttdash{\tt R ( \tComplex }{\tt *restrict r, \tReal }{\tt *a\extraarg)}}
+\newcommand{\protoUnaryQualCC}[1]{{\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash#1\ttdash{\tt C ( \tComplex }{\tt *restrict r, \tComplex }\\
+       &  {\tt *a\extraarg)}}
+\newcommand{\protoUnaryQualRC}[1]{{\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash#1\ttdash{\tt C ( \tReal }{\tt *restrict r, \tComplex }{\tt *a\extraarg)}}
+\newcommand{\protoUnaryQualRR}[1]{{\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash#1\ttdash{\tt R ( \tReal }{\tt *restrict r, \tReal }{\tt *a\extraarg)}}
+\newcommand{\protoUnarySum}{{\tt void \namespace}\ttdash{\it t}\ttdash{\it eqop}\ttdash sum\ttdash\itt{\tt ( }{\it QLA\_Type }{\tt *restrict r,}{\it Type }{\tt *a\extraarg)}}
+\newcommand{\protoUnary}{{\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r,}{\it Type }{\tt *a\extraarg)}}
+\newcommand{\protoUnaryA}{{\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt{\tt a( }{\it Type }{\tt *restrict r,}{\it Type }{\tt *a\extraarg)}}
+\newcommand{\protoUnaryShift}{{\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt s}\itt{\tt ( }{\it Type }{\tt *restrict r,}{\it Type } \\
+ & {\tt *a, int dir, int sign\extraarg)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% QDP macro names
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\qdpNcMacro}{{\tt \namespace}\ttdash{\tt Nc }}
+\newcommand{\qdpPrecisionMacro}{{\tt \namespace}\ttdash{\tt Precision}}
+\newcommand{\qdpColorsMacro}{{\tt \namespace}\ttdash{\tt Colors}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Functions special to QDP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\shift}{
+\paragraph{Shifting}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryShift  \\
+  \hline
+  Meaning     & $r = a$, etc. \\
+  \hline
+  \itt     & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+}
+\newcommand{\shiftleftmult}{
+\paragraph{Left multiplication by color matrix with shift of multiplicand}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt M}\ttdash{\tt times}\ttdash{\tt s}\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a\, }\\
+              & {\it Type }{\tt *b, int dir, int sign\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by color matrix with shift of multiplier}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt sM}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b, int dir, int sign\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by color matrix with parallel shift of multiplier and multiplicand}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt sM}\ttdash{\tt times}\ttdash{\tt s}\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b, int dir, int sign\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Omit functions special to QLA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\longdoubletodouble}{}
+\newcommand{\globalnormsqtypeconv}{}
+\newcommand{\globaldottypeconv}{}
+\newcommand{\globalsumtypeconv}{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\shiftleftmultadj}{
+\paragraph{Left multiplication by adjoint of color matrix with shift of multiplicand}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt Ma}\ttdash{\tt times}\ttdash{\tt s}\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b, int dir, int sign\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by adjoint of color matrix with shift of multiplier}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt sMa}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b, int dir, int sign\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by adjoint of color matrix with parallel shift of multiplier and multiplicand}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt sMa}\ttdash{\tt times}\ttdash{\tt s}\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b, int dir, int sign\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\funcfill}{
+\paragraph{Coordinate function fills}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt func( }{\it Type }{\tt *restrict r,}\\
+              & {\tt void *(*f)({\it QLA\_Type } *a, int coordinate[])\extraarg)} \\
+  \hline
+  Meaning     & $r = a(x)$ for coordinate $x$.\\
+              & $a(x)$ is obtained from the callback $f(a,x)$.\\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\multireduction}{
+\paragraph{Multisubset Norms}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash{\tt norm2}\ttdash\itt\ttdash{\tt multi( \tqlaReal *restrict r, }\\
+  & {\it Type}{\tt *a, Subset *s, int ns)} \\
+  \hline
+  Meaning     & $r_i = \sum |a|^2$ on subset $s_i$ for all $i = 0,\ldots{},n_s-1$.\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Multisubset inner products}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt c}\ttdash{\it eqop}\ttdash\itt\ttdash{\tt dot}\ttdash\itt\ttdash{\tt multi( \tqlaComplex *restrict r, }\\
+              & {\it Type *a, }{\it Type }{\tt *b, Subset *s, int ns)} \\
+  exceptions  & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash\itt\ttdash{\tt dot}\ttdash\itt\ttdash{\tt multi( \tqlaReal *restrict r, }\\
+              & {\tt \tReal *a, }{\tt \tReal }{\tt *b, Subset *s, int ns)} \\
+              & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash\itt\ttdash{\tt dot}\ttdash\itt\ttdash{\tt multi( \tqlaInt *restrict r, }\\
+              & {\tt \tInt *a, }{\tt \tInt }{\tt *b, Subset *s, int ns)} \\
+
+  \hline
+  Meaning     & $r_i = \sum a \cdot b$ on subset $s_i$ for all $i = 0,\ldots{},n_s-1$.\\
+  \hline
+  \itt        & {\tt \allNumericTypes} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+\paragraph{Multisubset global sums}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\it t}\ttdash{\it eqop}\ttdash sum\ttdash\itt\ttdash{\tt multi( }{\it QLA\_Type }{\tt *restrict r,}{\it Type }{\tt *a, Subset *s, int ns)} \\
+  exception   & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash sum\ttdash{\tt I}\ttdash{\tt multi( \tqlaReal *restrict r, \tInt *a, Subset *s, int ns)} \\
+  \hline
+  Meaning     & $r_i = \sum a$ on subset $s_i$ for all $i = 0,\ldots{},n_s-1$. \\
+  \hline
+  \itt     & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\title{
+   QDP Data Parallel Interface for QCD \\{\large Version 1.1}
+}
+\author{ SciDAC Software Coordinating Committee}
+
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This is a user's guide for the C binding for the QDP Data Parallel
+Applications Programmer Interface developed under the auspices of the
+U.S. Department of Energy Scientific Discovery through Advanced
+Computing (SciDAC) program.
+
+The QDP Level 2 API has the following features:
+\begin{itemize}
+\item Provides data parallel operations (logically SIMD) on all sites
+across the lattice or on subsets of these sites.
+\item Operates on lattice objects, which have an
+implementation-dependent data layout that is not visible above this
+API.
+\item Hides details of how the implementation maps onto a given
+architecture, namely how the logical problem grid (i.e. lattice) is
+mapped onto the machine architecture.
+\item Allows asynchronous (non-blocking) shifts of lattice level
+objects over any permutation map of sites onto sites. However, from
+the user's view these instructions appear blocking and in fact may be
+so in some implementation.
+\item Provides some combined shift and linear algebra instructions for
+convenience and optimization.
+\item Provides fill operations (filling a lattice quantity from a
+scalar value(s)), global reduction operations, and lattice-wide
+operations on various data-type primitives, such as matrices, vectors,
+and tensor products of matrices (propagators).
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Datatypes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\label{sec.datatypes}
+
+The $N_d$ dimensional lattice consists of all the space-time sites in
+the problem space.  Lattice data are fields on these sites.  A data
+primitive describes data on a single site.  The lattice fields consist
+of the primitives over all sites.  We do not define data types
+restricted to a subset of the lattice --- rather, lattice fields occupy
+the entire lattice.
+
+\subsection{Generic Names}
+
+The linear algebra portion of the QDP API is designed to resemble the
+Level 1 QLA API.  Thus the datatypes and function naming conventions
+are similar.  As with QLA there are two levels of generic naming:
+fully generic in which both color and precision may be controlled
+globally through two macros and color-generic in which precision is
+explicit but not color.  Generic naming applies to datatypes, module
+names, and accessor macros and follows similar rules.
+
+Names for fully generic datatypes are listed in the table below.
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+name                      & abbreviation & description \\
+\hline
+{\tt \tRandomState        } & {\tt S} & implementation dependent \\
+{\tt \tInt                } & {\tt I} & integer \\
+{\tt \tReal               } & {\tt R} & real \\
+{\tt \tComplex            } & {\tt C} & complex \\
+{\tt \tColorVector        } & {\tt V} & one-spin,  $N_c$ color spinor \\
+{\tt \tHalfFermion        } & {\tt H} & two-spin, $N_c$ color spinor \\
+{\tt \tDiracFermion       } & {\tt D} & four-spin, $N_c$ color spinor \\
+{\tt \tColorMatrix        } & {\tt M} & $N_c \times N_c$ complex matrix \\
+{\tt \tDiracPropagator    } & {\tt P} & $4N_c \times 4N_c$ complex matrix \\
+\hline
+\end{tabular}
+\end{center}
+%
+The name for the corresponding primitive type, also known as the QLA
+type, is obtained by replacing the {\tt QDP} prefix with a {\tt QLA}
+prefix.  Thus {\tt \tqlaColorMatrix} is the primitive (QLA) type associated
+with the field {\tt \tColorMatrix}.
+
+Names for color-generic datatypes are obtained by inserting a
+\ttdash{\tt D} for double precision or \ttdash{\tt F} for single
+precision after {\tt QDP} where appropriate.  Thus {\tt
+QDP}\ttdash{\tt D}\ttdash{ColorMatrix} specifies a double precision color
+matrix with color to be set through a global macro.
+
+A long double precision type with abbreviation {\tt Q} is defined for
+QLA, but currently not for QDP.
+
+\subsection{Specific Types for Color and Precision}
+
+According to the chosen color and precision, names for specific
+floating point types are constructed from names for generic types.
+Thus {\tt \tColorMatrix} becomes {\tt QDP}\ttdash{\it PC}\ttdash{\tt
+ColorMatrix}, where the precision {\it P} is {\tt D} or {\tt F}
+according to the table below
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+abbreviation & description \\
+\hline
+{\tt D}            & double precision \\
+{\tt F}            & single precision \\
+\hline
+\end{tabular}
+\end{center}
+and {\it C} is {\tt 2}, {\tt 3}, or {\tt N}, if color is a
+consideration, as listed below.
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+abbreviation & description \\
+\hline
+{\tt 2}            & SU(2) \\
+{\tt 3}            & SU(3) \\
+{\tt N}            & SU(N) \\
+\hline
+\end{tabular}
+\end{center}
+If the datatype carries no color, the color label is omitted.
+Integers also have no precision label.  Likewise for functions, if
+none of the arguments carry color, the color label is omitted, and if
+all numeric arguments are integers, the precision label is omitted.
+
+For example, the type
+%
+\begin{verbatim}
+   QDP_F3_DiracFermion
+\end{verbatim}
+%
+describes a single-precision four-spin, three-color spinor field.
+
+The general color choice {\tt N} can also be used for specialized
+$SU(2)$ or $SU(3)$ at the cost of degrading performance.
+
+\subsection{Color and Precision Uniformity}
+
+In standard coding practice it is assumed that a user keeps one of the
+precision and color options in force throughout the compilation.  So
+as a rule all functions in the interface take operands of the same
+precision and color.  As with data type names, function names come in
+generic and color- and precision-specific forms, as described in the
+next section.  Exceptions to this rule are functions that explicitly
+convert from double to single precision and vice versa.  These and
+functions that do not depend on color or precision are divided among
+thirteen separate libraries.  If the user chooses to adopt color and
+precision uniformity, then all variables can be defined with generic
+types and all functions accessed through generic names.  The
+prevailing color and precision is then defined through macros.  The
+interface automatically translates data type names and function names
+to the appropriate specific type names through typedefs and macros.
+With such a scheme and careful coding, changing only two macros and
+the QDP library converts code from one color and precision choice to
+another.
+
+\subsection{Breaking Color and Precision Uniformity}
+
+It is permissible for a user to mix precision and color choices.  This
+is done by declaring variables with specific type names, using
+functions with specific names, and making appropriate precision
+conversions when needed.  In this case it may be necessary to link
+against a larger set of libraries.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{QDP Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The QDP functions are grouped into the following categories:
+\begin{enumerate}
+\item Entry and exit from QDP
+\item Layout utilities
+\item Data parallel functions
+\item Data management utilities
+\item Subset definition
+\item Shift creation
+\item I/O utilities
+\item Temporary exit and reentry
+\item Optimization calls
+\end{enumerate}
+
+\subsection{Entry and exit from QDP}
+
+QDP can be started at any time, however field operations cannot be
+used until the layout is created.
+In the mean time it will be possible for the user to read input parameters
+and broadcast them to all nodes.
+It may also be possible to get parameters from the environment.
+This procedure is stil under development so, for now, you're on your own.
+
+{\bf [The startup procedure needs more thought - CD]}
+
+\paragraph{Entry to QDP}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_initialize(int argc, char *argv[])|\\
+    \hline
+  Purpose        & Starts QDP. \\
+\hline
+  Example  & \verb|QDP_initialize(argc,argv);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+%
+The routine \verb|QDP_initialize| is called once by all nodes and
+starts QDP operations.
+It initialiazes message passing, but does not setup the site layout
+(see \verb|QDP_create_layout| and related functions).
+It also defines the global variable
+%
+\begin{verbatim}
+int QDP_this_node;
+\end{verbatim}
+%
+specifying the logical node number of the current node.
+
+\paragraph{Exit from QDP}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_finalize(void)|\\
+    \hline
+  Purpose        & Exits QDP. \\
+\hline
+  Example  & \verb|QDP_finalize();| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+%
+This call provides for an orderly shutdown.  It is called by all
+nodes. It concludes all communications, does housekeeping, if needed
+and performs a barrier wait for all nodes.  Then it returns control to
+the calling process.
+
+\paragraph{Panic exit from QDP}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_abort(int status)|\\
+    \hline
+  Purpose        & Panic shutdown of the process. \\
+\hline
+  Example  & \verb|QDP_abort(1);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+%
+This routine may be called by one or more nodes.  It sends kill
+signals to all nodes and exits with exit status \verb|status|.
+
+\subsection{Layout utilities}
+
+The layout routine determines which nodes get which lattice sites and
+in what linear order the sites are stored.  It has entry points that
+allow a user to access single site data extracted from a QDP lattice
+field.  The layout must be created before any operations on QDP field
+objects are allowed.  If a user removes data from a QDP lattice object
+(see \verb|QDP_expose| or \verb|QDP_extract|) and wishes to manipulate
+the data on a site-by-site basis, the global entry points provided
+here are needed to locate the site data.
+
+Some implementations may have a built-in tightly constrained layout.
+In flexible implementations there may be several layout choices,
+thereby allowing the user the freedom to select one that works best
+with a given application.  Furthermore, such implementations may allow
+the user to create a custom layout to replace one of the standard
+layouts.  As long as the custom layout procedure provides the entry
+points and functionality described here, compatibility with the
+remainder of the QDP library is assured.
+
+\paragraph{Defining the layout}
+
+Prior to creating the layout the layout parameters must be defined.
+This is done through function calls.
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_set_latsize(int nd, int size[])|\\
+    \hline
+  Purpose        & Sets number of spacetime dimensions and lattice size. \\
+                 & No default.  Must always be set. \\
+\hline
+  Example  & \verb|QDP_set_latsize(4,size);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+%The following procedure is not currently implemented:
+
+%\begin{flushleft}
+%  \begin{tabular}{|l|l|}
+%  \hline
+%  Prototype      & \verb|void QDP_set_smp(int flag)|\\
+%    \hline
+%  Purpose        & Sets the SMP flag.  False for no SMP\@. \\
+%                 & Default false.                    \\
+%\hline
+%  Example  & \verb|QDP_set_smp(0);| \\
+%   \hline
+% \end{tabular}
+%\end{flushleft}
+
+%The following procedure is not currently implemented:
+
+%\begin{flushleft}
+%  \begin{tabular}{|l|l|}
+%  \hline
+%  Prototype      & \verb|void QDP_set_numproc(int n)|\\
+%    \hline
+%  Purpose        & In a multithreaded implementation, use {\tt n} processors per node. \\
+%                 & Default 1 --- single thread.                    \\
+%\hline
+%  Example  & \verb|QDP_set_numproc(2);| \\
+%   \hline
+% \end{tabular}
+%\end{flushleft}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_create_layout(void)|\\
+    \hline
+  Purpose        & Lays out the sites. \\
+\hline
+  Example  & \verb|QDP_create_layout();| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+All layout parameters must be initialized through the ``set'' function
+calls prior to creating the layout.
+
+After creating the layout the following global variables are accessible.
+The predefined lattice subsets for specifying even, odd, and
+global subsets of the lattice:
+
+\begin{verbatim}
+QDP_Subset QDP_even, QDP_odd, QDP_all;
+\end{verbatim}
+%
+The even and odd subsets are elements of a two-element subset array
+\verb|QDP_even_odd|, such that
+\begin{verbatim}
+  QDP_even = QDP_even_odd[0];
+  QDP_odd  = QDP_even_odd[1];
+\end{verbatim}
+%
+It also creates the nearest-neighbor shifts 
+%
+\begin{verbatim}
+QDP_shift QDP_neighbor[];
+\end{verbatim}
+%
+for each coordinate direction.  
+And finally the variable
+%
+\begin{verbatim}
+int QDP_sites_on_node;
+\end{verbatim}
+%
+gives the number of sites assigned to a node by the layout utility.
+Note that this may vary between nodes.
+
+The global variable
+\begin{flushleft}
+  \verb|int QDP_sites_on_node|
+\end{flushleft}
+
+
+The following global entry points are provided by the
+\verb|QDP_create_layout| procedure:
+
+\paragraph{Number of dimensions}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|int QDP_ndim(void)|\\
+    \hline
+  Purpose        & Returns the number of dimensions. \\
+\hline
+  Example  & \verb|ndim = QDP_ndim();| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+\paragraph{Length of lattice in a given direction}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|int QDP_coord_size(int i)|\\
+    \hline
+  Purpose        & Returns length of lattice in direction \verb|i|. \\
+\hline
+  Example  & \verb|nx = QDP_coord_size(0)|\\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+\paragraph{Length of lattice in all directions}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_latsize(int latsize[])|\\
+    \hline
+  Purpose        & Returns lattice dimensions into array \verb|latsize|.\\
+\hline
+  Example  & \verb|QDP_latsize(latsize)|\\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+\paragraph{Length of lattice in all directions}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|size_t QDP_volume(void)|\\
+    \hline
+  Purpose        & Returns lattice volume.\\
+\hline
+  Example  & \verb|vol = QDP_volume()|\\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+\paragraph{Node number of site}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|int QDP_node_number(int x[])|\\
+    \hline
+  Purpose        & Returns logical node number containing site \verb|x|. \\
+\hline
+  Example  & \verb|node = QDP_node_number(x);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+\paragraph{Linear index of site}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|int QDP_index(int x[])|\\
+    \hline
+  Purpose        & Returns the linearized index for the lattice site \verb|x|. \\
+\hline
+  Example  & \verb|k = QDP_index(x);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+The linear index returned by \verb|QDP_index| ranges from 0 to
+\verb|QDP_sites_on_node|$ - 1$.
+
+\paragraph{Map node and linear index to coordinate}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_get_coords(int x[], int node, int index)|\\
+    \hline
+  Purpose        & Returns site coordinates \verb|x| for the given node  \\
+                 & \verb|node| and linear index \verb|index|. \\
+\hline
+  Example  & \verb|QDP_get_coords(x,0,31);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+
+\paragraph{Defining the spacetime coordinate}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_I_eq_coord|{\tt (\tInt * r, int i)}\\
+    \hline
+  Purpose        & The {\tt i}th spacetime coordinate. \\
+\hline
+  Example  & \verb|QDP_Int coord_z;| \\
+           & \verb|QDP_I_eq_coord(&coord_z,2);| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+%
+The call \verb|QDP_I_eq_coord(&coord[i],i)| fills an integer lattice
+field \verb|coord[i]| with a value on each site equal to the integer
+value of the \verb|i|th space-time coordinate on that site.
+
+\subsection{Naming Conventions for Data Parallel Functions}
+
+Data parallel functions are described in detail in Sec.~\ref{sec:details}.  Here we desribe the naming conventions.  Data parallel function names are constructed with a pattern that suggests their functionality.  Thus the function
+%
+\begin{verbatim}
+  QDP_V_eq_M_times_V(c,u,b,s)
+\end{verbatim}
+%
+carries out the product
+%
+\begin{verbatim}
+  c[x] = u[x]*b[x]
+\end{verbatim}
+%
+for all lattice coordinates {\tt x} belonging to the subset {\tt s}.
+where $c$ and $b$ are pointers to lattice staggered fermion vector
+fields and $u$ is a pointer to a lattice color matrix field.  The elements of
+the function name are separated by an underscore ``{\tt \_}'' for
+readability.  All function names in this interface begin with ``{\tt
+QDP}''.  The specific name continues with a precision and color label
+as in {\tt QDP}\ttdash{\tt F3}\ttdash{\tt V}\ttdash{\tt eq}\ttdash{\tt
+M}\ttdash{\tt times}\ttdash{\tt V} for single precision $SU(3)$.  Then
+comes a string of elements that mimics the algebraic expression.  The
+next character ``{\tt V}'' abbreviates the type for the destination
+operand, in this case the argument ``{\tt c}''.  The abbreviations are
+listed in Sec.~\ref{sec.datatypes}.  The next string ``{\tt eq}''
+specifies the assignment operator.  In this case it is a straight
+replacement, but modifications are also supported, as described below.
+Then comes the first rhs operand type ``{\tt M}'' followed by a string
+``{\tt times}'' specifying the operation and a character ``{\tt V}''
+specifying the second rhs operand type.
+
+Supported variants of the assignment operator are tabulated below.
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+ abbreviation & meaning \\
+\hline
+ eq   & $=$  \\
+ peq  & $+=$ \\
+ meq  & $-=$ \\
+ eqm  & $=-$ \\
+\hline
+\end{tabular}
+\end{center}
+%
+Some functions allow all of these and some take only a simple replacement ($=$).
+
+\subsubsection{Constant Arguments}
+
+In some cases it is desirable to keep an argument constant over the
+entire subset.  For example the function
+%
+\begin{verbatim}
+   QDP_V_eq_c_times_V(c,z,b,s)
+\end{verbatim}
+%
+multiplies a lattice field of color vectors by a complex constant as in
+%
+\begin{verbatim}
+   c[x] = z*b[x]
+\end{verbatim}
+%
+for {\tt x} in subset {\tt s}.  In this case we specify that the argument is
+constant (coordinate-independent) by writing the type abbreviation in lower
+case: ``{\tt c}''.
+
+\subsubsection{Color argument for SU(N)}
+
+For the general color case $SU(N)$ the specific function requires an
+extra argument giving the number of colors.  It always comes first.
+Thus in the above example we would write
+%
+\begin{verbatim}
+   QDP_FN_V_eq_c_times_V(nc,c,z,b,s)
+\end{verbatim}
+%
+where {\tt nc} specifies the number of colors.  In normal practice,
+the variable {\tt nc} should be replaced by the required user-defined
+macro \qdpNcMacro specifying the prevailing number of colors.  The
+generic function is actually a macro and is automatically converted to
+this usage with \qdpNcMacro for the first argument.  However, if the
+specific name is used, the user must supply the argument.
+
+\subsubsection{Adjoint}
+
+The adjoint of an operand is specified by a suffix {\tt a} after the
+type abbreviation.  Thus
+%
+\begin{verbatim}
+  QDP_V_eq_Ma_times_V(c,u,b,s)
+\end{verbatim}
+%
+carries out the product
+%
+\begin{verbatim}
+  c[x] = adjoint(u[x])*b[x]
+\end{verbatim}
+%
+for all sites {\tt x} in subset {\tt s}.
+
+\subsubsection{Shift}
+
+A shift in an operand is specified by a prefix lowercase {\tt s} before
+the type abbreviation.  (See the discussion of shifts below.) Thus
+%
+\begin{verbatim}
+  QDP_V_eq_sV(c,b,dir,sign,s)
+\end{verbatim}
+%
+shifts staggered fermion data along the direction specified by {\tt
+dir} and {\tt sign} for all sites {\tt x} in destination subset {\tt
+s}.
+
+
+\subsection{Creating and destroying lattice fields}
+
+All QDP functions expect that lattice field arguments point to fields
+that have already been created.  The sole exception to this rule is
+the creation utility itself, which returns a pointer
+
+\paragraph{Creating a lattice field}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & {\it Type}\verb| * QDP_create_|{\it T}\verb|(void)|\\
+    \hline
+  Purpose        & Creates lattice field of type {\it Type}.\\
+    \hline
+  \itt     & \allTypes \\
+   \hline
+  Example  & \verb|u = QDP_create_M();| \\
+   \hline
+ \end{tabular}
+\end{flushleft}
+In prototype specifications throughout this document the notation {\it
+Type} specifies the generic or specific datatype name matching the
+abbreviation {\it T} according to the table in
+Sec.~\ref{sec.datatypes}.
+
+\paragraph{Destroying a lattice field}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_destroy_|{\it T}(Type *a)\\
+    \hline
+ Purpose        & Frees memory associated with field \verb|a|.\\
+    \hline
+ \itt     & \allTypes \\
+   \hline
+Example  & \verb|QDP_destroy_M(&u);| \\
+   \hline
+  \end{tabular}
+\end{flushleft}
+
+
+\subsection{Subsets}
+
+All QDP linear algebra and shift operations require specifying the
+subset of the lattice on which the operation is performed.  The subset
+may be the entire lattice.  When defining subsets, it is often
+convenient to partition the lattice into multiple disjoint subsets
+(e.g. time slices or checkerboards).  Such subsets are defined through
+a user-supplied function that returns a range of integers
+$0,1,2,\ldots{},n-1$, so that if $f(x) = i$, then site $x$ is in
+partition $i$.  A single subset may also be defined by limiting the
+range of return values to a single value (i.e. 0).  This procedure may
+be called more than once, and sites may be assigned to more than one
+subset.  Thus, for example an even site may also be assigned to a time
+slice subset and one of the subsets in a 32-level checkerboard scheme.
+A subset definition remains valid until \verb|QDP_destroy_subset| is
+called.
+
+\paragraph{Defining a subset}
+
+Subsets are defined through the data type \verb|QDP_Subset|
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|QDP_Subset * QDP_create_subset(|\\
+                 & \verb|int (*func)(int x[]), int n)|\\
+    \hline
+Purpose        & Creates an array of \verb|n| subsets based on \verb|func|.\\
+    \hline
+Example  & \verb|QDP_Subset ts[nt]|; \\
+         & \verb|ts = QDP_create_subset(timeslice,nt);| \\
+         & where {\tt timeslice}$(x,y,z,t) = t$. \\
+   \hline
+  \end{tabular}
+\end{flushleft}
+%
+It is permissible to call \verb|QDP_create_subset| with $n =
+1$.  In this case the function must return zero if the site is in the
+subset and nonzero if not.  (Note, this is opposite the ``true'',
+``false'' convention in C).
+
+\paragraph{Destroying subsets}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_destroy_subset(|\\
+                 & \verb|QDP_subset s[])| \\ 
+\hline
+Purpose        & Destroys all subsets created with \verb|s|. \\
+    \hline
+Example  & \verb|QDP_destroy_subset(ts);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+This procedure frees all memory associated with the subset object
+\verb|s|.  The \verb|QDP_subset *| value \verb|s| should be the object
+returned by \verb|QDP_create_subset|.  All subsets in the array
+\verb|s| are destroyed.
+
+\paragraph{Reductions on subsets}
+
+Reduction operations (norms, inner products, global sums) come in two
+variants according to whether the result is computed on a single
+subset of the lattice or on multiple subsets.  Thus the operation
+%
+\begin{verbatim}
+  QLA_Complex z;
+  QDP_ColorVector *a,*b;
+  QDP_c_eq_V_dot_V(&z,a,b,QDP_even)
+\end{verbatim}
+%
+sums the dot product of the lattice staggered fermion fields \verb|a|
+and \verb|b| on the even sites and stores the result in \verb|z|.  The
+operation
+%
+\begin{verbatim}
+  QLA_Complex z[nt];
+  QDP_ColorVector *a,*b;
+  QDP_c_eq_V_dot_V_multi(z,a,b,ts,nt)
+\end{verbatim}
+%
+with the timeslice subsets illustrated above computes the dot product
+summed separately on each timeslice and stores the sums in the array
+\verb|z|, so that the value in \verb|z[i]| results from the sum on the
+subset \verb|ts[i]|.
+
+\subsection{Shifts}
+
+Shifts are general communication operations specified by any
+permutation of sites.  Nearest neighbor shifts are a special case and
+are preinitialized by \verb|QDP_initialize|. Arbitrary displacement
+shifts are an intermediate generalization and are created with
+\verb|QDP_create_shift|.  Arbitrary permutations are created with
+\verb|QDP_create_map|.  However they are created, all shifts are
+specified by a ``direction'' label \verb|dir| of type \verb|QDP_Shift|
+and a sign \verb|sign| that takes one of two predefined global values
+\verb|QDP_forward| and \verb|QDP_backward|.
+
+Shifts are treated syntactically as a modification of a QDP argument
+and are specified with a prefix {\tt s} before the type abbreviation
+for the shifted field. Thus, for example,
+%
+\begin{verbatim}
+  QDP_H_eq_sH(r,a,dir,sign,s);
+\end{verbatim}
+%
+shifts the half fermion field {\tt a} along direction {\tt dir},
+forward or backward according to {\tt sign}, placing the result in the
+field {\tt r}.  Nearest neighbor shifts are specified by values of the
+global shift \verb|QDP_neighbor[|$\mu$\verb|]| with $\mu$ in the range
+$[0,N_d-1]$.  The sign
+is \verb|QDP_forward| for shifts from the positive direction, and
+\verb|QDP_backward| for shifts from the negative direction.  That is,
+for \verb|QDP_forward| and {\tt dir}$=$ \verb|QDP_neighbor|$[\mu]$,
+$r(x) = a(x+\hat \mu)$. For more general shifts, the direction {\tt
+dir} is specified by the object returned by \verb|QDP_create_shift| or
+\verb|QDP_create_map| and {\tt sign} must be either \verb|QDP_forward|
+or \verb|QDP_backward| to specify the permutation or its inverse,
+respectively.
+
+The subset restriction applies to the destination field {\tt r}.  Thus
+a nearest neighbor shift operation specifying the even subset shifts
+odd site values from the source {\tt a} and places them on even site
+values on the destination field {\tt r}.
+
+\paragraph{Creating displacement shifts}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|QDP_Shift QDP_create_shift( int d[] )|\\
+\hline
+Purpose        & Creates a shift defined by the displacement vector \verb|d|.\\
+    \hline
+Example  & \verb|int d[4] = {0,1,2,0};|\\
+         & \verb|QDP_Shift knight[4][4];|\\
+         & \verb|knight[2][3] = QDP_create_shift(d);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+Calling with a displacement vector \verb|{1,0,0,0}| would reproduce
+the shift \verb|QDP_neighbor[0]|.
+
+\paragraph{Creating arbitrary permutations}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|QDP_Shift QDP_create_map(|\\
+                 & \verb| int* (func *)(int coordinate[Nd],void *args),|\\
+                 & \verb|void *args, int argsize)| \\ 
+\hline
+Purpose        & Creates a shift specified by the permutation map {\tt func}. \\
+    \hline
+Example  & \verb|int mu = 1;|\\
+         & \verb|QDP_Shift mirror[4];| \\
+         & \verb|mirror[mu] = QDP_create_map(reflect,&mu,sizeof(mu));| \\
+         & where {\tt reflect(x,mu)} maps $x_\mu$ to $L_\mu - 1 - x_\mu$. \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+The return value is used in the various linear
+algebra calls involving shifts.  The arguments {\tt args} are passed
+through to the calling function.  The {\tt argsize} parameter
+specifies the byte length of the argument array or structure.
+
+The implementation may choose to postpone construction of a shift.
+Thus it is required that the callback function {\tt func} be static
+and invariant, i.e. a function call with the same arguments must give
+the same result, even if the call is postponed.  The parameters {\tt
+args} are copied at the moment the shift is created, however, so they
+may be volatile.  The size argument {\tt argsize} makes copying
+possible.
+
+\paragraph{Destroying a shift}
+
+The corresponding destruction function is \verb|QDP_destroy_shift|. 
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_destroy_shift(QDP_Shift dir)| \\ 
+\hline
+Purpose        & Frees memory associated with the map {\tt dir} \\
+    \hline
+Example  & \verb|QDP_destroy_shift(dir);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{I/O utilities}
+
+{\bf [Under development.]}
+
+\subsection{Temporary entry and exit from QDP}
+
+For a variety of reasons it may be necessary to remove data from QDP
+structures.  Conversely, it may be necessary to reinsert data into QDP
+structures.  For example, a highly optimized linear solver may
+operate outside QDP.  The operands would need to be extracted from QDP
+fields and the eventual solution reinserted.  It may also be useful to
+suspend QDP communications temporarily to gain separate access to the
+communications layer.  For this purpose function calls are provided to
+put the QDP implementation and/or QDP objects into a known state,
+extract values, and reinsert them.
+
+\paragraph{Exposing QDP data}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & {\tt {\it QLA}\ttdash{\it Type *} QDP}\ttdash{\tt expose}\ttdash\itt{\tt (}{\it Type *}{\tt src)}\\
+\hline
+Purpose        & Deliver data values from field {\tt src}. \\
+\hline
+  \itt     & \allNumericTypes \\
+\hline
+Example  & \verb|r = QDP_expose_M(a);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+This function grants direct access to the data values contained in the
+QDP field {\tt src}.  The return value is a pointer to an array of QLA
+data {\tt dest} of type {\it T}.  The order of the data is given by
+\verb|QDP_index|.  No QDP operations are permitted on exposed
+data until \verb|QDP_reset| is called. (See next.)
+
+\paragraph{Returning control of QDP data}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & {\tt void QDP}\ttdash{\tt reset}\ttdash\itt{\tt (}{\it Type *}{\tt field)}\\
+\hline
+Purpose        & Returns control of data values to QDP. \\
+\hline
+  \itt     & \allNumericTypes \\
+\hline
+Example  & \verb|QDP_reset_M(r);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+This call signals to QDP that the user is ready to resume QDP
+operations with the data in the specified field.
+
+\paragraph{Extracting QDP data}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & {\tt void QDP}\ttdash{\tt extract}\ttdash\itt{\tt (}{\it QLA\_Type} {\tt *dest, }{\it Type }{\tt *src)\extraarg}\\
+\hline
+Purpose        & Copy data values from field {\tt src} to array {\tt dest}. \\
+\hline
+  \itt     & \allNumericTypes \\
+\hline
+Example  & \verb|QDP_extract_M(r,a,QDP_even);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+The user must allocate space of size \verb|QDP_sites_on_node*|{\tt
+sizeof(}{\it QLA}\ttdash{\it Type}{\tt )} for the destination array
+before calling this function, regardless of the size of the subset.
+This function copies the data values contained in the QDP field {\tt
+src} to the destination field.  Only values belonging to the specified
+subset are copied.  Any values in the destination array not associated
+with the subset are left unmodified.  The order of the data is given
+by \verb|QDP_index|.  Since a copy is made, QDP operations
+involving the source field may proceed without disruption.
+
+\paragraph{Inserting QDP data}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & {\tt void QDP}\ttdash{\tt insert}\ttdash\itt{\tt (}{\it Type *}{\tt dest}, {\it QLA}\ttdash{\it Type *}{\tt src\extraarg)}\\
+\hline
+Purpose        & Inserts data values from QLA array {\tt src}. \\
+\hline
+  \itt     & \allNumericTypes \\
+\hline
+Example  & \verb|QDP_insert_M(a,r);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+Only data associated with the specified subset are inserted.  Other
+values are unmodified.  The data order must conform to
+\verb|QDP_index|.  This call, analogous to a fill operation, is
+permitted at any time and does not interfere with QDP operations.
+
+\paragraph{Suspending QDP communications}
+
+If a user wishes to suspend QDP communications temporarily and carry
+on communications by other means, it is first necessary to call
+\verb|QDP_suspend_comm|.
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_suspend_comm(void)| \\
+\hline
+Purpose        & Suspends QDP communications. \\
+\hline
+Example  & \verb|QDP_suspend_comm();| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+No QDP shifts can then be initiated until \verb|QDP_resume| is called.
+However QDP linear algebra operations without shifts may proceed.
+
+\paragraph{Resuming QDP communications}
+
+To resume QDP communications one uses
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & \verb|void QDP_resume_comm(void)| \\
+\hline
+Purpose        & Restores QDP communications. \\
+\hline
+Example  & \verb|QDP_resume_comm();| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Optimization Calls}
+
+The following procedure is included to aid in optimization of the QDP implementation
+
+\paragraph{Marking discarded data}
+
+\begin{flushleft}
+\begin{tabular}{|l|l|}
+  \hline
+  Prototype      & {\tt void QDP}\ttdash{\tt discard}\ttdash\itt{\tt (}{\it Type *}{\tt a)} \\
+\hline
+Purpose        & Indicates data in {\tt a} is no longer needed. \\
+\hline
+Example  & \verb|QDP_discard_M(utemp);| \\
+\hline
+  \end{tabular}
+\end{flushleft}
+%
+The field is not destroyed and memory is not released.  For that
+purpose, see \verb|QDP_destroy|.  This call allows the implementation
+to cancel the deferred resolution of a lazy shift.  It is a runtime
+error to attempt to use discarded data as an rvalue (source operand or
+incremented destination) in any subsequent operation.  However, once
+the field is used as an lvalue (fully replaced destination), data
+integrity is automatically reinstated.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Compilation with QDP}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Generic header and macros}
+
+As described above, normally the user selects a prevailing color and
+precision for the entire calculation.  In that case it is permissible
+to use the generic function names and datatypes, making it possible to
+change colors and precision with a simple recompilation, if desired.
+For this purpose the generic header file is {\tt qdp.h}.  The
+following macros must be defined by the user prior to including this
+header file:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+ required macro & choices \\
+\hline
+ \qdpPrecisionMacro & {\tt 'D', 'F'} \\
+ \qdpNcMacro        & number of colors \\
+\hline
+\end{tabular}
+\end{center}
+%
+Single quotes are required around nonnumeric values.  
+
+In the C implementation of QDP the number of spins is set to 4 when
+the library is built.
+
+An additional macro is available to the user, but is
+normally set to its default value according to the
+macro \qdpNcMacro.
+%
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+ required macro & choices \\
+\hline
+ \qdpColorsMacro    & {\tt 2, 3, 'N'} \\
+\hline
+\end{tabular}
+\end{center}
+%
+This is the macro that determines the color namespace for the generic
+functions.  Its default value is {\tt 2} when \qdpNcMacro is {\tt 2},
+{\tt 3} when {\tt 3}, and {\tt N} otherwise.  If, for some reason a
+users wishes to work with the {\tt N} namespace for two or three
+colors, rather than the more efficient {\tt 2} or {\tt 3} namespace,
+he/she may do so by setting this macro to {\tt 'N'} explicitly.
+
+A sample preamble for double precision $SU(3)$ reads
+%
+\begin{verbatim}
+#define QDP_Precision 'D'
+#define QDP_Nc 3
+#include <qdp.h>
+\end{verbatim}
+%
+with the include search path set to {\tt \$QDP}\ttdash{\tt
+HOME/include} and {\tt \$QDP}\ttdash{\tt HOME} set to the home
+directory for QDP\@.  With such a preamble the generic function names
+and datatypes are automatically mapped to the appropriate specific
+types.  Of course the precision and color macros can also be defined
+through a compiler flag, as in
+%
+\begin{verbatim}
+gcc  -DQDP_Precision=\'D\' -DQDP_Nc=3 ...
+\end{verbatim}
+%
+The single quotes are required and they must each be preceded by a
+backslash to keep them from being eaten by the shell.
+
+For $SU(4)$ one might do
+%
+\begin{verbatim}
+#define QDP_Precision 'F'
+#define QDP_Nc 4
+#include <qdp.h>
+\end{verbatim}
+%
+The maximum number of colors is determined by the QLA library.
+
+\subsection{Libraries}
+
+Normally, it is necessary to link five QDP libraries for a given
+choice of color and precision.  Other libraries may be required by the
+implementation.  Routines involving only integers and the random state
+are common to all choices.  Routines involving only real or complex
+numbers are common to all colors.  Thus for single precision $SU(3)$
+the required libraries are linked through
+%
+\begin{verbatim}
+  -lqdp_common -lqdp_int -lqdp_f -lqdp_f3 -lm
+\end{verbatim}
+%
+with the library search path set to {\tt QDP}\ttdash{\tt HOME/lib}.
+A complete list of the QDP libraries is given below.  Each library
+will depend on the corresponding QLA library.
+Also since global sums are done in a higher precision, using them
+requires linking to QLA libraries of the next higher precision in
+addition to the corresponding conversion library.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+ name & purpose \\
+\hline
+ {\tt libqdp}\ttdash{\tt common.a} & QDP utilities                       \\
+ {\tt libqdp}\ttdash{\tt int.a}    & integers, boolean                   \\
+ {\tt libqdp}\ttdash{\tt f.a  }    & real, complex, single precision     \\
+ {\tt libqdp}\ttdash{\tt d.a  }    & real, complex, double precision     \\
+ {\tt libqdp}\ttdash{\tt df.a }    & real, complex, precision conversion \\
+ {\tt libqdp}\ttdash{\tt f3.a }    & SU(3), single precision             \\
+ {\tt libqdp}\ttdash{\tt d3.a }    & SU(3), double precision             \\
+ {\tt libqdp}\ttdash{\tt df3.a}    & SU(3), precision conversion         \\
+ {\tt libqdp}\ttdash{\tt f2.a }    & SU(2), single precision             \\
+ {\tt libqdp}\ttdash{\tt d2.a }    & SU(2), double precision             \\
+ {\tt libqdp}\ttdash{\tt df2.a}    & SU(2), precision conversion         \\
+ {\tt libqdp}\ttdash{\tt fn.a }    & SU(N), single precision             \\
+ {\tt libqdp}\ttdash{\tt dn.a }    & SU(N), double precision             \\
+ {\tt libqdp}\ttdash{\tt dfn.a}    & SU(N), precision conversion         \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Nonuniform color and precision}
+
+Users wishing to vary color and precision within a single calculation
+must use specific type names and function names whenever these types
+and names differ from the prevailing precision and color.  For
+example, if an $SU(3)$ calculation is done primarly in single
+precision, but has double precision components, the following preamble
+is appropriate:
+%
+\begin{verbatim}
+#define QDP_Precision 'F'
+#define QDP_Nc 3
+#include <qdp.h>
+#include <qdp_d.h>
+#include <qdp_df.h>
+#include <qdp_d3.h>
+#include <qdp_df3.h>
+\end{verbatim}
+%
+and the following linkage to get the corresponding libraries:
+%
+\begin{verbatim}
+  -lqdp_common -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_df 
+      -lqdp_d3 -lqdp_df3 -lm
+\end{verbatim}
+%
+As in the previous example, the single precision components for
+$SU(3)$ are automatically included through {\tt qdp.h}.  Then we need
+the corresponding double precision components.  And we also need the
+{\tt DF} libraries to do conversions between single and double
+precision.  They, too have colored and noncolored members.
+
+The following table lists all the QDP headers.
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+ name & purpose \\
+\hline
+ {\tt qdp.h                   } & Master header and QDP utilities     \\
+ {\tt qdp}\ttdash{\tt int.h   } & integers, boolean                   \\
+ {\tt qdp}\ttdash{\tt f.h     } & real, complex, single precision     \\
+ {\tt qdp}\ttdash{\tt d.h     } & real, complex, double precision     \\
+ {\tt qdp}\ttdash{\tt df.h    } & real, complex, precision conversion \\
+ {\tt qdp}\ttdash{\tt f3.h    } & SU(3), single precision             \\
+ {\tt qdp}\ttdash{\tt d3.h    } & SU(3), double precision             \\
+ {\tt qdp}\ttdash{\tt df3.h   } & SU(3), precision conversion         \\
+ {\tt qdp}\ttdash{\tt f2.h    } & SU(2), single precision             \\
+ {\tt qdp}\ttdash{\tt d2.h    } & SU(2), double precision             \\
+ {\tt qdp}\ttdash{\tt df2.h   } & SU(2), precision conversion         \\
+ {\tt qdp}\ttdash{\tt fn.h    } & SU(N), single precision             \\
+ {\tt qdp}\ttdash{\tt dn.h    } & SU(N), double precision             \\
+ {\tt qdp}\ttdash{\tt dfn.h   } & SU(N), precision conversion         \\
+\hline
+\end{tabular}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Function Details}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\label{sec:details}
+
+This section describes in some detail the names and functionality for
+all functions in the interface involving linear algebra with and
+without shifts.  Because of the variety of datatypes, and assignment
+operations, there are a few hundred names altogether.  However, there
+are only a couple dozen categories.  It is hoped that the construction
+of the names is sufficiently natural that with only a little practice,
+the user can guess the name of any function and determine its
+functionality without consulting a list.
+
+In prototype specifications throughout this document the notation {\it
+Type} specifies the generic or specific datatype name matching the
+abbreviation {\it T} according to the table in
+Sec.~\ref{sec.datatypes}.  We also introduce the shorthand
+%
+\begin{verbatim}
+#typedef const QDP_Subset Subset
+\end{verbatim}
+%
+Unless otherwise indicated, operations occur on all sites in the
+specified subset.
+ 
+\subsection{Unary Operations}
+
+\paragraph{Elementary unary functions on reals}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryQualRR{\it func}  \\
+  \hline
+  Meaning     & $r = {\rm func}(a)$ \\
+  \hline
+  {\it func}  & cos, sin, tan, acos, asin, atan,
+		sqrt, fabs, exp, log, sign, \\
+              & ceil, floor, cosh, sinh, tanh, log10 \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Elementary unary functions real to complex}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryQualCR{\it func}  \\
+  \hline
+  Meaning     & $r = \exp(ia)$ \\
+  \hline
+  {\it func}  & cexpi \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Elementary unary functions complex to real}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryQualRC{\it func}  \\
+  \hline
+  Meaning     & $r = {\rm func}(a)$ \\
+  \hline
+  {\it func}  & norm, arg \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Elementary unary functions on complex values}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryQualCC{\it func}  \\
+  \hline
+  Meaning     & $r = {\rm func}(a)$ \\
+  \hline
+  {\it func}  & cexp, csqrt, clog \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Elementary binary functions on reals}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt R}\ttdash{\it func}\ttdash{\tt R( \tReal *restrict r, \tReal *a,}\\
+              & {\tt \tReal }{\tt *b\extraarg)} \\
+  exception   & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt R}\ttdash{\tt ldexp}\ttdash{\tt I( \tReal *restrict r, \tReal *a,}\\
+              & {\tt \tInt }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = {\rm func}(a,b)$ \\
+  \hline
+  {\it func}  & {\tt  mod, max, min, ldexp, pow, atan2} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Elementary binary functions on integers}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt I}\ttdash{\it op}\ttdash{\tt I( \tInt *restrict r, \tInt *a,} \\
+              & {\tt \tInt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = {\rm func}(a,b)$\\
+  \hline
+  $\op$       & {\tt lshift, rshift, mod, max, min} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Copying and incrementing}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnary  \\
+  \hline
+  Meaning     & $r = a$, etc. \\
+  \hline
+  \itt     & \allNumericTypes \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\shift
+
+\paragraph{Hermitian conjugate}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryA  \\
+  \hline
+  Meaning     & $r = a^\dagger$, etc. \\
+  \hline
+  \itt     & {\tt C, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Transpose}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryQual{\tt transpose}  \\
+  \hline
+  Meaning     & $r = {\rm transpose}(a)$, etc. \\
+  \hline
+  \itt     & {\tt M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Complex conjugate}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnaryQual{\tt conj}  \\
+  \hline
+  Meaning     & $r = a^*$, etc. \\
+  \hline
+  \itt     & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Local squared norm: uniform precision}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{R}{\tt norm2}{\itt}{\tqlaReal}{{\it Type}} \\
+  \hline
+  Meaning     & $r = |a|^2$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \itt        & \allComplexTypes \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Type conversion and component extraction and insertion}
+
+\paragraph{Convert float to double}
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash {\tt DF}\ttdash\itt\ttdash{\it eqop}\ttdash\itt{\tt ( }{\it Type}{\tt \_D }{\tt *restrict r,}{\it Type}{\tt \_F }{\tt *a\extraarg)} \\
+  \hline
+  Meaning     & $r = a$ \\
+  \hline
+  \itt     & {\tt R, C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Convert double to float}
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash {\tt FD}\ttdash\itt\ttdash{\it eqop}\ttdash\itt{\tt ( }{\it Type}{\tt \_F }{\tt *restrict r,}{\it Type}{\tt \_D }{\tt *a\extraarg)} \\
+  \hline
+  Meaning     & $r = a$ \\
+  \hline
+  \itt     & {\tt R, C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\longdoubletodouble
+
+\paragraph{Convert real to complex (zero imaginary part)}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesCR \\
+  \hline
+  Meaning     & $\Re r = a$, $\Im r = 0$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Convert real and imaginary to complex}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt R\_plus\_i\_R( \tComplex *restrict r,}\\
+              & {\tt \tReal *a, \tReal *b\extraarg)} \\
+  \hline
+  Meaning     & $\Re r = a$, $\Im r = b$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Real part of complex}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{R}{\tt re}{C}{\tReal}{\tComplex} \\
+  \hline
+  Meaning     & $r = \Re a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Imaginary part of complex}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{R}{\tt im}{C}{\tReal}{\tComplex} \\
+  \hline
+  Meaning     & $r = \Im a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Integer to real}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesRI \\
+  \hline
+  Meaning     & $r = a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Real to integer (truncate)}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt trunc}\ttdash{\tt R ( \tInt }{\tt *restrict r, \tReal }{\tt *a\extraarg)}\\
+  \hline
+  Meaning     & $r = a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Real to integer (round)}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt round}\ttdash{\tt R ( \tInt }{\tt *restrict r, \tReal }{\tt *a\extraarg)}\\
+  \hline
+  Meaning     & {\tt r = a>=0 ? a+0.5 : a-0.5} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Accessing a color matrix element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt elem}\ttdash\itt{\tt ( \tComplex *restrict r, \tColorMatrix *a,}\\
+              & {\tt int i, int j\extraarg)} \\
+  \hline
+  Meaning     & $r = a_{i,j}$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a color matrix element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt elem}\ttdash{\tt C( \tColorMatrix *restrict r, \tComplex *a,}\\
+              & {\tt int i, int j\extraarg)} \\
+  \hline
+  Meaning     & $r_{i,j} = a$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Accessing a half fermion or Dirac fermion spinor element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt elem}\ttdash\itt{\tt ( \tComplex *restrict r, Type *a,}\\
+              & {\tt int i\_c, int i\_s\extraarg)} \\
+  \hline
+  Meaning     & $r = a_{i_c,i_s}$\\
+  \hline
+  \itt        & {\tt H, D} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a half fermion or Dirac fermion spinor element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt elem}\ttdash{\tt C( Type *restrict r, \tComplex *a, }\\
+              & {\tt int i\_c, int i\_s\extraarg)} \\
+  \hline
+  Meaning     & $r_{i_c,i_s} = a$\\
+  \hline
+  \itt        & {\tt H, D} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Accessing a staggered fermion spinor element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt elem}\ttdash{\tt V( \tComplex *restrict r,}\\
+              & {\tt \tColorVector *a, int i\extraarg)} \\
+  \hline
+  Meaning     & $r = a_i$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a staggered fermion spinor element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt V}\ttdash{\it eqop}\ttdash{\tt elem}\ttdash{\tt C( \tColorVector *restrict r,}\\
+              & {\tt \tComplex *a, int i\extraarg)} \\
+  \hline
+  Meaning     & $r_i = a$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Accessing a Dirac propagator matrix element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt elem}\ttdash{\tt P( \tComplex *restrict r, \tDiracPropagator *a,} \\
+              & {\tt int i\_c, int i\_s, int j\_c, int j\_s\extraarg)} \\
+  \hline
+  Meaning     & $r = a_{i_c,i_s,j_c,j_s}$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a Dirac propagator matrix element}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt P}\ttdash{\it eqop}\ttdash{\tt elem}\ttdash{\tt C( \tDiracPropagator *restrict r, \tComplex *a,} \\
+              & {\tt int i\_c, int i\_s, int j\_c, int j\_s\extraarg)} \\
+  \hline
+  Meaning     & $r_{i_c,i_s,j_c,j_s} = a$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Extracting a color column vector from a color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt V}\ttdash{\it eqop}\ttdash{\tt colorvec}\ttdash\itt{\tt ( \tColorVector *restrict r, \tColorMatrix *a,}\\
+	      & {\tt int j\extraarg)} \\
+  \hline
+  Meaning     & $r_i = a_{i,j}\ \ \ \mbox{for $i = 0\ldots{}n_c-1$}$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a color vector into a color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt colorvec}\ttdash{\tt V( \tColorMatrix *restrict r, \tColorVector *a,}\\
+              & {\tt int j\extraarg)} \\
+  \hline
+  Meaning     & $r_{i,j} = a_i\ \ \ \mbox{for $i = 0\ldots{}n_c-1$}$\\
+  \hline
+w  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Extracting a color column vector from a half fermion or Dirac fermion spinor}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt V}\ttdash{\it eqop}\ttdash{\tt colorvec}\ttdash\itt{\tt ( \tColorVector *restrict r, Type *a,}\\
+              & {\tt int i\_s\extraarg)} \\
+  \hline
+  Meaning     & $r_{i_c} = a_{i_c,i_s}\ \ \ \mbox{for $i_c = 0\ldots{}n_c-1$}$\\
+  \hline
+  \itt        & {\tt H, D} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a color column vector into a half fermion or Dirac fermion spinor}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt colorvec}\ttdash{\tt V( Type *restrict r, \tColorVector *a, }\\
+              & {\tt int i\_s\extraarg)} \\
+  \hline
+  Meaning     & $r_{i_c,i_s} = a_{i_c}\ \ \ \mbox{for $i_c = 0\ldots{}n_c-1$}$\\
+  \hline
+  \itt        & {\tt H, D} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Extracting a Dirac column vector from a Dirac propagator matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt D}\ttdash{\it eqop}\ttdash{\tt diracvec}\ttdash{\tt P( \tDiracFermion *restrict r,}\\
+              & {\tt \tDiracPropagator *a, int jc, int js\extraarg)} \\
+  \hline
+  Meaning     & $r_{i_c,i_s} = a_{i_c,i_s,j_c,j_s}\ \ \ \mbox{for $i_c = 0\ldots{}n_c-1, i_s = 0\ldots{}3$}$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Inserting a Dirac column vector into a Dirac propagator matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt P}\ttdash{\it eqop}\ttdash{\tt diracvec}\ttdash{\tt D( \tDiracPropagator *restrict r,}\\
+              & {\tt \tDiracFermion *a, int jc, int js\extraarg)} \\
+  \hline
+  Meaning     & $r_{i_c,i_s,j_c,j_s} = a_{i_c,i_s} \ \ \ \mbox{for $i_c = 0\ldots{}n_c-1, i_s = 0\ldots{}3$}$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Trace of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{C}{\tt trace}{M}{\tComplex}{\tColorMatrix} \\
+  \hline
+  Meaning     & $r = \Tr a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Real trace of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{R}{\tt re\_trace}{M}{\tReal}{\tColorMatrix} \\
+  \hline
+  Meaning     & $r = \Re\Tr a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Imaginary trace of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{R}{\tt im\_trace}{M}{\tReal}{\tColorMatrix} \\
+  \hline
+  Meaning     & $r = \Im\Tr a$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Traceless antihermitian part of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{M}{\tt antiherm}{M}{\tColorMatrix}{\tColorMatrix}\\
+  \hline
+  Meaning     & $r = (a - a^\dagger)/2 - i\Im \Tr a/n_c$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Spin trace of Dirac propagator}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{M}{\tt spintrace}{P}{\tColorMatrix}{\tDiracPropagator} \\
+  \hline
+  Meaning     & $r_{i_c,j_c} = \sum_{i_s} a_{i_c,i_s,j_c,i_s}$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Dirac spin projection}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt H}\ttdash{\it eqop}\ttdash{\tt spproj}\ttdash{\tt D( \tHalfFermion *restrict r,}\\
+              & {\tt \tDiracFermion *a, int d, int p\extraarg)} \\
+  \hline
+  Meaning     & $r = (1 + p\gamma_d)a$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Dirac spin reconstruction}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt D}\ttdash{\it eqop}\ttdash{\tt sprecon}\ttdash{\tt H( \tDiracFermion *restrict r,}\\
+              & {\tt \tHalfFermion *a, int d, int p\extraarg)} \\
+  \hline
+  Meaning     & $r = {\rm recon\,}(p,d,a)$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Binary Operations with Constants}
+
+\paragraph{Multiplication by real constant}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt r}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tqlaReal *a,}\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  exception    & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt i}\ttdash{\tt times}\ttdash{\tt I( \tInt *restrict r, \tqlaInt *a,}\\
+              & {\tt \tInt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a*b$, etc. ($a$ real, constant)
+$
+$\\
+  \hline
+  \itt     & \allNumericTypes \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Multiplication by complex constant}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt c}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tqlaComplex *a,}\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a*b$, etc. ($a$ complex, constant)
+$
+$\\
+  \hline
+  \itt     & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Multiplication by i}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt i}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tqlaComplex *a,}\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = i*a$, etc.\\
+  \hline
+  \itt     & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by gamma matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt gamma}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, }{\it Type }\\
+              & {\tt *a, int d\extraarg)} \\
+  \hline
+  Meaning     & $r = \gamma_d a$ \\
+  \hline
+  \itt     & {\tt D, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Right multiplication by gamma matrix}
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt P}\ttdash{\it eqop}\ttdash{\tt P}\ttdash{\tt times}\ttdash{\tt gamma( }{\it Type }{\tt *restrict r, }{\it Type }\\
+              & {\tt *a, int d\extraarg)} \\
+  \hline
+  Meaning     & $r = a \gamma_d$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Binary Operations with Fields}
+
+\paragraph{Division of real, complex, and integer fields}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt R}\ttdash{\tt divide}\ttdash{\tt R}{\tt ( \tReal *restrict r, \tReal *a, }\\
+              & {\tt \tReal *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a/b$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash{\tt C}\ttdash{\tt divide}\ttdash{\tt C}{\tt ( \tComplex *restrict r,}\\
+              & {\tt  \tComplex *a, \tComplex *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a/b$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt I}\ttdash{\tt divide}\ttdash{\tt I}{\tt ( \tInt *restrict r, \tInt *a, }\\
+              & {\tt \tInt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a/b$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Addition}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt\ttdash{\tt plus}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, }{\it Type }{\tt *a, }{\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a + b$ \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Subtraction}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt\ttdash{\tt minus}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, }{\it Type }{\tt *a, }{\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a - b$ \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Multiplication: uniform types}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, }{\it Type }{\tt *a, }{\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt I, R, C, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Local inner product}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt C}\ttdash{\it eqop}\ttdash\itt\ttdash{\tt dot}\ttdash\itt{\tt ( \tComplex *restrict r, }\\
+              & {\it Type *a, }{\it Type }{\tt *b\extraarg)} \\
+  exception   & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt R}\ttdash{\tt dot}\ttdash{\tt R}{\tt ( \tReal *restrict r, }\\
+              & {\tt \tReal *a, }{\tt \tReal }{\tt *b\extraarg)} \\
+              & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt I}\ttdash{\tt dot}\ttdash{\tt I}{\tt ( \tReal *restrict r, }\\
+              & {\tt \tInt *a, }{\tt \tInt }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r_i = \Tr a^\dagger_i \cdot b_i$ \\
+  \hline
+  \itt        & \allComplexTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt re}\ttdash\itt\ttdash{\tt dot}\ttdash\itt{\tt ( \tComplex *restrict r, }\\
+              & {\it Type}{\tt *a, }{\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r_i = \Re \Tr a^\dagger_i \cdot b_i$ \\
+  \hline
+  \itt        & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Color matrix from outer product}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\it M}\ttdash{\it eqop}\ttdash{\tt V}\ttdash{\tt times}\ttdash{\tt Va( }{\tt \tColorMatrix }{\tt *restrict r, }\\
+              & {\tt \tColorVector }{\tt *a, }{\tt \tColorVector }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r_{i,j} = a_i * b_j^*$, etc. \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt M}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\shiftleftmult
+
+\paragraph{Adjoint of color matrix times adjoint of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt M}\ttdash{\it eqop}\ttdash{\tt Ma}\ttdash{\tt times}\ttdash{\tt Ma ( \tColorMatrix *restrict r, }\\
+              & {\tt \tColorMatrix *a, \tColorMatrix *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a^\dagger * b^\dagger$ \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Left multiplication by adjoint of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt Ma}\ttdash{\tt times}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\shiftleftmultadj
+
+\paragraph{Right multiplication by color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt\ttdash{\tt times}\ttdash{\tt M ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b$, etc. \\
+  \hline
+  \itt        & {\tt M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Right multiplication by adjoint of color matrix}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt\ttdash{\tt times}\ttdash{\tt Ma ( }{\it Type }{\tt *restrict r, \tColorMatrix *a, }\\
+              & {\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b^\dagger$, etc. \\
+  \hline
+  \itt        & {\tt M, P} \\
+  \hline
+  {\it eqop}  & \allEqOps \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Ternary Operations with Fields}
+
+\paragraph{Addition with real scalar multiplication}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {{\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt r}\ttdash{\tt times}\ttdash\itt\ttdash{\tt plus}\itt{\tt ( }{\it Type }{\tt *restrict r, \tqlaReal *a,}}\\
+               & {{\it Type }{\tt *b,}{\it Type }{\tt *c\extraarg)}} \\
+  exception    & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt i}\ttdash{\tt times}\ttdash{\tt I}\ttdash{\tt plus}{\tt I( \tInt *restrict r, \tqlaInt *a,}\\
+              & {\tt \tInt *b, \tInt *c\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b + c$, etc. \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Subtraction with real scalar multiplication}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {{\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt r}\ttdash{\tt times}\ttdash\itt\ttdash{\tt minus}\itt{\tt ( }{\it Type }{\tt *restrict r, \tqlaReal *a,}}\\
+              & {{\it Type }{\tt *b,}{\it Type }{\tt *c\extraarg)}} \\
+  exception   & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt i}\ttdash{\tt times}\ttdash{\tt I}\ttdash{\tt minus}\ttdash{\tt I( \tInt *restrict r, \tqlaInt *a,}\\
+              & {\tt \tInt *b, \tInt *c\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b - c$, etc. \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Addition with complex scalar multiplication}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt c}\ttdash{\tt times}\ttdash\itt\ttdash{\tt plus}\itt{\tt ( }{\it Type }{\tt *restrict r, }{\tt \tqlaComplex *a, }\\
+              & {\it Type }{\tt *b,}{\it Type }{\tt *c\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b + c$, etc. \\
+  \hline
+  \itt        & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Subtraction with complex scalar multiplication}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt c}\ttdash{\tt times}\ttdash\itt\ttdash{\tt minus}\itt{\tt ( }{\it Type }{\tt *restrict r, }{\tt \tqlaComplex *a, }\\
+              & {\it Type }{\tt *b,}{\it Type }{\tt *c\extraarg)} \\
+  \hline
+  Meaning     & $r = a * b - c$, etc. \\
+  \hline
+  \itt        & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Boolean and Bit Operations}
+\paragraph{Comparisons of integers and reals}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash\itt\ttdash{\it op}\ttdash\itt{\tt ( }{\it Type }{\tt *restrict r, } {\it Type}{\tt *a, }{\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = \op(a,b)$ \\
+  \hline
+  \itt        & {\tt I, R} \\
+  \hline
+  $\op$       & {\tt eq, ne, gt, lt, ge, le} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Boolean Operations}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt I}\ttdash{\it op}\ttdash{\tt I( \tInt *restrict r, \tInt *a, \tInt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = a \op b$\\
+  \hline
+  $\op$       & {\tt or, and, xor} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt I}\ttdash{\it eqop}\ttdash{\tt not}\ttdash{\tt I( \tInt *restrict r, \tInt *a)} \\
+  \hline
+  Meaning     & $r = \not a$\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Copymask}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash\itt\ttdash{\tt mask}\ttdash{\tt I}{\tt ( }{\it Type }{\tt *restrict r, }{\it Type }{\tt *a, }{\tt \tInt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = b$ if $a$ is true\\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\subsection{Reductions}
+
+\paragraph{Global squared norm: uniform precision}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySingleTypesQual{r}{\tt norm2}{\itt}{\tqlaReal}{{\it Type}} \\
+  \hline
+  Meaning     & $r = \sum |a|^2$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\globalnormsqtypeconv
+
+\paragraph{Global inner product}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt c}\ttdash{\it eqop}\ttdash\itt\ttdash{\tt dot}\ttdash\itt{\tt ( \tqlaComplex *restrict r, }\\
+              & {\it Type *a, }{\it Type }{\tt *b\extraarg)} \\
+  exception   & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash{\tt R}\ttdash{\tt dot}\ttdash{\tt R}{\tt ( \tqlaReal *restrict r, }\\
+              & {\tt \tReal *a, }{\tt \tReal }{\tt *b\extraarg)} \\
+              & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash{\tt R}\ttdash{\tt dot}\ttdash{\tt R}{\tt ( \tqlaReal *restrict r, }\\
+              & {\tt \tInt *a, }{\tt \tInt }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = \sum \Tr a^\dagger \cdot b$ \\
+  \hline
+  \itt        & {\tt \allNumericTypes} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash{\tt re}\ttdash\itt\ttdash{\tt dot}\ttdash\itt{\tt ( \tqlaComplex *restrict r, }\\
+              & {\it Type}{\tt *a, }{\it Type }{\tt *b\extraarg)} \\
+  \hline
+  Meaning     & $r = \Re \sum \Tr a^\dagger \cdot b$ \\
+  \hline
+  \itt        & {\tt C, V, H, D, M, P} \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\globaldottypeconv
+
+\paragraph{Global sums}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & \protoUnarySum \\
+  exception   & {\tt void \namespace}\ttdash{\tt r}\ttdash{\it eqop}\ttdash sum\ttdash{\tt I( \tqlaReal *restrict r, \tInt *a\extraarg)}\\
+  \hline
+  Meaning     & $r = \sum a$ \\
+  \hline
+  \itt     & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\globalsumtypeconv
+
+\multireduction
+
+\subsection{Fills}
+
+\paragraph{Zero fills}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt zero}{\tt (}{\it Type }{\tt *r\extraarg)} \\
+  \hline
+  Meaning     & $r = 0$ \\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\funcfill
+
+\paragraph{Constant fills and random numbers}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\it t}{\tt ( }{\it Type }{\tt *restrict r,}{\it Type }{\tt *a\extraarg)} \\
+  \hline
+  Meaning     & $r = a$ (constant)\\
+  \hline
+  \itt        & \allNumericTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt M}\ttdash{\it eqop}\ttdash{\tt c ( \tColorMatrix *restrict r,}{\it QLA\_Type }{\tt *a\extraarg)} \\
+  \hline
+  Meaning     & $r = \diag(a,a,\ldots{})$ (constant $a$)\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Uniform random number fills}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt R}\ttdash{\it eqop}\ttdash{\tt random}\ttdash{\tt S ( \tReal *restrict r,}\\
+              & {\tt \tRandomState *a\extraarg )} \\
+  \hline
+  Meaning     & $r$ random, uniform on $[0,1]$ \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Gaussian random number fills}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash\itt\ttdash{\it eqop}\ttdash{\tt gaussian}\ttdash{\tt S ( }{\it Type } \\
+              & {\tt *restrict r, \tRandomState *a\extraarg)} \\
+  \hline
+  Meaning     & $r$ normal Gaussian \\
+  \hline
+  \itt        & \allFloatTypes \\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+\paragraph{Seeding the random number generator field from an integer field}
+
+\begin{flushleft}
+  \begin{tabular}{|l|l|}
+  \hline
+  Syntax      & {\tt void \namespace}\ttdash{\tt S}\ttdash{\it eqop}\ttdash{\tt seed}\ttdash{\tt i}\ttdash{\tt I (}{\it Type }{\tt \tRandomState *restrict r, int seed,}\\
+              & {\tt \tInt *a\extraarg)} \\
+  \hline
+  Meaning     & seed $r$ from field $a$ and constant {\tt seed}\\
+  \hline
+  {\it eqop}  & {\tt eq} \\
+  \hline
+  \end{tabular}
+\end{flushleft}
+
+For details see the discussion of the corresponding scalar function
+{\tt qla}\ttdash{\tt random.h}.
+
+\end{document}
+

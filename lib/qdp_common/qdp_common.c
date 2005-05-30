@@ -1,0 +1,409 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <unistd.h>
+#include "qdp_common_internal.h"
+#include "qdp_layout.h"
+#include "qdp_string.h"
+#include "com_common.h"
+#include "com_specific.h"
+
+/*  Exported Globals  */
+
+int QDP_suspended = 0;
+int QDP_block_size = 256;
+
+/* Private Globals */
+
+static int qdp_initialized=0;
+static QDP_prof *prof_list=NULL, **prof_last;
+
+int
+QDP_profcontrol(int new)
+{
+  int old;
+  old = QDP_prof_level;
+  QDP_prof_level = new;
+  return old;
+}
+
+void
+QDP_register_prof(QDP_prof *qp)
+{
+  *prof_last = qp;
+  prof_last = &qp->next;
+}
+
+double
+QDP_time(void)
+{
+  struct timeval tp;
+  gettimeofday(&tp,NULL);
+  return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
+  //struct tms buf;
+  //times(&buf);
+  //return buf.tms_utime + buf.tms_stime;
+  //  return (double)clock()/CLOCKS_PER_SEC;
+}
+
+int
+QDP_initialize(int *argc, char **argv[])
+{
+  if(qdp_initialized) {
+    fprintf(stderr,
+    	    "error: QDP_initialize() called but QDP already initialized!\n");
+    QDP_abort();
+  }
+  qdp_initialized = 1;
+  if(!QMP_is_initialized()) {
+    QDP_initialize_comm(argc, argv);
+    qdp_initialized = 2;
+  }
+  QDP_this_node = QDP_mynode();
+  prof_last = &prof_list;
+  return 0;
+}
+
+void
+QDP_finalize(void)
+{
+  if(!qdp_initialized) {
+    fprintf(stderr,"error: QDP_finalize() called but QDP not initialized!\n");
+    QDP_abort();
+  }
+  if((prof_list)&&(QDP_this_node==0)) {
+    double s;
+    QDP_prof *qp;
+    s = 1000.0;
+    //s = 1000.0/sysconf(_SC_CLK_TCK);
+    *prof_last = NULL;
+    qp = prof_list;
+    printf("%-31s          time us per ns per\n","");
+    printf("%-31s  count   (ms)  call   site  caller:line\n","QDP function");
+    printf("----------------------------------------");
+    printf("---------------------------------------\n");
+    while(qp) {
+      if(qp->count) {
+	printf("%-31s %6i %6i %6i %6i %s:%i\n", qp->func, qp->count,
+	       (int)(s*qp->time+0.5), (int)((1000*s*qp->time/qp->count)+0.5),
+	       (int)((1000000*s*qp->time/(qp->nsites))+0.5),
+	       qp->caller, qp->line);
+	if(0*qp->math_time) {
+	  printf("%-31s %6i %6i %6i %6i %s:%i\n", "  -math", qp->count,
+		 (int)(s*qp->math_time+0.5),
+	       (int)((1000*s*qp->math_time/qp->count)+0.5),
+		 (int)((1000000*s*qp->math_time/(qp->nsites))+0.5),
+		 qp->caller, qp->line);
+	}
+	if(qp->comm_time) {
+	  printf("%-31s %6i %6i %6i %6i %s:%i\n", "  -comm", qp->count,
+		 (int)(s*qp->comm_time+0.5),
+		 (int)((1000*s*qp->comm_time/qp->count)+0.5),
+		 (int)((1000000*s*qp->comm_time/(qp->nsites))+0.5),
+		 qp->caller, qp->line);
+	}
+      }
+      qp = qp->next;
+    }
+  }
+  if(qdp_initialized==2) QDP_finalize_comm();
+}
+
+void
+QDP_abort(void)
+{
+  QDP_abort_comm();
+  exit(1);
+}
+
+void
+QDP_suspend_comm(void)
+{
+  QDP_suspended = 1;
+  QDP_clear_shift_list();
+}
+
+void
+QDP_resume_comm(void)
+{
+  QDP_suspended = 0;
+}
+
+int
+QDP_get_block_size(void)
+{
+  return QDP_block_size;
+}
+
+void
+QDP_set_block_size(int bs)
+{
+  if(bs>0) QDP_block_size = bs;
+}
+
+/* IO routines */
+
+void
+QDP_IO_get_site(char *buf, const int coords[], void *field)
+{
+  if( QDP_node_number(coords) != QDP_this_node ) {
+    buf[0] = '\0';
+  } else {
+    struct QDP_IO_field *qf = field;
+    int i;
+    i = QDP_index(coords);
+    memcpy(buf, qf->data+i*qf->size, qf->size);
+  }
+}
+
+void
+QDP_IO_put_site(char *buf, const int coords[], void *field)
+{
+  if( QDP_node_number(coords) == QDP_this_node ) {
+    struct QDP_IO_field *qf = field;
+    int i;
+    i = QDP_index(coords);
+    memcpy(qf->data+i*qf->size, buf, qf->size);
+  }
+}
+
+QDP_Reader *
+QDP_open_read(QDP_String *md, char *filename)
+{
+  QDP_Reader *qdpr;
+  QIO_Layout *layout;
+  QIO_String *qio_md = QIO_string_create(0);
+
+  qdpr = (QDP_Reader *)malloc(sizeof(struct QDP_Reader_struct));
+  if(qdpr == NULL) return NULL;
+
+  layout = (QIO_Layout *)malloc(sizeof(QIO_Layout));
+  if(layout == NULL) {
+    free(qdpr);
+    return NULL;
+  }
+
+  layout->node_number = QDP_node_number;
+  layout->node_index = QDP_index;
+  layout->get_coords = QDP_get_coords;
+  layout->num_sites = QDP_numsites;
+  layout->latdim = QDP_ndim();
+  layout->latsize = (int *)malloc(layout->latdim*sizeof(int));
+  QDP_latsize(layout->latsize);
+  layout->volume = QDP_volume();
+  layout->sites_on_node = QDP_sites_on_node;
+  layout->this_node = QDP_this_node;
+  layout->number_of_nodes = QDP_numnodes();
+
+  qdpr->qior = QIO_open_read(qio_md, filename, layout, 0);
+
+  QDP_string_set(md, QIO_string_ptr(qio_md));
+  QIO_string_destroy(qio_md);
+
+  free(layout->latsize);
+  free(layout);
+
+  if(!qdpr->qior) {
+    free(qdpr);
+    return NULL;
+  }
+
+  return qdpr;
+}
+
+QDP_Writer *
+QDP_open_write(QDP_String *md, char *filename, int volfmt)
+{
+  QDP_Writer *qdpw;
+  QIO_Layout *layout;
+  QIO_String *qio_md;
+
+  qdpw = (QDP_Writer *)malloc(sizeof(struct QDP_Writer_struct));
+  if(qdpw == NULL) return NULL;
+
+  layout = (QIO_Layout *)malloc(sizeof(QIO_Layout));
+  if(layout == NULL) {
+    free(qdpw);
+    return NULL;
+  }
+
+  layout->node_number = QDP_node_number;
+  layout->node_index = QDP_index;
+  layout->get_coords = QDP_get_coords;
+  layout->num_sites = QDP_numsites;
+  layout->latdim = QDP_ndim();
+  layout->latsize = (int *)malloc(layout->latdim*sizeof(int));
+  QDP_latsize(layout->latsize);
+  layout->volume = QDP_volume();
+  layout->sites_on_node = QDP_sites_on_node;
+  layout->this_node = QDP_this_node;
+  layout->number_of_nodes = QDP_numnodes();
+
+  qio_md = QIO_string_create();
+  QIO_string_set(qio_md, QDP_string_ptr(md));
+  qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, layout, 0);
+  QIO_string_destroy(qio_md);
+
+  free(layout->latsize);
+  free(layout);
+
+  if(!qdpw->qiow) {
+    free(qdpw);
+    return NULL;
+  }
+
+  return qdpw;
+}
+
+int
+QDP_close_read(QDP_Reader *qdpr)
+{
+  int status;
+  status = QIO_close_read(qdpr->qior);
+  free(qdpr);
+  return status;
+}
+
+int
+QDP_close_write(QDP_Writer *qdpw)
+{
+  int status;
+  status = QIO_close_write(qdpw->qiow);
+  free(qdpw);
+  return status;
+}
+
+int
+QDP_read_record_info(QDP_Reader *qdpr, QDP_String *md)
+{
+  int status;
+  QIO_RecordInfo record_info;  /* Private data ignored */
+  QIO_String *qio_md = QIO_string_create(0);
+
+  status = QIO_read_record_info(qdpr->qior, &record_info, qio_md);
+  QDP_string_set(md, QIO_string_ptr(qio_md));
+  QIO_string_destroy(qio_md);
+  //printf("QDP_read_record_info has datacount %d\n",
+  //record_info.datacount.value);
+  return status;
+}
+
+int
+QDP_next_record(QDP_Reader *qdpr)
+{
+  int status;
+  status = QIO_next_record(qdpr->qior);
+  return status;
+}
+
+/* Internal: Read and check */
+int
+QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
+	       void (* put)(char *buf, size_t index, int count, void *qfin),
+	       struct QDP_IO_field *qf, int count, QIO_RecordInfo *cmp_info)
+{
+  QIO_RecordInfo *rec_info;
+  QIO_String *qio_md = QIO_string_create(0);
+  int status;
+
+  rec_info = QIO_create_record_info(0, "", "", 0, 0, 0, 0);
+
+  status = QIO_read(qdpr->qior, rec_info, qio_md, put, qf->size*count,
+		    qf->word_size, (void *)qf);
+  QDP_string_set(md, QIO_string_ptr(qio_md));
+  QIO_string_destroy(qio_md);
+
+  /* Check for consistency */
+  if(QIO_compare_record_info(rec_info, cmp_info)) {
+    status = 1;
+  }
+
+  QIO_destroy_record_info(rec_info);
+
+  return status;
+}
+
+/* Internal: Write and check */
+int
+QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
+		void (*get)(char *buf, size_t index, int count, void *qfin),
+		struct QDP_IO_field *qf, int count, QIO_RecordInfo *rec_info)
+{
+  int status;
+  QIO_String *qio_md;
+
+  qio_md = QIO_string_create();
+  QIO_string_set(qio_md, QDP_string_ptr(md));
+
+  status = QIO_write(qdpw->qiow, rec_info, qio_md,
+		     get, qf->size*count, qf->word_size, (void *)qf);
+
+  QIO_string_destroy(qio_md);
+
+  return status;
+}
+
+/*
+ *  QDP_String manipulation utilities
+ */
+
+/* String creation */
+QDP_String *
+QDP_string_create(void)
+{
+  QDP_String *qs;
+
+  qs = (QDP_String *)malloc(sizeof(QDP_String));
+  if(qs == NULL) return NULL;
+  qs->string = NULL;
+  qs->length = 0;
+  return qs;
+}
+
+void
+QDP_string_destroy(QDP_String *qs)
+{
+  if(qs->length>0) free(qs->string);
+  free(qs);
+}
+
+/* set String */
+void
+QDP_string_set(QDP_String *qs, char *string)
+{
+  if(string==NULL) {
+    if(qs->length>0) free(qs->string);
+    qs->string = NULL;
+    qs->length = 0;
+  } else {
+    size_t len = strlen(string) + 1;
+
+    qs->string = realloc(qs->string, len);
+    memcpy(qs->string, string, len);
+    qs->length = len;
+  }
+}
+
+/* Size of string */
+size_t
+QDP_string_length(const QDP_String *const qs)
+{
+  return qs->length;
+}
+
+/* Return pointer to string data */
+char *
+QDP_string_ptr(QDP_String *qs)
+{
+  return qs->string;
+}
+
+void
+QDP_string_copy(QDP_String *dest, QDP_String *src)
+{
+  size_t len = src->length;
+  dest->string = realloc(dest->string, len);
+  memcpy(dest->string, src->string, len);
+}

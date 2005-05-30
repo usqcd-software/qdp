@@ -1,0 +1,3 @@
+SUBDIRS = doc other_libs include lib examples
+
+DISTCHECK_CONFIGURE_FLAGS = @DISTCHECK_CONFIGURE_FLAGS@

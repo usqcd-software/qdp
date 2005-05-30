@@ -1,0 +1,12 @@
+===========================================================================
+2005-05-29	version 1.3.0
+===========================================================================
+Directory structure modified to follow more common conventions.
+Added function "int QDP_numsites(int node)" needed by QIO and modified
+QDP_create_subset to take extra arguments for the subset function.
+Many other internal fixes and improvements since the last entry here.
+===========================================================================
+2004-08-14	version 1.2.2
+===========================================================================
+Autoconfiscated and automakeified.
+
