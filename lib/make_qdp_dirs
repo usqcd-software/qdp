@@ -10,7 +10,8 @@ dirs="qdp_int \
 
 incdir="\$(top_builddir)/include"
 
-rm -rf $dirs
+# CVS doesn't like us to remove the CVS directories
+#rm -rf $dirs
 
 for dir in $dirs; do
   lib="lib$dir"
@@ -24,10 +25,22 @@ for dir in $dirs; do
     *)             hdrs="$hdr";;
   esac
   hdrs="$hdrs ${idir}_profile.h"
-  mkdir $dir
 
   echo $dir
-  cd $dir
+  if [ -d $dir ]; then
+    echo Found $dir
+    if cd $dir; then
+      \ls -1A |grep -v CVS |xargs rm -rf
+    else
+      echo "Can't enter directory $dir"
+      exit 1
+    fi
+  else
+    echo Creating $dir
+    mkdir $dir
+    cd $dir
+  fi
+
   ../generate/generate_sources ${tag}
   \ls -1 | grep 'QDP.*\.c' > src_list
   nl=`wc src_list | sed 's/^[^0-9]*\([0-9]*\)[^0-9].*/\1/'`

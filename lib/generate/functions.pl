@@ -560,7 +560,7 @@ comment2("r <eqop> a * b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @float_types ],
-   EQ_OPS      => [ @eqops ],
+   EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'Real' ],
    SRC1_SCALAR => 1,
    FUNCS       => [ 'times' ],
@@ -573,7 +573,7 @@ comment2("r <eqop> a * b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @complex_types ],
-   EQ_OPS      => [ @eqops ],
+   EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'Complex' ],
    SRC1_SCALAR => 1,
    FUNCS       => [ 'times' ],
@@ -707,7 +707,7 @@ comment2("r <eqop> a * b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @color_types ],
-   EQ_OPS      => [ @eqops,@veqops ],
+   EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
@@ -719,7 +719,7 @@ comment2("r <eqop> adjoint(a) * b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @color_types ],
-   EQ_OPS      => [ @eqops,@veqops ],
+   EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
    SRC1_ADJ    => 1,
    FUNCS       => [ 'times' ],
@@ -795,7 +795,7 @@ comment2("r[i, j] <eqop> a[i] * b[j]");
 make_functions(%{{
   (
    DEST_TYPES  => [ 'ColorMatrix' ],
-   EQ_OPS      => [ @eqops ],
+   EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'ColorVector' ],
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'ColorVector' ],

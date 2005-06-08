@@ -7,7 +7,7 @@
 @c start titlepage, only used in TeX mode
 @titlepage
 @title QDP/C User Manual
-Version 1.3
+Version 1.3.1
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -20,7 +20,7 @@ with the SciDAC Software Committee
 @ifnottex
 @node Top
 @top QDP/C User Manual
-Version 1.3
+Version 1.3.1
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -787,10 +787,11 @@ Subsets are defined through the data type @code{QDP_Subset}
 
 @funcx{
 QDP_Subset * QDP_create_subset,
-int (*func)(int x[]@comma{} void *args)@comma{} void *args@comma{} int n,
+int (*func)(int x[]@comma{} void *args)@comma{} void *args@comma{}
+int argsize@comma{} int n,
 Creates an array of @code{n} subsets based on @code{func}.,
 QDP_Subset ts[nt];@*
-ts = QDP_create_subset(timeslice@comma{} NULL@comma{} nt);}
+ts = QDP_create_subset(timeslice@comma{} NULL@comma{} 0@comma{} nt);}
 @c  where timeslice(x@comma{} NULL) = x[3].
 
 The extra arguments @code{args} are passed directly to the function and saved

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "qdp_layout.h"
 #include "qdp_subset.h"
 #include "qdp_subset_internal.h"
@@ -28,10 +29,10 @@ QDP_even_and_odd_func(int x[], void *args)
 void
 QDP_make_subsets(void)
 {
-  QDP_all_array = QDP_create_subset(QDP_all_func, NULL, 1);
+  QDP_all_array = QDP_create_subset(QDP_all_func, NULL, 0, 1);
   QDP_all = QDP_all_array[0];
 
-  QDP_even_and_odd = QDP_create_subset(QDP_even_and_odd_func, NULL, 2);
+  QDP_even_and_odd = QDP_create_subset(QDP_even_and_odd_func, NULL, 0, 2);
   QDP_even = QDP_even_and_odd[0];
   QDP_odd = QDP_even_and_odd[1];
 }
@@ -42,7 +43,7 @@ QDP_make_subsets(void)
  */
 
 QDP_Subset *
-QDP_create_subset(int (*func)(int x[], void *args), void *args, int n)
+QDP_create_subset(int (*func)(int x[], void *args), void *args, int argsize, int n)
 {
   int i, c, *x;
   QDP_Subset obj, *ptr;
@@ -55,7 +56,12 @@ QDP_create_subset(int (*func)(int x[], void *args), void *args, int n)
   for(i=0; i<n; ++i) {
     ptr[i] = &obj[i];
     obj[i].func = func;
-    obj[i].args = args;
+    if(argsize>0) {
+      obj[i].args = malloc(argsize);
+      memcpy(obj[i].args, args, argsize);
+    } else {
+      obj[i].args = NULL;
+    }
     obj[i].colors = n;
     obj[i].coloring = i;
     obj[i].first = ptr[0];
@@ -113,6 +119,7 @@ QDP_destroy_subset(QDP_Subset *s)
   obj = s[0]->first;
   n = obj[0].colors;
   for(i=0; i<n; ++i) {
+    if(obj[i].args) free(obj[i].args);
     if(obj[i].indexed) free(obj[i].index);
   }
   free(obj);

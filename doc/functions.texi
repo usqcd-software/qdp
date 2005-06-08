@@ -380,18 +380,22 @@ eq@comma{} peq@comma{} meq@comma{} eqm}
 
 @subheading Multiplication by real constant
 
-@functe{
+@funcvte{
 QDP_@var{T}_@var{eqop}_r_times_@var{T},
 @var{Type} *r@comma{} QLA_Real *a@comma{} @var{Type} *b@comma{} @var{subset},
+QDP_@var{T}_v@var{eqop}_r_times_@var{T},
+@var{Type} *r[]@comma{} QLA_Real *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r @var{eqop} a * b,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
 @subheading Multiplication by complex constant
 
-@functe{
+@funcvte{
 QDP_@var{T}_@var{eqop}_c_times_@var{T},
 @var{Type} *r@comma{} QLA_Complex *a@comma{} @var{Type} *b@comma{} @var{subset},
+QDP_@var{T}_v@var{eqop}_c_times_@var{T},
+@var{Type} *r[]@comma{} QLA_Complex *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r @var{eqop} a * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
@@ -544,9 +548,11 @@ C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @subheading Color matrix from outer product
 
-@funce{
+@funcve{
 QDP_M_@var{eqop}_V_times_Va,
 QDP_ColorMatrix *r@comma{} QDP_ColorVector *a@comma{} QDP_ColorVector *b@comma{} @var{subset},
+QDP_M_v@var{eqop}_V_times_Va,
+QDP_ColorMatrix *r[]@comma{} QDP_ColorVector *a[]@comma{} QDP_ColorVector *b[]@comma{} @var{subset}@comma{} int n,
 r[i@comma{} j] @var{eqop} a[i] * b[j],
 eq@comma{} peq@comma{} meq@comma{} eqm}
 

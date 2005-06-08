@@ -125,7 +125,7 @@ run_tests(void)
 
   printf0("creating subset... ");
   fflush(stdout);
-  ts = QDP_create_subset(timeslices, NULL, QDP_coord_size(3));
+  ts = QDP_create_subset(timeslices, NULL, 0, QDP_coord_size(3));
   printf0("done\n");
 
   printf0("Calling QDP_M_eq_gaussian_S... ");
