@@ -60,10 +60,18 @@ QDP_F_create_R.c \
 QDP_F_C_veq_C.c \
 QDP_F_c_veq_C_dot_C.c \
 QDP_F_c_veq_C_dot_C_multi.c \
+QDP_F_C_veq_c_times_C.c \
 QDP_F_C_veqm_C.c \
+QDP_F_C_veqm_c_times_C.c \
+QDP_F_C_veqm_r_times_C.c \
+QDP_F_C_veq_r_times_C.c \
 QDP_F_C_veq_sC.c \
 QDP_F_C_vmeq_C.c \
+QDP_F_C_vmeq_c_times_C.c \
+QDP_F_C_vmeq_r_times_C.c \
 QDP_F_C_vpeq_C.c \
+QDP_F_C_vpeq_c_times_C.c \
+QDP_F_C_vpeq_r_times_C.c \
 QDP_F_discard_C.c \
 QDP_F_discard_R.c \
 QDP_F_expose_C.c \
@@ -153,6 +161,7 @@ QDP_F_R_peq_R_times_R.c \
 QDP_F_r_veq_I_dot_I.c \
 QDP_F_r_veq_I_dot_I_multi.c \
 QDP_F_R_veqm_R.c \
+QDP_F_R_veqm_r_times_R.c \
 QDP_F_r_veq_norm2_C.c \
 QDP_F_r_veq_norm2_C_multi.c \
 QDP_F_r_veq_norm2_I.c \
@@ -164,9 +173,12 @@ QDP_F_r_veq_R_dot_R.c \
 QDP_F_r_veq_R_dot_R_multi.c \
 QDP_F_r_veq_re_C_dot_C.c \
 QDP_F_r_veq_re_C_dot_C_multi.c \
+QDP_F_R_veq_r_times_R.c \
 QDP_F_R_veq_sR.c \
 QDP_F_R_vmeq_R.c \
+QDP_F_R_vmeq_r_times_R.c \
 QDP_F_R_vpeq_R.c \
+QDP_F_R_vpeq_r_times_R.c \
 QDP_F_write_C.c \
 QDP_F_write_R.c
 
@@ -228,10 +240,18 @@ QDP_F_create_R.o \
 QDP_F_C_veq_C.o \
 QDP_F_c_veq_C_dot_C.o \
 QDP_F_c_veq_C_dot_C_multi.o \
+QDP_F_C_veq_c_times_C.o \
 QDP_F_C_veqm_C.o \
+QDP_F_C_veqm_c_times_C.o \
+QDP_F_C_veqm_r_times_C.o \
+QDP_F_C_veq_r_times_C.o \
 QDP_F_C_veq_sC.o \
 QDP_F_C_vmeq_C.o \
+QDP_F_C_vmeq_c_times_C.o \
+QDP_F_C_vmeq_r_times_C.o \
 QDP_F_C_vpeq_C.o \
+QDP_F_C_vpeq_c_times_C.o \
+QDP_F_C_vpeq_r_times_C.o \
 QDP_F_discard_C.o \
 QDP_F_discard_R.o \
 QDP_F_expose_C.o \
@@ -321,6 +341,7 @@ QDP_F_R_peq_R_times_R.o \
 QDP_F_r_veq_I_dot_I.o \
 QDP_F_r_veq_I_dot_I_multi.o \
 QDP_F_R_veqm_R.o \
+QDP_F_R_veqm_r_times_R.o \
 QDP_F_r_veq_norm2_C.o \
 QDP_F_r_veq_norm2_C_multi.o \
 QDP_F_r_veq_norm2_I.o \
@@ -332,9 +353,12 @@ QDP_F_r_veq_R_dot_R.o \
 QDP_F_r_veq_R_dot_R_multi.o \
 QDP_F_r_veq_re_C_dot_C.o \
 QDP_F_r_veq_re_C_dot_C_multi.o \
+QDP_F_R_veq_r_times_R.o \
 QDP_F_R_veq_sR.o \
 QDP_F_R_vmeq_R.o \
+QDP_F_R_vmeq_r_times_R.o \
 QDP_F_R_vpeq_R.o \
+QDP_F_R_vpeq_r_times_R.o \
 QDP_F_write_C.o \
 QDP_F_write_R.o
 
