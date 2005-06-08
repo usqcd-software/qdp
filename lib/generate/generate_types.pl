@@ -56,7 +56,7 @@ if($cflag) {
     for $dt (@all_types) {
       next if(!compatible_pc($dt,$precision,$color));
 
-      $infile_mtime = (stat($file))[9];
+      #$infile_mtime = (stat($file))[9];
       open(INFILE, "<".$file);
       ($fn = $file) =~ s/.*[\/]//;
       $save = 1;
@@ -131,11 +131,11 @@ if($cflag) {
 	      $ttemp =~ s/\$EQOP/$eqop/g;
 	      $toutfn = $outfn;
 	      $toutfn =~ s/EQOP/$eqop/;
-              if((stat($toutfn))[9]<$infile_mtime) {
+              #if((stat($toutfn))[9]<$infile_mtime) {
 	        open(OUTFILE, ">".$toutfn);
 	        print OUTFILE $ttemp;
                 close(OUTFILE);
-              }
+              #}
 	    }
 	  }
 	} else { # not $gauge_mult
@@ -177,11 +177,11 @@ if($cflag) {
 	  $temp =~ s/\$P/$precision/g;
 	  $temp =~ s/\$C/$color/g;
 	  $temp =~ s/\$N/$cn/g;
-          if((stat($outfn))[9]<$infile_mtime) {
+          #if((stat($outfn))[9]<$infile_mtime) {
 	    open(OUTFILE, ">".$outfn);
 	    print OUTFILE $temp;
             close(OUTFILE);
-          }
+          #}
 	}
       }
 
