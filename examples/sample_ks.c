@@ -3,6 +3,7 @@
 #include <sys/resource.h>
 #include <time.h>
 #include <qdp.h>
+#include <qmp.h>
 #include "congrad_ks.h"
 
 //int lattice_size[4] = { 32,32,32,32 };
@@ -118,9 +119,32 @@ main(int argc, char *argv[])
   struct rusage ru;
 
   QDP_initialize(&argc, &argv);
+  QDP_check_comm(1);
+  if(argc>1) {
+    int s=atoi(argv[1]);
+    for(i=0; i<4; i++) lattice_size[i] = s;
+  }
   QDP_set_latsize(4, lattice_size);
   QDP_create_layout();
-  QDP_check_comm(1);
+  if(QDP_this_node==0) {
+    printf("number of nodes = %i\n", QMP_get_number_of_nodes());
+    printf("lattice_size =");
+    for(i=0; i<4; i++) printf(" %i", lattice_size[i]);
+    printf("\n");
+    printf("volume = %i\n", QDP_volume());
+    printf("subvolume = %i\n", QDP_sites_on_node);
+    if(QMP_logical_topology_is_declared()) {
+      int i, ld, *lt;
+      ld = QMP_get_logical_number_of_dimensions();
+      lt = QMP_get_logical_dimensions();
+      printf("logical topology =");
+      for(i=0; i<ld; i++) printf(" %i", lt[i]);
+      printf("\n");
+      printf("sublattice =");
+      for(i=0; i<ld; i++) printf(" %i", lattice_size[i]/lt[i]);
+      printf("\n");
+    }
+  }
 
   li = QDP_create_I();
   rs = QDP_create_S();

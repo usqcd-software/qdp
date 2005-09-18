@@ -59,7 +59,7 @@ QDP_setup_layout(int len[], int nd)
     nsquares[i] = 1;
   }
 
-  if(QMP_get_msg_passing_type()==QMP_GRID) {
+  if(QMP_get_msg_passing_type()!=QMP_SWITCH) {
     int ndim2, i;
     const int *nsquares2;
     ndim2 = QMP_get_allocated_number_of_dimensions();

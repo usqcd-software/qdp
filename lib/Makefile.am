@@ -19,9 +19,8 @@ SUBDIRS = \
 	qdp_common \
 	qdp_int \
 	$(QDP_DIRS) \
-	#optimized \
+	optimized \
 	$(QDP_DIRS)
 
-# we don't need the optimized dir at the moment, but keep it around for now
-EXTRA_DIST = make_qdp_dirs generate optimized
+EXTRA_DIST = make_qdp_dirs generate
 

@@ -13,6 +13,6 @@ libf3:
 	  echo compiling $$f; \
 	  $(CC) $(CFLAGS) $(CINC) -c $$f; \
 	done
-	mv -f *.o ../../qdp_f3
+	-mv -f *.o ../../qdp_f3
 
 EXTRA_DIST = src
