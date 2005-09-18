@@ -447,6 +447,42 @@ QDP_abort(1);}
 This routine may be called by one or more nodes.  It sends kill
 signals to all nodes and exits with exit status @code{status}.
 
+@subsection Check for initialization
+
+@funcx{
+int QDP_initialized,
+void,
+Checks if QDP is initialized.,
+if(!QDP_initialized()) QDP_initialize(&argc@comma{} &argv);}
+
+@subsection Control profiling
+
+@funcx{
+int QDP_profcontrol,
+int new,
+Controls profiling.,
+old = QDP_profcontrol(new);}
+
+Profiling results are only available for code that is compiled with
+the macro @code{QDP_PROFILE} defined.  This must be defined before
+the qdp.h header is included.  When @code{QDP_finalize} is called
+a list of QDP function and call times will be sent to stdio on
+node 0.  This function toggles the accumulation of the profiling
+statistics within the profiled sections of code.
+A value of zero turns the collection of timing info off and
+nonzero values turn it on.  It is on by default.
+
+@subsection Control checking communications
+
+@funcx{
+int QDP_check_comm,
+int new,
+Controls checking communications.,
+old = QDP_check_comm(new);}
+
+A nonzero value turns the internal communications checksums on and
+zero turns it off.  It is off by default.
+
 
 @section Layout utilities
 

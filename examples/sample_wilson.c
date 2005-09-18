@@ -120,6 +120,7 @@ main(int argc, char *argv[])
   QDP_initialize(&argc, &argv);
   QDP_set_latsize(4, lattice_size);
   QDP_create_layout();
+  QDP_check_comm(1);
 
   li = QDP_create_I();
   rs = QDP_create_S();

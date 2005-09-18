@@ -21,6 +21,7 @@ extern void QDP_finalize(void);
 extern void QDP_abort(void);
 extern int QDP_initialized(void);
 
+extern int QDP_check_comm(int new);
 extern int QDP_profcontrol(int new);
 extern double QDP_time(void);
 extern void QDP_register_prof(QDP_prof *qp);

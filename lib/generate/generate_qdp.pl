@@ -540,15 +540,23 @@ sub func_body($$$$$$$$) {
 	  }
 	}
       }
-      $def .= "  for(i=0; i<nv; ++i) {\n";
-      $top  = "  }\n";
-      $top .= "\n";
-      $top .= "  offset = 0;\n";
-      $top .= "  blen = QDP_block_size;\n";
-      $top .= "  while(1) {\n";
-      $top .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
-      $top .= "    if( blen <= 0) break;\n";
-      $top .= "    for(i=0; i<$nvv; ++i) {\n";
+#      $def .= "  for(i=0; i<nv; ++i) {\n";
+#      $top  = "  }\n";
+#      $top .= "\n";
+#      $top .= "  offset = 0;\n";
+#      $top .= "  blen = QDP_block_size;\n";
+#      $top .= "  while(1) {\n";
+#      $top .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
+#      $top .= "    if( blen <= 0) break;\n";
+#      $top .= "    for(i=0; i<$nvv; ++i) {\n";
+      $def .= "  offset = 0;\n";
+      $def .= "  blen = QDP_block_size;\n";
+      $def .= "  while(1) {\n";
+      $def .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
+      $def .= "    if( blen <= 0) break;\n";
+      $def .= "    for(i=0; i<$nvv; ++i) {\n";
+      $def .= "      if(offset==0) {\n";
+      $top  = "      }\n";
       $bot  = "    }\n";
       $bot .= "    offset += blen;\n";
       $bot .= "  }\n";

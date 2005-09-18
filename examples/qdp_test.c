@@ -244,6 +244,7 @@ main(int argc, char *argv[])
   fflush(stdout);
   QDP_create_layout();
   printf0("done\n");
+  QDP_check_comm(1);
 
   run_tests();
 
