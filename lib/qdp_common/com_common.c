@@ -815,7 +815,7 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
       gmem = sm->gmem;
       do {
 	for(i=gmem->begin; i<gmem->end; ++i) {
-	  crc32(crc, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size);
+	  crc = crc32(crc,gmem->mem+gmem->sitelist[i]*gmem->stride,gmem->size);
 	}
       } while((gmem=gmem->next)!=NULL);
       *crc_pt = crc;
@@ -853,13 +853,13 @@ QDP_wait_gather(QDP_msg_tag *mtag)
       rm = mtag->recv_msgs;
       while(rm != NULL){
 	tpt = rm->buf;
-	msg_size = rm->size;
-	crc_pt = tpt + msg_size - CRCBYTES;
+	msg_size = rm->size - CRCBYTES;
+	crc_pt = tpt + msg_size;
 	crc = (uint32_t *)crc_pt;
 	crcgot = crc32(0, tpt, msg_size );
-	if(*crc != 0 && *crc != crcgot) {
+	if(*crc != crcgot) {
 	  fprintf(stderr,
-		  "Node %d received checksum %x but node %d sent checksum %x\n",
+	          "QDP error: node %d received checksum %x but node %d sent checksum %x\n",
 		  QDP_this_node, crcgot, rm->node, *crc);
 	  fflush(stdout);
 	  fail = 1;
