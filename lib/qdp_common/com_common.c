@@ -721,7 +721,6 @@ prepare_gather(QDP_msg_tag *mtag)
     if(do_checksum) rm->size += CRCBYTES;
     rm->mem = QMP_allocate_memory( rm->size );
     rm->buf = QMP_get_memory_pointer( rm->mem );
-    if(do_checksum) memset(rm->buf, '\0', rm->size);
     QDP_prepare_recv(mtag->mhrecv, rm, j);
     /* set pointers in sites to correct location */
     gmem = rm->gmem;
@@ -775,7 +774,16 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 
   if(!mtag->prepared) prepare_gather(mtag);
 
-  if(mtag->nrecvs>0) QDP_start_recv(mtag, gather_number);
+  if(mtag->nrecvs>0) {
+    if(do_checksum) {
+      recv_msg_t *rm = mtag->recv_msgs;
+      while(rm!=NULL) {
+	memset(rm->buf, '\0', rm->size);
+	rm = rm->next;
+      }
+    }
+    QDP_start_recv(mtag, gather_number);
+  }
 
   sm = mtag->send_msgs;
   /* for each node whose neighbors I have */
@@ -827,6 +835,74 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
   ++gather_number;
 }
 
+static void
+hexdump(FILE *f, char *buf, int size, int *pos)
+{
+  int i;
+  unsigned char *ubuf = (unsigned char *)buf;
+  for(i=0; i<size; i++) {
+    if( *pos % 4 == 0 ) {
+      if( *pos % 32 == 0 ) {
+	if(*pos>0) fputc('\n', f);
+	fprintf(f, "%06x: ", *pos);
+      } else {
+	fputc(' ', f);
+      }
+    }
+    fprintf(f, "%02x", ubuf[i]);
+    ++(*pos);
+  }
+}
+
+static void
+dump_messages(QDP_msg_tag *mtag)
+{
+  FILE *f;
+  char fn[100];
+
+  sprintf(fn, "/tmp/qdpmsgdump.%04i", QDP_this_node);
+  f = fopen(fn, "w");
+  if(f) {
+    int i, n;
+    char *tpt;
+    send_msg_t *sm;
+    recv_msg_t *rm;
+    gmem_t *gmem;
+
+    n = 0;
+    sm = mtag->send_msgs;
+    while(sm!=NULL) {
+      int p = 0;
+      tpt = sm->buf;
+      gmem = sm->gmem;
+      fprintf(f, "send %i: node %i to node %i of %i bytes from buffer %p\n",
+	      n, QDP_this_node, sm->node, sm->size, sm->buf);
+      do {
+	for(i=gmem->begin; i<gmem->end; ++i) {
+	  hexdump(f, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size, &p);
+	}
+      } while((gmem=gmem->next)!=NULL);
+      hexdump(f, sm->buf+sm->size-CRCBYTES, CRCBYTES, &p);
+
+      fputs("\n\n", f);
+      sm = sm->next;
+    }
+
+    n = 0;
+    rm = mtag->recv_msgs;
+    while(rm!=NULL) {
+      int p = 0;
+      fprintf(f, "recv %i: node %i from node %i of %i bytes to buffer %p\n",
+	      n, QDP_this_node, rm->node, rm->size, rm->buf);
+      hexdump(f, rm->buf, rm->size, &p);
+      fputs("\n\n", f);
+      rm = rm->next;
+    }
+
+    fclose(f);
+  }
+}
+
 /*
 **  wait for gather to finish
 */
@@ -841,35 +917,41 @@ QDP_wait_gather(QDP_msg_tag *mtag)
 
   /* Verify the checksums received */
   if(do_checksum) {
-    if(mtag->nrecvs>0){
+    int fail = 0;
+    if(mtag->nrecvs>0) {
       uint32_t crcgot;
       recv_msg_t *rm;
       char *tpt;
       int msg_size;
       char *crc_pt;
       uint32_t *crc;
-      int fail = 0;
 
       rm = mtag->recv_msgs;
-      while(rm != NULL){
+      while(rm != NULL) {
 	tpt = rm->buf;
 	msg_size = rm->size - CRCBYTES;
 	crc_pt = tpt + msg_size;
-	crc = (uint32_t *)crc_pt;
-	crcgot = crc32(0, tpt, msg_size );
+	crc = (uint32_t *) crc_pt;
+	crcgot = crc32(0, (unsigned char *)tpt, msg_size);
 	if(*crc != crcgot) {
 	  fprintf(stderr,
 	          "QDP error: node %d received checksum %x but node %d sent checksum %x\n",
 		  QDP_this_node, crcgot, rm->node, *crc);
-	  fflush(stdout);
+	  fprintf(stderr, "node %i recv buf=%p size=%i\n",
+		  QDP_this_node, rm->buf, rm->size);
 	  fail = 1;
 	}
 
-	QMP_sum_int(&fail);
-	if(fail > 0) QMP_abort(1);
-
 	rm = rm->next;
       }
+    }
+
+    QMP_sum_int(&fail);
+    if(fail > 0) {
+      dump_messages(mtag);
+      fflush(stdout);
+      QMP_barrier();
+      QMP_abort(1);
     }
   }
 }
@@ -1900,6 +1982,7 @@ local uLongf crc_table[256] = {
 };
 #endif
 
+#if 0
 /* =========================================================================
  * This function can be used by asm versions of crc32()
  */
@@ -1910,6 +1993,7 @@ static uLongf *get_crc_table()
 #endif
   return (uLongf *)crc_table;
 }
+#endif
 
 /* ========================================================================= */
 #define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);

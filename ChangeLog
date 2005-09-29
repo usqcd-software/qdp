@@ -1,4 +1,9 @@
 ===========================================================================
+2005-09-29	version 1.3.3
+===========================================================================
+Fixed problem with unused but still present optimized makefiles.
+Added message dumping to /tmp/qdpmsgdump.XXXX if CRC error is caught.
+===========================================================================
 2005-09-20	version 1.3.2
 ===========================================================================
 Fixed bug in checksum code.  Should actually catch bad messages now.

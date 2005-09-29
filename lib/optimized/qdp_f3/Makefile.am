@@ -9,9 +9,11 @@ all: $(OPT_LIBS)
  
 .PHONY: libf3
 libf3:
-	for f in $(srcdir)/src/*.c; do \
-	  echo compiling $$f; \
-	  $(CC) $(CFLAGS) $(CINC) -c $$f; \
+	-for f in $(srcdir)/src/*.c; do \
+	  if [ -f $f ]; then \
+	    echo compiling $$f; \
+	    $(CC) $(CFLAGS) $(CINC) -c $$f; \
+	  fi; \
 	done
 	-mv -f *.o ../../qdp_f3
 
