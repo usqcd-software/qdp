@@ -330,12 +330,13 @@ r[ic@comma{} jc] = Sum_is a[ic@comma{} is@comma{} jc@comma{} is]}
 
 @subheading Dirac spin projection
 
-@funcv{
-QDP_H_eq_spproj_D,
+@funcve{
+QDP_H_@var{eqop}_spproj_D,
 QDP_HalfFermion *r@comma{} QDP_DiracFermion *a@comma{} int dir@comma{} int sign@comma{} @var{subset},
-QDP_H_veq_spproj_D,
+QDP_H_v@var{eqop}_spproj_D,
 QDP_HalfFermion *r[]@comma{} QDP_DiracFermion *a[]@comma{} int dir[]@comma{} int sign[]@comma{} @var{subset}@comma{} int n,
-r = spin project(a@comma{} dir@comma{} sign)}
+r = spin project(a@comma{} dir@comma{} sign),
+eq@comma{} peq@comma{} meq@comma{} eqm}
 
 @subheading Dirac spin reconstruction
 
@@ -347,25 +348,45 @@ QDP_DiracFermion *r[]@comma{} QDP_HalfFermion *a[]@comma{} int dir[]@comma{} int
 r = spin reconstruct(a@comma{} dir@comma{} sign),
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
+@subheading Dirac spin projection with reconstruction
+
+@funcve{
+QDP_D_@var{eqop}_spproj_D,
+QDP_DiracFermion *r@comma{} QDP_DiracFermion *a@comma{} int dir@comma{} int sign@comma{} @var{subset},
+QDP_D_v@var{eqop}_spproj_D,
+QDP_DiracFermion *r[]@comma{} QDP_DiracFermion *a[]@comma{} int dir[]@comma{} int sign[]@comma{} @var{subset}@comma{} int n,
+r = spin reconstruct(spin project(a@comma{} dir@comma{} sign)@comma{} dir@comma{} sign),
+eq@comma{} peq@comma{} meq@comma{} eqm}
+
+@subheading Matrix multiply and Dirac spin projection
+
+@funcve{
+QDP_H_@var{eqop}_M@{a@}_times_D,
+QDP_HalfFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_DiracFermion *b@comma{} int dir@comma{} int sign@comma{} @var{subset},
+QDP_H_v@var{eqop}_M@{a@}_times_D,
+QDP_HalfFermion *r[]@comma{} QDP_ColorMatrix *a[]@comma{} QDP_DiracFermion *b[]@comma{} int dir[]@comma{} int sign[]@comma{} @var{subset}@comma{} int n,
+r = spin project(a*b@comma{} dir@comma{} sign),
+eq_sprecon@comma{} peq_sprecon@comma{} meq_sprecon@comma{} eqm_sprecon}
+
 @subheading Matrix multiply and Dirac spin reconstruction
 
 @funcve{
-QDP_D_@var{eqop}_M_times_H,
+QDP_D_@var{eqop}_M@{a@}_times_H,
 QDP_DiracFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_HalfFermion *b@comma{} int dir@comma{} int sign@comma{} @var{subset},
-QDP_D_v@var{eqop}_M_times_H,
+QDP_D_v@var{eqop}_M@{a@}_times_H,
 QDP_DiracFermion *r[]@comma{} QDP_ColorMatrix *a[]@comma{} QDP_HalfFermion *b[]@comma{} int dir[]@comma{} int sign[]@comma{} @var{subset}@comma{} int n,
 r = spin reconstruct(a*b@comma{} dir@comma{} sign),
 eq_sprecon@comma{} peq_sprecon@comma{} meq_sprecon@comma{} eqm_sprecon}
 
-@subheading Matrix multiply and Wilson spin multiplication
+@subheading Matrix multiply and Dirac spin projection with reconstruction
 
 @funcve{
-QDP_D_@var{eqop}_M_times_D,
+QDP_D_@var{eqop}_M@{a@}_times_D,
 QDP_DiracFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_DiracFermion *b@comma{} int dir@comma{} int sign@comma{} @var{subset},
-QDP_D_v@var{eqop}_M_times_D,
+QDP_D_v@var{eqop}_M@{a@}_times_D,
 QDP_DiracFermion *r[]@comma{} QDP_ColorMatrix *a[]@comma{} QDP_DiracFermion *b[]@comma{} int dir[]@comma{} int sign[]@comma{} @var{subset}@comma{} int n,
-r = Wilson spin(a*b@comma{} dir@comma{} sign),
-eq_wilsonspin@comma{} peq_wilsonspin@comma{} meq_wilsonspin@comma{} eqm_wilsonspin}
+r = spin reconstruct(spin project(a*b@comma{} dir@comma{} sign)@comma{} dir@comma{} sign),
+eq_spproj@comma{} peq_spproj@comma{} meq_spproj@comma{} eqm_spproj}
 
 @functionhooktype 
 

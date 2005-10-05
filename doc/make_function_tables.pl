@@ -125,6 +125,7 @@ sub make_functions(\%) {
     @z = @{$arg->{SRC1_TYPES}};
     $a = "";
     $a = "a" if($arg->{SRC1_ADJ});
+    $a = '@{a@}' if($arg->{SRC1_DO_ADJ});
     if($arg->{SRC1_SCALAR}) {
       $ta = "t";
       $tt = "QLA_Type";
@@ -186,6 +187,7 @@ sub make_functions(\%) {
     @z = @{$arg->{SRC2_TYPES}};
     $a = "";
     $a = "a" if($arg->{SRC2_ADJ});
+    $a = '@{a@}' if($arg->{SRC2_DO_ADJ});
     if($#z==0) {
       if(($z[0] eq "DEST")||($z[0] eq "SRC1")) {
 	if($t) {

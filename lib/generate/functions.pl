@@ -495,7 +495,7 @@ comment2("r = spin project(a, dir, sign)");
 make_functions(%{{
   (
    DEST_TYPES  => [ 'HalfFermion' ],
-   EQ_OPS      => [ 'eq','veq' ],
+   EQ_OPS      => [ @eqops, @veqops ],
    FUNCS       => [ 'spproj' ],
    SRC2_TYPES  => [ 'DiracFermion' ],
    EXTRA_ARGS3 => "int dir, int sign, ",
@@ -513,6 +513,32 @@ make_functions(%{{
    EXTRA_ARGS3 => "int dir, int sign, ",
   )}});
 
+comment1("Dirac spin projection with reconstruction");
+comment2("r = spin reconstruct(spin project(a, dir, sign), dir, sign)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'DiracFermion' ],
+   EQ_OPS      => [ @eqops, @veqops ],
+   FUNCS       => [ 'spproj' ],
+   SRC2_TYPES  => [ 'DiracFermion' ],
+   EXTRA_ARGS3 => "int dir, int sign, ",
+  )}});
+
+comment1("Matrix multiply and Dirac spin projection");
+comment2("r = spin project(a*b, dir, sign)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'HalfFermion' ],
+   EQ_OPS      => [ map($_."_sprecon",( @eqops, @veqops )) ],
+   SRC1_TYPES  => [ 'ColorMatrix' ],
+   SRC1_DO_ADJ => 1,
+   FUNCS       => [ 'times' ],
+   SRC2_TYPES  => [ 'DiracFermion' ],
+   EXTRA_ARGS3 => "int dir, int sign, ",
+  )}});
+
 comment1("Matrix multiply and Dirac spin reconstruction");
 comment2("r = spin reconstruct(a*b, dir, sign)");
 
@@ -521,19 +547,21 @@ make_functions(%{{
    DEST_TYPES  => [ 'DiracFermion' ],
    EQ_OPS      => [ map($_."_sprecon",( @eqops, @veqops )) ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
+   SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'HalfFermion' ],
    EXTRA_ARGS3 => "int dir, int sign, ",
   )}});
 
-comment1("Matrix multiply and Wilson spin multiplication");
-comment2("r = Wilson spin(a*b, dir, sign)");
+comment1("Matrix multiply and Dirac spin projection with reconstruction");
+comment2("r = spin reconstruct(spin project(a*b, dir, sign), dir, sign)");
 
 make_functions(%{{
   (
    DEST_TYPES  => [ 'DiracFermion' ],
-   EQ_OPS      => [ map($_."_wilsonspin",( @eqops, @veqops )) ],
+   EQ_OPS      => [ map($_."_spproj",( @eqops, @veqops )) ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
+   SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DiracFermion' ],
    EXTRA_ARGS3 => "int dir, int sign, ",
