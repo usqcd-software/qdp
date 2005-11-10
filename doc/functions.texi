@@ -366,7 +366,7 @@ QDP_HalfFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_DiracFermion *b@comma{
 QDP_H_v@var{eqop}_M@{a@}_times_D,
 QDP_HalfFermion *r[]@comma{} QDP_ColorMatrix *a[]@comma{} QDP_DiracFermion *b[]@comma{} int dir[]@comma{} int sign[]@comma{} @var{subset}@comma{} int n,
 r = spin project(a*b@comma{} dir@comma{} sign),
-eq_sprecon@comma{} peq_sprecon@comma{} meq_sprecon@comma{} eqm_sprecon}
+eq_spproj@comma{} peq_spproj@comma{} meq_spproj@comma{} eqm_spproj}
 
 @subheading Matrix multiply and Dirac spin reconstruction
 

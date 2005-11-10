@@ -1,10 +1,6 @@
 #ifndef _QDP_TYPES
 #define _QDP_TYPES
 
-#ifndef __restrict__
-#define __restrict__
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

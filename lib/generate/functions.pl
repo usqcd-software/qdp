@@ -531,7 +531,7 @@ comment2("r = spin project(a*b, dir, sign)");
 make_functions(%{{
   (
    DEST_TYPES  => [ 'HalfFermion' ],
-   EQ_OPS      => [ map($_."_sprecon",( @eqops, @veqops )) ],
+   EQ_OPS      => [ map($_."_spproj",( @eqops, @veqops )) ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
    SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],

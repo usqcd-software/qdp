@@ -4,7 +4,7 @@
 #include "com_common.h"
 
 void
-QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *__restrict__ dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv)
+QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *restrict dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv)
 {
   int *ra, restart, i;
 

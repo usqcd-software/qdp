@@ -764,10 +764,10 @@ sub qdp_args($$$$$$) {
     if($dest->{SCALAR}) {
       $args .= " ".$dest->{VAR}."[], ";
     } else {
-      $args .= " *__restrict__ ".$dest->{VAR}."[], ";
+      $args .= " *restrict ".$dest->{VAR}."[], ";
     }
   } else {
-    $args .= " *__restrict__ ".$dest->{VAR}.", ";
+    $args .= " *restrict ".$dest->{VAR}.", ";
   }
   $args .= $x1.$s1arg.$x2.$s2arg.$x3;
   if($dest->{MULTI}) {
