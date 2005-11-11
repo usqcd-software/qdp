@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "qdp_config.h"
 #include "qla_types.h"
 #include "qla_complex.h"
 #include "qla_random.h"

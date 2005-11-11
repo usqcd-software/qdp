@@ -1,5 +1,4 @@
 !GAUGEMULT2
-#include "qdp_$lib.h"
 #include "qdp_$lib_internal.h"
 #include "com_common.h"
 #include "com_common_internal.h"

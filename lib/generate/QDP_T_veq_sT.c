@@ -1,5 +1,4 @@
 !PCSHIFTTYPES
-#include "qdp_$lib.h"
 #include "qdp_$lib_internal.h"
 #include "com_common.h"
 

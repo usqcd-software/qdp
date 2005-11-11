@@ -1,6 +1,7 @@
 #ifndef _QDP_COMMON_INTERNAL
 #define _QDP_COMMON_INTERNAL
 
+#include "qdp_config.h"
 #include "qio_string.h"
 #include "qla_types.h"
 #include "qla_complex.h"

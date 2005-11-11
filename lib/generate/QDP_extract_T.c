@@ -1,4 +1,3 @@
-#include "qdp_$lib.h"
 #include "qdp_$lib_internal.h"
 
 void

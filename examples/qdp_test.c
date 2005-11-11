@@ -1,6 +1,7 @@
 #include <stdio.h>
 //#define QDP_Precision 'F'
 //#define QDP_Nc 3
+#include "qdp_config.h"
 #include <qdp.h>
 
 #define printf0 if(QDP_this_node==0) printf
