@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "qdp_config.h"
 #include <qdp.h>
 #include "congrad_ks.h"
 

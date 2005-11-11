@@ -80,20 +80,26 @@ else
     before configure])
 fi
 
-#if ! set | grep '^CFLAGS='; then
-#  CFLAGS=-O
-#fi
-CFLAGS="$CFLAGS $QMP_CFLAGS"
-
 # Checks for programs.
+AC_CHECK_TOOL(AR, ar, [ar])
 AC_PROG_RANLIB
-AC_PROG_CC([cc gcc])
-AC_PATH_PROG([GCC], [gcc], [gcc])
 AC_PATH_PROG([PERL], [perl], [perl])
 AC_PATH_PROG([TEXI2DVI], [texi2dvi], [texi2dvi])
 AC_PATH_PROG([DVIPS], [dvips], [dvips])
 AC_PATH_PROG([MAKEINFO], [makeinfo], [makeinfo])
-AC_CHECK_TOOL(AR, ar, [ar])
+if ! set | grep '^CFLAGS='; then ac_CFLAGS_not_set=1; fi
+AC_PROG_CC([c99 gcc])
+if test "X$ac_CFLAGS_not_set" = "X1"; then
+  if test "X$GCC" = "Xyes"; then
+    CFLAGS="-std=c99 -O2"
+  else
+    CFLAGS=-O
+  fi
+fi
+if test "X$GCC" = "Xyes"; then GNUCC="$CC"; else
+AC_PATH_PROG([GNUCC], [gcc], [gcc])
+fi
+CFLAGS="$CFLAGS $QMP_CFLAGS"
 
 # Checks for libraries.
 

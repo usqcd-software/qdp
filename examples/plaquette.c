@@ -1,5 +1,6 @@
 //#include <stdlib.h>
 #include <stdio.h>
+#include "qdp_config.h"
 #include <qdp.h>
 
 #define LOCAL_SUM

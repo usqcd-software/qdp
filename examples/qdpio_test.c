@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "qdp_config.h"
 #include <qdp.h>
 
 #define printf0 if(QDP_this_node==0) printf

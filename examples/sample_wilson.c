@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <sys/resource.h>
 #include <time.h>
+#include "qdp_config.h"
 #include <qdp.h>
 #include "congrad_wilson.h"
 
