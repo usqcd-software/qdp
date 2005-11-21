@@ -10,7 +10,7 @@
 
 void
 QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_$ABBR2$ADJ2(
-  $NC$QDPPCTYPE3 *restrict dest,
+  $NC$QDPPCTYPE3 *dest,
   $QDPPCTYPE1 *src1,
   $QDPPCTYPE2 *src2,
   QDP_Shift shift,

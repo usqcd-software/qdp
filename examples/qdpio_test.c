@@ -70,6 +70,7 @@ main(int argc, char *argv[])
   int lattice_size[4] = { 8,8,8,8 };
   char fn[]="qdpio-test.bin";
   QDP_DiracFermion *d1out, *d2out, *d1in, *d2in;
+  QDP_ColorMatrix *mout[2], *min[2];
   QDP_RandomState *rs;
   QDP_Int *li;
   QDP_Reader *qr;
@@ -85,6 +86,10 @@ main(int argc, char *argv[])
   d2out = QDP_create_D();
   d1in = QDP_create_D();
   d2in = QDP_create_D();
+  mout[0] = QDP_create_M();
+  mout[1] = QDP_create_M();
+  min[0] = QDP_create_M();
+  min[1] = QDP_create_M();
   rs = QDP_create_S();
   li = QDP_create_I();
 
@@ -109,6 +114,14 @@ main(int argc, char *argv[])
   printf0("writing field, norm = %g\n", x);
   QDP_write_D(qw, md, d2out);
 
+  QDP_M_eq_gaussian_S(mout[0], rs, QDP_all);
+  QDP_M_eq_gaussian_S(mout[1], rs, QDP_all);
+  QDP_r_eq_norm2_M(&x, mout[0], QDP_all);
+  printf0("writing mout[0], norm = %g\n", x);
+  QDP_r_eq_norm2_M(&x, mout[1], QDP_all);
+  printf0("writing mout[1], norm = %g\n", x);
+  QDP_vwrite_M(qw, md, mout, 2);
+
   QDP_close_write(qw);
 
   qr = QDP_open_read(md, fn);
@@ -124,6 +137,16 @@ main(int argc, char *argv[])
   QDP_D_meq_D(d2out, d2in, QDP_all);
   QDP_r_eq_norm2_D(&y, d2out, QDP_all);
   printf0("read field,   norm = %g  error = %g\n", x, y);
+
+  QDP_vread_M(qr, md, min, 2);
+  QDP_r_eq_norm2_M(&x, min[0], QDP_all);
+  QDP_M_meq_M(mout[0], min[0], QDP_all);
+  QDP_r_eq_norm2_M(&y, mout[0], QDP_all);
+  printf0("read mout[0],   norm = %g  error = %g\n", x, y);
+  QDP_r_eq_norm2_M(&x, min[1], QDP_all);
+  QDP_M_meq_M(mout[1], min[1], QDP_all);
+  QDP_r_eq_norm2_M(&y, mout[1], QDP_all);
+  printf0("read mout[1],   norm = %g  error = %g\n", x, y);
 
   QDP_close_read(qr);
 

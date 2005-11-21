@@ -177,13 +177,13 @@ sub do_subset($$$$$$$$$$) {
   my($argsi) = "$y0 $dvi$y1$s1i$y2$s2i$y3";
   my($body) = <<"  EOF;";
   if($subset->indexed) {
-    //QDP_math_time -= QDP_time();
+    /*QDP_math_time -= QDP_time();*/
     $qla1$x$qla2($argsi, $subset->index, $subset->len );
-    //QDP_math_time += QDP_time();
+    /*QDP_math_time += QDP_time();*/
   } else {
-    //QDP_math_time -= QDP_time();
+    /*QDP_math_time -= QDP_time();*/
     $qla1$v$qla2($args, $subset->len );
-    //QDP_math_time += QDP_time();
+    /*QDP_math_time += QDP_time();*/
   }
   EOF;
   my($space);
@@ -323,13 +323,13 @@ sub bod1($$$$$$$$$$) {
   my($sp, $qla1, $qla2, $y0, $dv, $y1, $src, $y2, $off, $arg) = @_;
   my($body) = "";
   $body .= $sp."if( ".$src->{VAR}."->ptr ) {\n";
-  $body .= $sp."  "."//QDP_math_time -= QDP_time();\n";
+  $body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."  ".$qla1."p".$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->ptr".$off.$y2.$arg." );\n";
-  $body .= $sp."  "."//QDP_math_time += QDP_time();\n";
+  $body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."} else {\n";
-  $body .= $sp."  "."//QDP_math_time -= QDP_time();\n";
+  $body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."  ".$qla1.$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->data".$off.$y2.$arg." );\n";
-  $body .= $sp."  "."//QDP_math_time += QDP_time();\n";
+  $body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."}\n";
   return $body;
 }
@@ -355,23 +355,23 @@ sub bod2($$$$$$$$$$$$$) {
   my($body) = "";
   $body .= $sp."if( ".$src1->{VAR}."->ptr ) {\n";
   $body .= $sp."  if( ".$src2->{VAR}."->ptr ) {\n";
-  $body .= $sp."    "."//QDP_math_time -= QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1."p".$qla2."p".$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->ptr".$off.$y2.", ".$src2->{VAR}."->ptr".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."//QDP_math_time += QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  } else {\n";
-  $body .= $sp."    "."//QDP_math_time -= QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1."p".$qla2.$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->ptr".$off.$y2.", ".$src2->{VAR}."->data".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."//QDP_math_time += QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."} else {\n";
   $body .= $sp."  if( ".$src2->{VAR}."->ptr ) {\n";
-  $body .= $sp."    "."//QDP_math_time -= QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1.$qla2."p".$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->data".$off.$y2.", ".$src2->{VAR}."->ptr".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."//QDP_math_time += QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  } else {\n";
-  $body .= $sp."    "."//QDP_math_time -= QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1.$qla2.$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->data".$off.$y2.", ".$src2->{VAR}."->data".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."//QDP_math_time += QDP_time();\n";
+  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."}\n";
   return $body;
@@ -764,10 +764,10 @@ sub qdp_args($$$$$$) {
     if($dest->{SCALAR}) {
       $args .= " ".$dest->{VAR}."[], ";
     } else {
-      $args .= " *restrict ".$dest->{VAR}."[], ";
+      $args .= " *".$dest->{VAR}."[], ";
     }
   } else {
-    $args .= " *restrict ".$dest->{VAR}.", ";
+    $args .= " *".$dest->{VAR}.", ";
   }
   $args .= $x1.$s1arg.$x2.$s2arg.$x3;
   if($dest->{MULTI}) {

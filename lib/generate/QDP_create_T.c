@@ -27,7 +27,6 @@ void
 QDP$PC_destroy_$ABBR($NC$QDPPCTYPE *field)
 {
   QDP_prepare_destroy(&field->dc);
-  //free(field->data);
   if(field->dc.qmpmem) QMP_free_memory(field->dc.qmpmem);
   free((void*)field->ptr);
   free(field);

@@ -48,8 +48,8 @@ void QDP$PC_$ABBR_eq_func($NC$QDPPCTYPE *dest, void (*func)($QLAPCTYPE *dest, in
 /* shift */
 
 !PCSHIFTTYPES
-void QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *restrict dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
-void QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *restrict dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv);
+void QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv);
 !END
 
 /* shift & multiply */

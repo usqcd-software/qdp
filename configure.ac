@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([qdp],[1.4.0],[josborn@physics.bu.edu])
+AC_INIT([qdp],[1.4.1],[josborn@physics.bu.edu])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE
 

@@ -3,7 +3,7 @@
 #include "com_common.h"
 
 void
-QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *restrict dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset)
+QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset)
 {
   int restart;
 
@@ -37,8 +37,6 @@ QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *restrict dest, $QDPPCTYPE *src, QDP_Shift 
   }
 
   dest->dc.shift_src->st->shift_pending = 1;
-  //QDP_comm_time -= QDP_time();
   QDP_do_gather(dest->dc.shift_src->st->msgtag);
-  //QDP_comm_time += QDP_time();
 }
 !END

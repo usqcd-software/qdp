@@ -114,41 +114,41 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
 
 #define QDPIO_size_I(p, nc, ns) sizeof(QLA_Int)
 #define QDPIO_word_I(p) sizeof(QLA_Int)
-#define QDPIO_get_I(NC, p, pc, buf, s, nc, ns) *((QLA_Int*)buf) = *s
-#define QDPIO_put_I(NC, p, pc, s, buf, nc, ns) *s = *((QLA_Int*)buf)
+#define QDPIO_get_I(NC, p, pc, buf, s, nc, ns) *((QLA_Int*)(buf)) = *(s)
+#define QDPIO_put_I(NC, p, pc, s, buf, nc, ns) *(s) = *((QLA_Int*)(buf))
 
 #define QDPIO_size_R(p, nc, ns) sizeof(QLA_##p##_Real)
 #define QDPIO_word_R(p) sizeof(QLA_##p##_Real)
-#define QDPIO_get_R(NC, p, pc, buf, s, nc, ns) *((QLA_##p##_Real*)buf) = *s
-#define QDPIO_put_R(NC, p, pc, s, buf, nc, ns) *s = *((QLA_##p##_Real*)buf)
+#define QDPIO_get_R(NC, p, pc, buf, s, nc, ns) *((QLA_##p##_Real*)(buf)) = *(s)
+#define QDPIO_put_R(NC, p, pc, s, buf, nc, ns) *(s) = *((QLA_##p##_Real*)(buf))
 
 #define QDPIO_size_C(p, nc, ns) sizeof(QLA_##p##_Complex)
 #define QDPIO_word_C(p) sizeof(QLA_##p##_Real)
-#define QDPIO_get_C(NC, p, pc, buf, s, nc, ns) *((QLA_##p##_Complex*)buf) = *s
-#define QDPIO_put_C(NC, p, pc, s, buf, nc, ns) *s = *((QLA_##p##_Complex*)buf)
+#define QDPIO_get_C(NC, p, pc, buf, s, nc, ns) *((QLA_##p##_Complex*)(buf)) = *(s)
+#define QDPIO_put_C(NC, p, pc, s, buf, nc, ns) *(s) = *((QLA_##p##_Complex*)(buf))
 
-#define QDPIO_size_V(p, nc, ns) (nc*sizeof(QLA_##p##_Complex))
+#define QDPIO_size_V(p, nc, ns) ((nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_V(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_V(NC, p, pc, buf, s, nc, ns) {			\
     int _ic;								\
     for(_ic=0; _ic<(nc); ++_ic) {					\
-      QLA##pc##_C_eq_elem_V(NC ((QLA_##p##_Complex *)buf)+_ic, s, _ic); \
+      QLA##pc##_C_eq_elem_V(NC ((QLA_##p##_Complex *)(buf))+_ic, s, _ic); \
     }									\
   }
 #define QDPIO_put_V(NC, p, pc, s, buf, nc, ns) {			\
     int _ic;								\
     for(_ic=0; _ic<(nc); ++_ic) {					\
-      QLA##pc##_V_eq_elem_C(NC s, ((QLA_##p##_Complex *)buf)+_ic, _ic); \
+      QLA##pc##_V_eq_elem_C(NC s, ((QLA_##p##_Complex *)(buf))+_ic, _ic); \
     }									\
   }
 
-#define QDPIO_size_H(p, nc, ns) ((ns/2)*nc*sizeof(QLA_##p##_Complex))
+#define QDPIO_size_H(p, nc, ns) ((ns/2)*(nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_H(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_H(NC, p, pc, buf, s, nc, ns) {			\
     int _is, _ic;							\
     for(_is=0; _is<(ns); ++_is) {					\
       for(_ic=0; _ic<(nc); ++_ic) {					\
-	QLA##pc##_C_eq_elem_H(NC ((QLA_##p##_Complex *)buf)+(nc)*_is+_ic, s, _ic, _is); \
+	QLA##pc##_C_eq_elem_H(NC ((QLA_##p##_Complex *)(buf))+(nc)*_is+_ic, s, _ic, _is); \
       }									\
     }									\
   }
@@ -156,7 +156,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     int _is, _ic;							\
     for(_is=0; _is<(ns); ++_is) {					\
       for(_ic=0; _ic<(nc); ++_ic) {					\
-	QLA##pc##_H_eq_elem_C(NC s, ((QLA_##p##_Complex *)buf)+(nc)*_is+_ic, _ic, _is); \
+	QLA##pc##_H_eq_elem_C(NC s, ((QLA_##p##_Complex *)(buf))+(nc)*_is+_ic, _ic, _is); \
       }									\
     }									\
   }
@@ -167,7 +167,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     int _is, _ic;							\
     for(_is=0; _is<(ns); ++_is) {					\
       for(_ic=0; _ic<(nc); ++_ic) {					\
-	QLA##pc##_C_eq_elem_D(NC ((QLA_##p##_Complex *)buf)+(nc)*_is+_ic, s, _ic, _is); \
+	QLA##pc##_C_eq_elem_D(NC ((QLA_##p##_Complex *)(buf))+(nc)*_is+_ic, s, _ic, _is); \
       }									\
     }									\
   }
@@ -175,7 +175,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     int _is, _ic;							\
     for(_is=0; _is<(ns); ++_is) {					\
       for(_ic=0; _ic<(nc); ++_ic) {					\
-	QLA##pc##_D_eq_elem_C(NC s, ((QLA_##p##_Complex *)buf)+(nc)*_is+_ic, _ic, _is); \
+	QLA##pc##_D_eq_elem_C(NC s, ((QLA_##p##_Complex *)(buf))+(nc)*_is+_ic, _ic, _is); \
       }									\
     }									\
   }
@@ -186,7 +186,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     int _ic, _jc;							\
     for(_ic=0; _ic<(nc); ++_ic) {					\
       for(_jc=0; _jc<(nc); ++_jc) {					\
-	QLA##pc##_C_eq_elem_M(NC ((QLA_##p##_Complex *)buf)+(nc)*_ic+_jc, s, _ic, _jc); \
+	QLA##pc##_C_eq_elem_M(NC ((QLA_##p##_Complex *)(buf))+(nc)*_ic+_jc, s, _ic, _jc); \
       }									\
     }									\
   }
@@ -194,7 +194,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     int _ic, _jc;							\
     for(_ic=0; _ic<(nc); ++_ic) {					\
       for(_jc=0; _jc<(nc); ++_jc) {					\
-	QLA##pc##_M_eq_elem_C(NC s, ((QLA_##p##_Complex *)buf)+(nc)*_ic+_jc, _ic, _jc); \
+	QLA##pc##_M_eq_elem_C(NC s, ((QLA_##p##_Complex *)(buf))+(nc)*_ic+_jc, _ic, _jc); \
       }									\
     }									\
   }
@@ -207,7 +207,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
       for(_js=0; _js<(ns); ++_jc) {					\
 	for(_ic=0; _ic<(nc); ++_ic) {					\
 	  for(_jc=0; _jc<(nc); ++_jc) {					\
-	    QLA##pc##_C_eq_elem_P(NC ((QLA_##p##_Complex *)buf)+((_is*(ns)+_js)*(nc)+_ic)*(nc)+_jc, s, _ic, _is, _jc, _js); \
+	    QLA##pc##_C_eq_elem_P(NC ((QLA_##p##_Complex *)(buf))+((_is*(ns)+_js)*(nc)+_ic)*(nc)+_jc, s, _ic, _is, _jc, _js); \
 	  }								\
 	}								\
       }									\
@@ -219,7 +219,7 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
       for(_js=0; _js<(ns); ++_jc) {					\
 	for(_ic=0; _ic<(nc); ++_ic) {					\
 	  for(_jc=0; _jc<(nc); ++_jc) {					\
-	    QLA##pc##_P_eq_elem_C(NC s, ((QLA_##p##_Complex *)buf)+((_is*(ns)+_js)*(nc)+_ic)*(nc)+_jc, _ic, _is, _jc, _js); \
+	    QLA##pc##_P_eq_elem_C(NC s, ((QLA_##p##_Complex *)(buf))+((_is*(ns)+_js)*(nc)+_ic)*(nc)+_jc, _ic, _is, _jc, _js); \
 	  }								\
 	}								\
       }									\
