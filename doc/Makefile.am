@@ -1,7 +1,7 @@
 # For making Postscript and html documentation
 
 info_TEXINFOS = qdpc.texi
-qdpc.texi = qdpdefs.texi functions.texi
+qdpc_TEXINFOS = qdpdefs.texi functions.texi
 
 EXTRA_DIST = README make_function_tables.pl qdp_1p1.tex
 
