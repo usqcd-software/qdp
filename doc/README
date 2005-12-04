@@ -1,7 +1,8 @@
 Postscript documentation can be made with the command 'make ps'.
+PDF documentation can be made with the command 'make pdf'.
 GNU info documentation can be made with the command 'make info'.
 Html documentation can be built with 'make html'.
 
-You will need 'texi2dvi' in your path for the ps documentation and
-'makeinfo' for the info and html docs.
+You will need 'texi2dvi' in your path for the ps and pdf documentation
+and 'makeinfo' for the info and html docs.
 
