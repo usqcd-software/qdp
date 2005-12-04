@@ -81,6 +81,8 @@ struct $QDPPCTYPE_struct {
 !END
 extern int QDP_suspended;
 extern int QDP_block_size;
+extern int QDP_mem_align;
+extern int QDP_mem_flags;
 
 extern QDP_msg_tag *QDP_declare_shift(char **dest, char *src, int size, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
 extern void QDP_declare_accumulate_shift(QDP_msg_tag **mt, char **dest, char *src, int size, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);

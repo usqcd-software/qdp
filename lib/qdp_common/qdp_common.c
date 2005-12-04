@@ -14,6 +14,8 @@
 
 int QDP_suspended = 0;
 int QDP_block_size = 256;
+int QDP_mem_align = 16;
+int QDP_mem_flags = QDP_MEM_FAST | QDP_MEM_COMMS;
 
 /* Private Globals */
 
@@ -141,6 +143,30 @@ void
 QDP_set_block_size(int bs)
 {
   if(bs>0) QDP_block_size = bs;
+}
+
+int
+QDP_get_mem_align(void)
+{
+  return QDP_mem_align;
+}
+
+void
+QDP_set_mem_align(int align)
+{
+  QDP_mem_align = align;
+}
+
+int
+QDP_get_mem_flags(void)
+{
+  return QDP_mem_flags;
+}
+
+void
+QDP_set_mem_flags(int flags)
+{
+  QDP_mem_flags = flags;
 }
 
 /* IO routines */

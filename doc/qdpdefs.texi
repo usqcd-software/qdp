@@ -134,9 +134,9 @@ I, R, C, V, H, D, M, P
 @code{QDP_Nc}
 @end macro
 
-@macro comma
-,
-@end macro
+@c @macro comma
+@c ,
+@c @end macro
 
 @tex
 

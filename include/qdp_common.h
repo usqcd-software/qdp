@@ -6,6 +6,14 @@
 #include "qdp_subset.h"
 #include "qdp_shift.h"
 
+#define QDP_ALIGN_ANY QMP_ALIGN_ANY
+#define QDP_ALIGN_DEFAULT QMP_ALIGN_DEFAULT
+
+#define QDP_MEM_NONCACHE QMP_MEM_NONCACHE
+#define QDP_MEM_COMMS QMP_MEM_COMMS
+#define QDP_MEM_FAST QMP_MEM_FAST
+#define QDP_MEM_DEFAULT QMP_MEM_DEFAULT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,6 +39,11 @@ extern void QDP_resume_comm(void);
 
 extern int QDP_get_block_size(void);
 extern void QDP_set_block_size(int bs);
+
+extern int QDP_get_mem_align(void);
+extern void QDP_set_mem_align(int align);
+extern int QDP_get_mem_flags(void);
+extern void QDP_set_mem_flags(int flags);
 
 #ifdef __cplusplus
 }

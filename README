@@ -1,21 +1,15 @@
 SciDAC QDP C interface -- Level 2 data parallel routines
 
 This package uses the standard GNU configuration script.  See the file
-INSTALL for datails on compiling and installing.  It is recommended that
-QDP be compiled with a C99 compliant compiler (or at least one that
-understands the restrict keyword).  Linking to QDP may also require a C99
-compiler or a redefinition of restrict before including the QDP header.
-If you get errors like 'error: syntax error before "dest"' then most likely
-you are not using your compiler in C99 mode.  Check your compiler
-documentation to find the appropriate option (for gcc try -std=c99 or
-for xlc try -qlanglvl=stdc99).
+INSTALL for datails on compiling and installing.
 
-Documentation is included in the doc directory.  This is not included in
-the installation.  See the README file in the doc directory for details.
+Documentation is included in the doc directory.  Gnu info files are
+automatically build with the rest of the library.  Postscript, pdf and
+html versions can be made with "make ps", "make pdf" and "make html".
 
 Contents of directories:
 
-  doc			Documentation - Postscript and HTML
+  doc			Documentation
   examples		Example programs using QDP
   include		Header files, some of these will be generated
   lib/generate		Scripts for creating the library source

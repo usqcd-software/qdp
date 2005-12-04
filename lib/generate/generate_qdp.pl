@@ -245,8 +245,8 @@ sub prepare_src($$$) {
   return $r;
 }
 
-sub global_sum($) {
-  my($dest) = @_;
+sub global_sum($$) {
+  my($dest, $eqop) = @_;
   my($r);
   my($abbr) = $dest->{ABBR};
   my($uabbr) = uc $abbr;
@@ -264,13 +264,15 @@ sub global_sum($) {
     $nc = 'nc, ';
     $ncn = '_N';
   }
+  if(!$eqop) { $eqop = "eq"; }
   if(($dest->{MULTI})||($dest->{VECT})) {
     my $vvar = "nv";
     if($dest->{MULTI}) { $vvar = "ns"; }
     if($dest->{EXTENDED}) {
       $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof(QLA".$epc."_".$dest->{TYPE}."), dtemp, $vvar);\n";
-      $r .= "  QLA".$cpc.$uabbr."_veq".$uabbr."(".$nc."dest, dtemp, $vvar);\n";
-      $r .= "  free(dtemp);\n"
+      $r .= "  QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, dtemp, $vvar);\n";
+      $r .= "  free(dtemp);\n";
+      $r .= "  free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     } else {
       $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof(QLA".$tpc."_".$dest->{TYPE}."), dest, $vvar);\n";
     }
@@ -291,31 +293,78 @@ sub global_sum($) {
   return $r;
 }
 
+
+#### begin old functions ######
+
+#sub body0($$$$$) {
+#  my($qla1, $qla2, $y0, $dest, $y1) = @_;
+#  my($body) = "{\n";
+#  $body .= prepare_dest("  ", $dest);
+#  $body .= "\n";
+#  $body .= do_subset(2, $qla1, $qla2, $y0, $dest, $y1, '', '', '', '');
+#  $body .= "}\n";
+#  return $body;
+#}
+
+#sub body1ns($$$$$$$$$) {
+#  my($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $sv, $y2) = @_;
+#  my($ds) = $dest->{SCALAR};
+#  my($body) = "{\n";
+#  $body .= prepare_dest("  ", $dest);
+#  $body .= prepare_src("  ", $src, $sv);
+#  $body .= "\n";
+#  $body .= do_subset(2, $qla1, $qla2.$qla3, $y0, $dest, $y1, ", src->data", $y2, '', '');
+#  $body .= "}\n";
+#  return $body;
+#}
+
+#sub body1($$$$$$$$$) {
+#  my($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $sv, $y2) = @_;
+#  my($body) = "{\n";
+#  $body .= prepare_dest("  ", $dest);
+#  $body .= prepare_src("  ", $src, $sv);
+#  $body .= "\n";
+#  $body .= "  if($sv->ptr==NULL) {\n";
+#  $body .= do_subset(4, $qla1, $qla2.$qla3, $y0, $dest, $y1, ", $sv->data", $y2, '', '');
+#  $body .= "  } else {\n";
+#  $body .= do_subset(4, $qla1, $qla2.'p'.$qla3, $y0, $dest, $y1, ", $sv->ptr", $y2, '', '');
+#  $body .= "  }\n";
+#  if($dest->{SCALAR}) { $body .= global_sum($dest); }
+#  $body .= "}\n";
+#  return $body;
+#}
+
+#sub body2($$$$$$$$$$$$$) {
+#  my($qla1, $qla2, $qla3, $qla4, $y0, $dest, $y1, $src1, $s1v, $y2, $src2, $s2v, $y3) = @_;
+#  my($ds) = $dest->{SCALAR};
+#  my($body) = "{\n";
+#  $body .= prepare_dest("  ", $dest);
+#  $body .= prepare_src("  ", $src1, $s1v);
+#  $body .= prepare_src("  ", $src2, $s2v);
+#  $body .= "\n";
+#  $body .= "  if(src1->ptr==NULL) {\n";
+#  $body .= "    if(src2->ptr==NULL) {\n";
+#  $body .= do_subset(6, $qla1, $qla2.$qla3.$qla4, $y0, $dest, $y1, ", src1->data", $y2, ", src2->data", $y3);
+#  $body .= "    } else {\n";
+#  $body .= do_subset(6, $qla1, $qla2.$qla3.'p'.$qla4, $y0, $dest, $y1, ", src1->data", $y2, ", src2->ptr", $y3);
+#  $body .= "    }\n";
+#  $body .= "  } else {\n";
+#  $body .= "    if(src2->ptr==NULL) {\n";
+#  $body .= do_subset(6, $qla1, $qla2.'p'.$qla3.$qla4, $y0, $dest, $y1, ", src1->ptr", $y2, ", src2->data", $y3);
+#  $body .= "    } else {\n";
+#  $body .= do_subset(6, $qla1, $qla2.'p'.$qla3.'p'.$qla4, $y0, $dest, $y1, ", src1->ptr", $y2, ", src2->ptr", $y3);
+#  $body .= "    }\n";
+#  $body .= "  }\n";
+#  if($ds) { $body .= global_sum($dest); }
+#  $body .= "}\n";
+#  return $body;
+#}
+
+#### end old functions ######
+
 sub bod0($$$$$$$) {
   my($sp, $qla, $y0, $dv, $y1, $off, $arg) = @_;
   my($body) = $sp.$qla."( ".$y0.$dv.$y1.$arg." );\n";
-  return $body;
-}
-
-sub body0($$$$$) {
-  my($qla1, $qla2, $y0, $dest, $y1) = @_;
-  my($body) = "{\n";
-  $body .= prepare_dest("  ", $dest);
-  $body .= "\n";
-  $body .= do_subset(2, $qla1, $qla2, $y0, $dest, $y1, '', '', '', '');
-  $body .= "}\n";
-  return $body;
-}
-
-sub body1ns($$$$$$$$$) {
-  my($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $sv, $y2) = @_;
-  my($ds) = $dest->{SCALAR};
-  my($body) = "{\n";
-  $body .= prepare_dest("  ", $dest);
-  $body .= prepare_src("  ", $src, $sv);
-  $body .= "\n";
-  $body .= do_subset(2, $qla1, $qla2.$qla3, $y0, $dest, $y1, ", src->data", $y2, '', '');
-  $body .= "}\n";
   return $body;
 }
 
@@ -331,22 +380,6 @@ sub bod1($$$$$$$$$$) {
   $body .= $sp."  ".$qla1.$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->data".$off.$y2.$arg." );\n";
   $body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."}\n";
-  return $body;
-}
-
-sub body1($$$$$$$$$) {
-  my($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $sv, $y2) = @_;
-  my($body) = "{\n";
-  $body .= prepare_dest("  ", $dest);
-  $body .= prepare_src("  ", $src, $sv);
-  $body .= "\n";
-  $body .= "  if($sv->ptr==NULL) {\n";
-  $body .= do_subset(4, $qla1, $qla2.$qla3, $y0, $dest, $y1, ", $sv->data", $y2, '', '');
-  $body .= "  } else {\n";
-  $body .= do_subset(4, $qla1, $qla2.'p'.$qla3, $y0, $dest, $y1, ", $sv->ptr", $y2, '', '');
-  $body .= "  }\n";
-  if($dest->{SCALAR}) { $body .= global_sum($dest); }
-  $body .= "}\n";
   return $body;
 }
 
@@ -374,32 +407,6 @@ sub bod2($$$$$$$$$$$$$) {
   $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."}\n";
-  return $body;
-}
-
-sub body2($$$$$$$$$$$$$) {
-  my($qla1, $qla2, $qla3, $qla4, $y0, $dest, $y1, $src1, $s1v, $y2, $src2, $s2v, $y3) = @_;
-  my($ds) = $dest->{SCALAR};
-  my($body) = "{\n";
-  $body .= prepare_dest("  ", $dest);
-  $body .= prepare_src("  ", $src1, $s1v);
-  $body .= prepare_src("  ", $src2, $s2v);
-  $body .= "\n";
-  $body .= "  if(src1->ptr==NULL) {\n";
-  $body .= "    if(src2->ptr==NULL) {\n";
-  $body .= do_subset(6, $qla1, $qla2.$qla3.$qla4, $y0, $dest, $y1, ", src1->data", $y2, ", src2->data", $y3);
-  $body .= "    } else {\n";
-  $body .= do_subset(6, $qla1, $qla2.$qla3.'p'.$qla4, $y0, $dest, $y1, ", src1->data", $y2, ", src2->ptr", $y3);
-  $body .= "    }\n";
-  $body .= "  } else {\n";
-  $body .= "    if(src2->ptr==NULL) {\n";
-  $body .= do_subset(6, $qla1, $qla2.'p'.$qla3.$qla4, $y0, $dest, $y1, ", src1->ptr", $y2, ", src2->data", $y3);
-  $body .= "    } else {\n";
-  $body .= do_subset(6, $qla1, $qla2.'p'.$qla3.'p'.$qla4, $y0, $dest, $y1, ", src1->ptr", $y2, ", src2->ptr", $y3);
-  $body .= "    }\n";
-  $body .= "  }\n";
-  if($ds) { $body .= global_sum($dest); }
-  $body .= "}\n";
   return $body;
 }
 
@@ -501,6 +508,9 @@ sub func_body($$$$$$$$) {
   my($def) = "";
   my($top) = "\n";
   my($bot) = "";
+  my($botsum) = "";
+  my($global_eqop) = "eq";
+
   if($dest->{VECT}) {
     if($dest->{MULTI}) {
       my($ssv) = "subset[i]";
@@ -526,17 +536,31 @@ sub func_body($$$$$$$$) {
       $def  = "  int i, offset, blen;\n";
       if($dest->{SCALAR}) {
 	my($ext) = qla_ext_type($dest);
-	$def .= $sp.$ext." *dtemp;\n";
+	$def .= $sp.$ext." *dtemp, *dtemp1;\n";
 	$def .= $sp."dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
-	if( ($op eq "eq") || ($op eq "eqm") ) {
+	$def .= $sp."dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
+	$global_eqop = $op;
+	if(1) {
 	  my($dpc) = $ext;
 	  $dpc =~ s/_[^_]*$//;
 	  $dpc .= uc $dest->{ABBR};
 	  $def .= $sp.$dpc."_veq_zero(dtemp, $nvv);\n";
-	  if($op eq "eq") {
-	    $qla2 =~ s/eq/peq/;
-	  } else {
-	    $qla2 =~ s/eq/meq/;
+	  $qla2 =~ s/_eqm_/_eq_/;
+	  $qla2 =~ s/_.eq_/_eq_/;
+	  $botsum = $dpc."_vpeq";
+	  $botsum .= uc $dest->{ABBR};
+	  $botsum .= "(dtemp, dtemp1, $nvv);\n";
+	} else {
+	  if( ($op eq "eq") || ($op eq "eqm") ) {
+	    my($dpc) = $ext;
+	    $dpc =~ s/_[^_]*$//;
+	    $dpc .= uc $dest->{ABBR};
+	    $def .= $sp.$dpc."_veq_zero(dtemp, $nvv);\n";
+	    if($op eq "eq") {
+	      $qla2 =~ s/eq/peq/;
+	    } else {
+	      $qla2 =~ s/eq/meq/;
+	    }
 	  }
 	}
       }
@@ -558,11 +582,13 @@ sub func_body($$$$$$$$) {
       $def .= "      if(offset==0) {\n";
       $top  = "      }\n";
       $bot  = "    }\n";
+      $bot .= "    ".$botsum if($botsum);
       $bot .= "    offset += blen;\n";
       $bot .= "  }\n";
       $sp .= "  ";
     }
   }
+
   my($vdv) = $dest->{VAR}."->data".$voff;
   my($xdv) = $dest->{VAR}."->data".$xoff;
   if($dest->{SCALAR}) {
@@ -578,7 +604,11 @@ sub func_body($$$$$$$$) {
       #$sp .= "  ";
     } elsif($dest->{VECT}) {
       if($dest->{EXTENDED}) {
-	$vdv = $xdv = "&dtemp[i]";
+	if($dest->{MULTI}) {
+	  $vdv = $xdv = "&dtemp[i]";
+	} else {
+	  $vdv = $xdv = "&dtemp1[i]";
+	}
       } else {
 	$vdv = $xdv = $dest->{VAR};
       }
@@ -589,7 +619,7 @@ sub func_body($$$$$$$$) {
 	$vdv = $xdv = $dest->{VAR};
       }
     }
-    $bot .= global_sum($dest);
+    $bot .= global_sum($dest, $global_eqop);
   }
   my($sp2) = $sp."  ";
 

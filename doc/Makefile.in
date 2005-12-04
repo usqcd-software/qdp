@@ -46,6 +46,18 @@ CONFIG_HEADER = $(top_builddir)/include/qdp_config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+INFO_DEPS = $(srcdir)/qdpc.info
+TEXINFO_TEX = $(top_srcdir)/config/texinfo.tex
+am__TEXINFO_TEX_DIR = $(top_srcdir)/config
+DVIS = qdpc.dvi
+PDFS = qdpc.pdf
+PSS = qdpc.ps
+HTMLS = qdpc.html
+TEXINFOS = qdpc.texi
+TEXI2PDF = $(TEXI2DVI) --pdf --batch
+MAKEINFOHTML = $(MAKEINFO) --html
+AM_MAKEINFOHTMLFLAGS = $(AM_MAKEINFOFLAGS)
+am__installdirs = "$(DESTDIR)$(infodir)"
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -145,22 +157,13 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-HTMLDIR = html
-PS = qdpc.ps
-INFO = qdpc.info
-SRC = $(srcdir)/qdpc.texi
-SRCDEP = ${SRC} $(srcdir)/qdpdefs.texi ${FUNC}
-DVI = qdpc.dvi
-FUNC = $(srcdir)/functions.texi
-MFUNC = $(srcdir)/make_function_tables.pl
-FUNCSRC = $(top_srcdir)/lib/generate/functions.pl
-FUNCDEP = ${FUNC} ${MFUNC} ${FUNCSRC}
-EXTRA_DIST = make_function_tables.pl qdpc.texi qdpdefs.texi functions.texi \
-             README qdp_1p1.tex
-
+info_TEXINFOS = qdpc.texi
+qdpc.texi = qdpdefs.texi functions.texi
+EXTRA_DIST = README make_function_tables.pl qdp_1p1.tex
 all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .dvi .html .info .pdf .ps .texi
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -190,7 +193,105 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+
+.texi.info:
+	restore=: && backupdir="$(am__leading_dot)am$$$$" && \
+	am__cwd=`pwd` && cd $(srcdir) && \
+	rm -rf $$backupdir && mkdir $$backupdir && \
+	for f in $@ $@-[0-9] $@-[0-9][0-9] $(@:.info=).i[0-9] $(@:.info=).i[0-9][0-9]; do \
+	  if test -f $$f; then mv $$f $$backupdir; restore=mv; else :; fi; \
+	done; \
+	cd "$$am__cwd"; \
+	if $(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
+	 -o $@ $<; \
+	then \
+	  rc=0; \
+	  cd $(srcdir); \
+	else \
+	  rc=$$?; \
+	  cd $(srcdir) && \
+	  $$restore $$backupdir/* `echo "./$@" | sed 's|[^/]*$$||'`; \
+	fi; \
+	rm -rf $$backupdir; exit $$rc
+
+.texi.dvi:
+	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
+	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
+	$(TEXI2DVI) $<
+
+.texi.pdf:
+	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
+	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
+	$(TEXI2PDF) $<
+
+.texi.html:
+	rm -rf $(@:.html=.htp)
+	if $(MAKEINFOHTML) $(AM_MAKEINFOHTMLFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
+	 -o $(@:.html=.htp) $<; \
+	then \
+	  rm -rf $@; \
+	  if test ! -d $(@:.html=.htp) && test -d $(@:.html=); then \
+	    mv $(@:.html=) $@; else mv $(@:.html=.htp) $@; fi; \
+	else \
+	  if test ! -d $(@:.html=.htp) && test -d $(@:.html=); then \
+	    rm -rf $(@:.html=); else rm -Rf $(@:.html=.htp) $@; fi; \
+	  exit 1; \
+	fi
+$(srcdir)/qdpc.info: qdpc.texi 
+qdpc.dvi: qdpc.texi 
+qdpc.pdf: qdpc.texi 
+qdpc.html: qdpc.texi 
+.dvi.ps:
+	$(DVIPS) -o $@ $<
+
 uninstall-info-am:
+	@$(PRE_UNINSTALL)
+	@if (install-info --version && \
+	     install-info --version 2>&1 | sed 1q | grep -i -v debian) >/dev/null 2>&1; then \
+	  list='$(INFO_DEPS)'; \
+	  for file in $$list; do \
+	    relfile=`echo "$$file" | sed 's|^.*/||'`; \
+	    echo " install-info --info-dir='$(DESTDIR)$(infodir)' --remove '$(DESTDIR)$(infodir)/$$relfile'"; \
+	    install-info --info-dir="$(DESTDIR)$(infodir)" --remove "$(DESTDIR)$(infodir)/$$relfile"; \
+	  done; \
+	else :; fi
+	@$(NORMAL_UNINSTALL)
+	@list='$(INFO_DEPS)'; \
+	for file in $$list; do \
+	  relfile=`echo "$$file" | sed 's|^.*/||'`; \
+	  relfile_i=`echo "$$relfile" | sed 's|\.info$$||;s|$$|.i|'`; \
+	  (if cd "$(DESTDIR)$(infodir)"; then \
+	     echo " cd '$(DESTDIR)$(infodir)' && rm -f $$relfile $$relfile-[0-9] $$relfile-[0-9][0-9] $$relfile_i[0-9] $$relfile_i[0-9][0-9]"; \
+	     rm -f $$relfile $$relfile-[0-9] $$relfile-[0-9][0-9] $$relfile_i[0-9] $$relfile_i[0-9][0-9]; \
+	   else :; fi); \
+	done
+
+dist-info: $(INFO_DEPS)
+	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
+	list='$(INFO_DEPS)'; \
+	for base in $$list; do \
+	  case $$base in \
+	    $(srcdir)/*) base=`echo "$$base" | sed "s|^$$srcdirstrip/||"`;; \
+	  esac; \
+	  if test -f $$base; then d=.; else d=$(srcdir); fi; \
+	  for file in $$d/$$base*; do \
+	    relfile=`expr "$$file" : "$$d/\(.*\)"`; \
+	    test -f $(distdir)/$$relfile || \
+	      cp -p $$file $(distdir)/$$relfile; \
+	  done; \
+	done
+
+mostlyclean-aminfo:
+	-rm -rf qdpc.aux qdpc.cp qdpc.cps qdpc.fn qdpc.fns qdpc.ky qdpc.kys qdpc.log \
+	  qdpc.pg qdpc.pgs qdpc.tmp qdpc.toc qdpc.tp qdpc.tps qdpc.vr \
+	  qdpc.vrs qdpc.dvi qdpc.pdf qdpc.ps qdpc.html
+
+maintainer-clean-aminfo:
+	@list='$(INFO_DEPS)'; for i in $$list; do \
+	  i_i=`echo "$$i" | sed 's|\.info$$||;s|$$|.i|'`; \
+	  echo " rm -f $$i $$i-[0-9] $$i-[0-9][0-9] $$i_i[0-9] $$i_i[0-9][0-9]"; \
+	  rm -f $$i $$i-[0-9] $$i-[0-9][0-9] $$i_i[0-9] $$i_i[0-9][0-9]; \
+	done
 tags: TAGS
 TAGS:
 
@@ -225,10 +326,16 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-info
 check-am: all-am
 check: check-am
-all-am: Makefile
+all-am: Makefile $(INFO_DEPS)
 installdirs:
+	for dir in "$(DESTDIR)$(infodir)"; do \
+	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -255,87 +362,144 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-local mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-local
+distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
 
-dvi-am:
+dvi-am: $(DVIS)
 
 html: html-am
 
-info-am:
+html-am: $(HTMLS)
 
-install-data-am:
+info: info-am
+
+info-am: $(INFO_DEPS)
+
+install-data-am: install-info-am
 
 install-exec-am:
 
 install-info: install-info-am
 
+install-info-am: $(INFO_DEPS)
+	@$(NORMAL_INSTALL)
+	test -z "$(infodir)" || $(mkdir_p) "$(DESTDIR)$(infodir)"
+	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
+	list='$(INFO_DEPS)'; \
+	for file in $$list; do \
+	  case $$file in \
+	    $(srcdir)/*) file=`echo "$$file" | sed "s|^$$srcdirstrip/||"`;; \
+	  esac; \
+	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	  file_i=`echo "$$file" | sed 's|\.info$$||;s|$$|.i|'`; \
+	  for ifile in $$d/$$file $$d/$$file-[0-9] $$d/$$file-[0-9][0-9] \
+                       $$d/$$file_i[0-9] $$d/$$file_i[0-9][0-9] ; do \
+	    if test -f $$ifile; then \
+	      relfile=`echo "$$ifile" | sed 's|^.*/||'`; \
+	      echo " $(INSTALL_DATA) '$$ifile' '$(DESTDIR)$(infodir)/$$relfile'"; \
+	      $(INSTALL_DATA) "$$ifile" "$(DESTDIR)$(infodir)/$$relfile"; \
+	    else : ; fi; \
+	  done; \
+	done
+	@$(POST_INSTALL)
+	@if (install-info --version && \
+	     install-info --version 2>&1 | sed 1q | grep -i -v debian) >/dev/null 2>&1; then \
+	  list='$(INFO_DEPS)'; \
+	  for file in $$list; do \
+	    relfile=`echo "$$file" | sed 's|^.*/||'`; \
+	    echo " install-info --info-dir='$(DESTDIR)$(infodir)' '$(DESTDIR)$(infodir)/$$relfile'";\
+	    install-info --info-dir="$(DESTDIR)$(infodir)" "$(DESTDIR)$(infodir)/$$relfile" || :;\
+	  done; \
+	else : ; fi
 install-man:
 
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 	-rm -f Makefile
-maintainer-clean-am: distclean-am maintainer-clean-generic
+maintainer-clean-am: distclean-am maintainer-clean-aminfo \
+	maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-aminfo mostlyclean-generic
 
 pdf: pdf-am
 
-pdf-am:
+pdf-am: $(PDFS)
 
-ps-am:
+ps: ps-am
+
+ps-am: $(PSS)
 
 uninstall-am: uninstall-info-am
 
-.PHONY: all all-am check check-am clean clean-generic clean-local \
-	distclean distclean-generic distclean-local distdir dvi dvi-am \
-	html html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am uninstall uninstall-am uninstall-info-am
+.PHONY: all all-am check check-am clean clean-generic dist-info \
+	distclean distclean-generic distdir dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-exec install-exec-am install-info install-info-am \
+	install-man install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-aminfo \
+	maintainer-clean-generic mostlyclean mostlyclean-aminfo \
+	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-info-am
 
 
-.PHONY: ps info
-ps: ${PS}
-info: ${INFO}
+#PERL = @PERL@
+#TEXI2DVI = @TEXI2DVI@
+#DVIPS = @DVIPS@
+#MAKEINFO = @MAKEINFO@
 
-${PS}: ${SRCDEP}
-	${TEXI2DVI} ${SRC}
-	${DVIPS} ${DVI} -o
+#HTMLDIR = html
+#PS = qdpc.ps
+#INFO = qdpc.info
+#SRC = $(srcdir)/qdpc.texi
+#SRCDEP = ${SRC} $(srcdir)/qdpdefs.texi ${FUNC}
+#DVI = qdpc.dvi
+#FUNC = $(srcdir)/functions.texi
+#MFUNC = $(srcdir)/make_function_tables.pl
+#FUNCSRC = $(top_srcdir)/lib/generate/functions.pl
+#FUNCDEP = ${FUNC} ${MFUNC} ${FUNCSRC}
 
-${INFO}: ${SRCDEP}
-	${MAKEINFO} ${SRC}
+#.PHONY: ps info
+#ps: ${PS}
+#info: ${INFO}
 
-${HTMLDIR}: ${SRCDEP}
-	-rm -rf $@
-	mkdir $@
-	${MAKEINFO} --html -o ${HTMLDIR} ${SRC}
+#${PS}: ${SRCDEP}
+#	${TEXI2DVI} ${SRC}
+#	${DVIPS} ${DVI} -o
 
-${FUNC}:
-	${PERL} ${MFUNC}
+#${INFO}: ${SRCDEP}
+#	${MAKEINFO} ${SRC}
+
+#${HTMLDIR}: ${SRCDEP}
+#	-rm -rf $@
+#	mkdir $@
+#	${MAKEINFO} --html -o ${HTMLDIR} ${SRC}
+
+#${FUNC}:
+#	${PERL} ${MFUNC}
 
 # Removes TeXinfo debris
-doc-clean:
-	-/bin/rm -f *.aux *.log *.err *.dvi *.cp *.cps *.fn *.ky *.pg *.tmp *.toc *.tp *.vr
+#doc-clean:
+#	-/bin/rm -f *.aux *.log *.err *.dvi *.cp *.cps *.fn *.ky *.pg *.tmp *.toc *.tp *.vr
 
 # Removes all but the source files
-doc-distclean: doc-clean
-	-/bin/rm -f *.info *.ps
-	-/bin/rm -rf ${HTMLDIR}
+#doc-distclean: doc-clean
+#	-/bin/rm -f *.info *.ps
+#	-/bin/rm -rf ${HTMLDIR}
 
 # also clean on regular make clean and distclean
-clean-local: doc-clean
-distclean-local: doc-distclean
+#clean-local: doc-clean
+#distclean-local: doc-distclean
+
+#EXTRA_DIST = make_function_tables.pl qdpc.texi qdpdefs.texi functions.texi \
+#             README qdp_1p1.tex
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

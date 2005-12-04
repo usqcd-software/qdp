@@ -7,10 +7,6 @@
 #include "com_common.h"
 #include "com_common_internal.h"
 
-#define QDP_MEM_ALIGN QMP_ALIGN_DEFAULT
-//#define QDP_MEM_FLAGS (QMP_MEM_FAST|QMP_MEM_COMMS)
-#define QDP_MEM_FLAGS QMP_MEM_DEFAULT
-
 //#define DEBUG
 
 #if !defined(DEBUG) || DEBUG==0
@@ -251,7 +247,7 @@ QDP_switch_ptr_to_data(QDP_data_common_t *dc)
   if(*(dc->data)==NULL) {
     //*(dc->data) = (char *) malloc(QDP_sites_on_node*dc->size);
     dc->qmpmem = QMP_allocate_aligned_memory( QDP_sites_on_node*dc->size,
-					      QDP_MEM_ALIGN, QDP_MEM_FLAGS );
+					      QDP_mem_align, QDP_mem_flags );
     *(dc->data) = QMP_get_memory_pointer(dc->qmpmem);
   } else {
     QDP_clear_valid_shift_dest(dc);

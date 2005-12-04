@@ -71,10 +71,10 @@
 #define NOWHERE -1	/* Not an index in array of fields */
 
 /* If we want to do our own checksums */
-#include <stdint.h>
+/*#include <stdint.h>*/ /* don't require uint32_t anymore */
 #define CRCBYTES 8
 static int do_checksum = 0;
-static uint32_t crc32(uint32_t crc, const unsigned char *buf, size_t len);
+static int crc32(int crc, const unsigned char *buf, size_t len);
 
 
 /**********************************************************************
@@ -817,8 +817,8 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
       }
     } while((gmem=gmem->next)!=NULL);
     if(do_checksum) {
-      uint32_t crc = 0;
-      uint32_t *crc_pt = (uint32_t *)(sm->buf + sm->size - CRCBYTES);
+      int crc = 0;
+      int *crc_pt = (int *)(sm->buf + sm->size - CRCBYTES);
 
       gmem = sm->gmem;
       do {
@@ -919,19 +919,19 @@ QDP_wait_gather(QDP_msg_tag *mtag)
   if(do_checksum) {
     int fail = 0;
     if(mtag->nrecvs>0) {
-      uint32_t crcgot;
+      int crcgot;
       recv_msg_t *rm;
       char *tpt;
       int msg_size;
       char *crc_pt;
-      uint32_t *crc;
+      int *crc;
 
       rm = mtag->recv_msgs;
       while(rm != NULL) {
 	tpt = rm->buf;
 	msg_size = rm->size - CRCBYTES;
 	crc_pt = tpt + msg_size;
-	crc = (uint32_t *) crc_pt;
+	crc = (int *) crc_pt;
 	crcgot = crc32(0, (unsigned char *)tpt, msg_size);
 	if(*crc != crcgot) {
 	  fprintf(stderr,
@@ -1861,7 +1861,7 @@ QDP_wait_recv(QDP_msg_tag *mtag)
   (zlib format), rfc1951.txt (deflate format) and rfc1952.txt (gzip format).
 */
 
-typedef uint32_t uLong;            /* At least 32 bits */
+typedef int uLong;            /* At least 32 bits */
 typedef unsigned char Byte;
 typedef Byte Bytef;
 typedef uLong uLongf;
@@ -2002,8 +2002,8 @@ static uLongf *get_crc_table()
 #define DO8(buf)  DO4(buf); DO4(buf);
 
 /* ========================================================================= */
-static uint32_t
-crc32(uint32_t crc, const unsigned char *buf, size_t len)
+static int
+crc32(int crc, const unsigned char *buf, size_t len)
 {
     if (buf == Z_NULL) return 0L;
 #ifdef DYNAMIC_CRC_TABLE

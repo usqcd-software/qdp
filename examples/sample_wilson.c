@@ -115,8 +115,8 @@ main(int argc, char *argv[])
   QDP_RandomState *rs;
   QDP_Int *li;
   QLA_Real mass, t;
+  double dtime;
   int i, count=1;
-  struct rusage ru;
 
   QDP_initialize(&argc, &argv);
   QDP_set_latsize(4, lattice_size);
@@ -148,6 +148,7 @@ main(int argc, char *argv[])
 
   mass = 0.2;
 
+  dtime = -QDP_time();
   do {
     //fprintf(stderr,"count=%i\n",count);
     QDP_D_eq_gaussian_S(result, rs, QDP_all);
@@ -161,9 +162,8 @@ main(int argc, char *argv[])
   if(QDP_this_node==0) printf("conjugate gradient steps: %i\n", i);
 
   if(QDP_this_node==0) {
-    getrusage(RUSAGE_SELF,&ru);
-    printf("cpu time: %.2f seconds\n", (ru.ru_utime.tv_sec+ru.ru_stime.tv_sec)
-	   +0.000001*(ru.ru_utime.tv_usec+ru.ru_stime.tv_usec));
+    dtime += QDP_time();
+    printf("total time: %.2f seconds\n", dtime);
   }
 
   //QDP_D_eq_func(source, print_D, QDP_all);
