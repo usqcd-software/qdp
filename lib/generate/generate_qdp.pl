@@ -461,7 +461,9 @@ sub func_body($$$$$$$$) {
     $dest->{VAR} .= "[i]";
     if($dest->{SCALAR}) { $dest->{VAR} = "\&".$dest->{VAR}; }
     $src1->{VAR} .= "[i]";
+    if($src1->{SCALAR}) { $src1->{VAR} = "\&".$src1->{VAR}; }
     $src2->{VAR} .= "[i]";
+    if($src2->{SCALAR}) { $src2->{VAR} = "\&".$src2->{VAR}; }
     $y1 =~ s/,/[i],/g;
     $y2 =~ s/,/[i],/g;
     $y3 =~ s/,/[i],/g;
@@ -539,7 +541,7 @@ sub func_body($$$$$$$$) {
 	$def .= $sp.$ext." *dtemp, *dtemp1;\n";
 	$def .= $sp."dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
 	$def .= $sp."dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
-	$global_eqop = $op;
+	($global_eqop = $op) =~ s/_.*//;
 	if(1) {
 	  my($dpc) = $ext;
 	  $dpc =~ s/_[^_]*$//;
@@ -551,6 +553,7 @@ sub func_body($$$$$$$$) {
 	  $botsum .= uc $dest->{ABBR};
 	  $botsum .= "(dtemp, dtemp1, $nvv);\n";
 	} else {
+	  # need to strip _.* from $op
 	  if( ($op eq "eq") || ($op eq "eqm") ) {
 	    my($dpc) = $ext;
 	    $dpc =~ s/_[^_]*$//;
@@ -774,7 +777,11 @@ sub qdp_args($$$$$$) {
   my($s1arg) = '';
   if($s1t) {
     if($dest->{VECT}) {
-      $s1arg = type_name($src1)." *".$src1->{VAR}."[], ";
+      if($src1->{SCALAR}) {
+	$s1arg = type_name($src1)." ".$src1->{VAR}."[], ";
+      } else {
+	$s1arg = type_name($src1)." *".$src1->{VAR}."[], ";
+      }
     } else {
       $s1arg = type_name($src1)." *".$src1->{VAR}.", ";
     }
@@ -782,7 +789,11 @@ sub qdp_args($$$$$$) {
   my($s2arg) = '';
   if($s2t) {
     if($dest->{VECT}) {
-      $s2arg = type_name($src2)." *".$src2->{VAR}."[], ";
+      if($src2->{SCALAR}) {
+	$s2arg = type_name($src2)." ".$src2->{VAR}."[], ";
+      } else {
+	$s2arg = type_name($src2)." *".$src2->{VAR}."[], ";
+      }
     } else {
       $s2arg = type_name($src2)." *".$src2->{VAR}.", ";
     }

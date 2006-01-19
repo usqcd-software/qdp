@@ -405,7 +405,7 @@ eq@comma{} peq@comma{} meq@comma{} eqm}
 QDP_@var{T}_@var{eqop}_r_times_@var{T},
 @var{Type} *r@comma{} QLA_Real *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_r_times_@var{T},
-@var{Type} *r[]@comma{} QLA_Real *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
+@var{Type} *r[]@comma{} QLA_Real a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r @var{eqop} a * b,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
@@ -416,7 +416,7 @@ eq@comma{} peq@comma{} meq@comma{} eqm}
 QDP_@var{T}_@var{eqop}_c_times_@var{T},
 @var{Type} *r@comma{} QLA_Complex *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_c_times_@var{T},
-@var{Type} *r[]@comma{} QLA_Complex *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
+@var{Type} *r[]@comma{} QLA_Complex a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r @var{eqop} a * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}

@@ -113,6 +113,12 @@ QDP_finalize(void)
   if(qdp_initialized==2) QDP_finalize_comm();
 }
 
+int
+QDP_is_initialized(void)
+{
+  return qdp_initialized;
+}
+
 void
 QDP_abort(void)
 {

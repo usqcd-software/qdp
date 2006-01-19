@@ -159,6 +159,9 @@ sub make_functions(\%) {
       $t = typelist(@z);
       $macro .= "t";
     }
+    if($arg->{SRC1_SCALAR}) {
+      $vargs =~ s/\*src1/src1/;
+    }
   }
 
   if($arg->{FUNCS}) {
@@ -214,6 +217,9 @@ sub make_functions(\%) {
       $t = typelist(@z);
       $macro .= "t";
       $macrs =~ s/ft/tf/;
+    }
+    if($arg->{SRC2_SCALAR}) {
+      $vargs =~ s/\*src2/src2/;
     }
   }
 

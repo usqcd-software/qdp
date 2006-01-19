@@ -27,7 +27,7 @@ extern double QDP_math_time;
 extern int QDP_initialize(int *argc, char **argv[]);
 extern void QDP_finalize(void);
 extern void QDP_abort(void);
-extern int QDP_initialized(void);
+extern int QDP_is_initialized(void);
 
 extern int QDP_check_comm(int new);
 extern int QDP_profcontrol(int new);

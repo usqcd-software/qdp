@@ -302,6 +302,7 @@ if($cflag) {
       $line =~ s/\$PORPC/$porpc/g;
       $line =~ s/\$LIB/$lib/g;
       $line =~ s/\$lib/$llib/g;
+      $line =~ s/\$clib/$clib/g;
       print OUTFILE $line;
     }
 
