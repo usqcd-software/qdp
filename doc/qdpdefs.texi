@@ -134,348 +134,282 @@ I, R, C, V, H, D, M, P
 @code{QDP_Nc}
 @end macro
 
-@c @macro comma
-@c ,
-@c @end macro
-
 @tex
-
 \gdef\hline{\cr\noalign{\hrule\vskip 1mm}}
-
-\gdef\funcx#1{\tfuncx#1,}
-\gdef\tfuncx#1,#2,#3,#4,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-Example & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\functx#1{\tfunctx#1,}
-\gdef\tfunctx#1,#2,#3,#4,#5,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\offinterlineskip\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\ \ \hfil \vrule \cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-Example & \code{\ignorespaces#5}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\func#1{\tfunc#1,}
-\gdef\tfunc#1,#2,#3,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funct#1{\tfunct#1,}
-\gdef\tfunct#1,#2,#3,#4,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funce#1{\tfunce#1,}
-\gdef\tfunce#1,#2,#3,#4,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-\var{eqop} & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcf#1{\tfuncf#1,}
-\gdef\tfuncf#1,#2,#3,#4,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-\var{func} & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\functe#1{\tfuncte#1,}
-\gdef\tfuncte#1,#2,#3,#4,#5,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\offinterlineskip\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\ \ \hfil \vrule \cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-\var{eqop} & \code{\ignorespaces#5}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\functf#1{\tfunctf#1,}
-\gdef\tfunctf#1,#2,#3,#4,#5,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\offinterlineskip\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\ \ \hfil \vrule \cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#3\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#4}\cr
-\noalign{\hrule}
-\var{func} & \code{\ignorespaces#5}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcv#1{\tfuncv#1,}
-\gdef\tfuncv#1,#2,#3,#4,#5,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-        & \hangindent=\wd0\code{\ignorespaces#3(\ignorespaces#4);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#5\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcvt#1{\tfuncvt#1,}
-\gdef\tfuncvt#1,#2,#3,#4,#5,#6,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-        & \hangindent=\wd0\code{\ignorespaces#3(\ignorespaces#4);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#5\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#6}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcve#1{\tfuncve#1,}
-\gdef\tfuncve#1,#2,#3,#4,#5,#6,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-        & \hangindent=\wd0\code{\ignorespaces#3(\ignorespaces#4);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#5\cr
-\noalign{\hrule}
-\var{eqop} & \code{\ignorespaces#6}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcvf#1{\tfuncvf#1,}
-\gdef\tfuncvf#1,#2,#3,#4,#5,#6,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-        & \hangindent=\wd0\code{\ignorespaces#3(\ignorespaces#4);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#5\cr
-\noalign{\hrule}
-\var{func} & \code{\ignorespaces#6}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcvte#1{\tfuncvte#1,}
-\gdef\tfuncvte#1,#2,#3,#4,#5,#6,#7,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-        & \hangindent=\wd0\code{\ignorespaces#3(\ignorespaces#4);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#5\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#6}\cr
-\noalign{\hrule}
-\var{eqop} & \code{\ignorespaces#7}\cr
-\noalign{\hrule}
-}}}
-
-\gdef\funcvtf#1{\tfuncvtf#1,}
-\gdef\tfuncvtf#1,#2,#3,#4,#5,#6,#7,{
-\setbox0=\hbox{\code{\ignorespaces#1(}}
-\vbox{\raggedright\halign{
-\strut\vrule\ ##\hfil&\vrule\ \vtop{\hsize=135mm\noindent##\strut}\hfil\vrule\cr
-\noalign{\hrule}
-Syntax  & \hangindent=\wd0\code{\ignorespaces#1(\ignorespaces#2);}\cr
-        & \hangindent=\wd0\code{\ignorespaces#3(\ignorespaces#4);}\cr
-\noalign{\hrule}
-Meaning & \ignorespaces#5\cr
-\noalign{\hrule}
-\var{Type} & \code{\ignorespaces#6}\cr
-\noalign{\hrule}
-\var{func} & \code{\ignorespaces#6}\cr
-\noalign{\hrule}
-}}}
-
 @end tex
-
+@ifhtml
+@macro hline
+@html
+<br>
+@end html
+@end macro
+@end ifhtml
 @ifnottex
-
+@ifnothtml
 @macro hline
 @end macro
+@end ifnothtml
+@end ifnottex
 
-@macro funcx{func, args, def, example}
-@multitable @columnfractions .15 .85
-@item Syntax:  @tab @code{\func\(\args\);}
-@item Meaning: @tab \def\
-@item Example: @tab @code{\example\}
-@end multitable
-@end macro
+@c ****************************
+@c * function printing macros *
+@c ****************************
 
-@macro functx{func, args, def, types, example}
+@macro funct {func, args, def, types}
+@cartouche
 @multitable @columnfractions .15 .85
 @item Syntax     @tab @code{\func\(\args\);}
+@hline
 @item Meaning    @tab \def\
+@hline
 @item @var{Type} @tab @code{\types\}
+@end multitable
+@end cartouche
+@end macro
+
+@macro funce {func, args, def, example}
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax   @tab @code{\func\(\args\);}
+@hline
+@item Meaning  @tab \def\
+@hline
+@item Example  @tab @code{\example\}
+@end multitable
+@end cartouche
+@end macro
+
+@macro funcvt {func, args, funcv, argsv, def, types}
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@end multitable
+@end cartouche
+@end macro
+
+@macro sfunc {subheading, func, args, def}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfunco {subheading, func, args, def, eqops}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{eqop} @tab @code{\eqops\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfuncf {subheading, func, args, def, funcs}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{func} @tab @code{\funcs\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfunct {subheading, func, args, def, types}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfuncv {subheading, func, args, funcv, argsv, def}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
+@item Meaning    @tab \def\
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfunce {subheading, func, args, def, example}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax   @tab @code{\func\(\args\);}
+@hline
+@item Meaning  @tab \def\
+@hline
+@item Example  @tab @code{\example\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfuncto {subheading, func, args, def, types, eqops}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@hline
+@item @var{eqop} @tab @code{\eqops\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfunctf {subheading, func, args, def, types, funcs}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@hline
+@item @var{func} @tab @code{\funcs\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfuncte {subheading, func, args, def, types, example}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@hline
 @item Example    @tab @code{\example\}
 @end multitable
+@end cartouche
+@end float
 @end macro
 
-@macro func{func, args, def}
+@macro sfuncvo {subheading, func, args, funcv, argsv, def, eqops}
+@float
+@subheading \subheading\
+@cartouche
 @multitable @columnfractions .15 .85
 @item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
 @item Meaning    @tab \def\
-@end multitable
-@end macro
-
-@macro funct{func, args, def, types}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item Meaning    @tab \def\
-@item @var{Type} @tab @code{\types\}
-@end multitable
-@end macro
-
-@macro funce{func, args, def, eqops}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item Meaning    @tab \def\
+@hline
 @item @var{eqop} @tab @code{\eqops\}
 @end multitable
+@end cartouche
+@end float
 @end macro
 
-@macro funcf{func, args, def, funcs}
+@macro sfuncvf {subheading, func, args, funcv, argsv, def, funcs}
+@float
+@subheading \subheading\
+@cartouche
 @multitable @columnfractions .15 .85
 @item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
 @item Meaning    @tab \def\
+@hline
 @item @var{func} @tab @code{\funcs\}
 @end multitable
+@end cartouche
+@end float
 @end macro
 
-@macro functe{func, args, def, types, eqops}
+@macro sfuncvt {subheading, func, args, funcv, argsv, def, types}
+@float
+@subheading \subheading\
+@cartouche
 @multitable @columnfractions .15 .85
 @item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
 @item Meaning    @tab \def\
+@hline
 @item @var{Type} @tab @code{\types\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro sfuncvto {subheading, func, args, funcv, argsv, def, types, eqops}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@hline
 @item @var{eqop} @tab @code{\eqops\}
 @end multitable
+@end cartouche
+@end float
 @end macro
 
-@macro functf{func, args, def, types, funcs}
+@macro sfuncvtf {subheading, func, args, funcv, argsv, def, types, funcs}
+@float
+@subheading \subheading\
+@cartouche
 @multitable @columnfractions .15 .85
 @item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
 @item Meaning    @tab \def\
+@hline
 @item @var{Type} @tab @code{\types\}
+@hline
 @item @var{func} @tab @code{\funcs\}
 @end multitable
+@end cartouche
+@end float
 @end macro
-
-@macro funcv{func, args, funcv, argsv, def}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item            @tab @code{\funcv\(\argsv\);}
-@item Meaning    @tab \def\
-@end multitable
-@end macro
-
-@macro funcvt{func, args, funcv, argsv, def, types}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item            @tab @code{\funcv\(\argsv\);}
-@item Meaning    @tab \def\
-@item @var{Type} @tab @code{\types\}
-@end multitable
-@end macro
-
-@macro funcve{func, args, funcv, argsv, def, eqops}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item            @tab @code{\funcv\(\argsv\);}
-@item Meaning    @tab \def\
-@item @var{eqop} @tab @code{\eqops\}
-@end multitable
-@end macro
-
-@macro funcvf{func, args, funcv, argsv, def, funcs}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item            @tab @code{\funcv\(\argsv\);}
-@item Meaning    @tab \def\
-@item @var{func} @tab @code{\funcs\}
-@end multitable
-@end macro
-
-@macro funcvte{func, args, funcv, argsv, def, types, eqops}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item            @tab @code{\funcv\(\argsv\);}
-@item Meaning    @tab \def\
-@item @var{Type} @tab @code{\types\}
-@item @var{eqop} @tab @code{\eqops\}
-@end multitable
-@end macro
-
-@macro funcvtf{func, args, funcv, argsv, def, types, funcs}
-@multitable @columnfractions .15 .85
-@item Syntax     @tab @code{\func\(\args\);}
-@item            @tab @code{\funcv\(\argsv\);}
-@item Meaning    @tab \def\
-@item @var{Type} @tab @code{\types\}
-@item @var{func} @tab @code{\funcs\}
-@end multitable
-@end macro
-
-@end ifnottex

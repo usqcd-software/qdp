@@ -1,44 +1,41 @@
+@float
 @section Fills and random numbers
-@subheading Zero fills
+@end float
 
-@funct{
+@sfunct{
+Zero fills,
 QDP_@var{T}_eq_zero,
 @var{Type} *r@comma{} @var{subset},
 r = 0,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Constant fills
-
-@funct{
+@sfunct{
+Constant fills,
 QDP_@var{T}_eq_@var{t},
 @var{Type} *r@comma{} @var{QLA_Type} *a@comma{} @var{subset},
 r = a,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Fill color matrix with constant times identity
-
-@func{
+@sfunc{
+Fill color matrix with constant times identity,
 QDP_M_eq_c,
 QDP_ColorMatrix *r@comma{} QLA_Complex *a@comma{} @var{subset},
 r = a I}
 
-@subheading Seeding the random number generator field from an integer field
-
-@func{
+@sfunc{
+Seeding the random number generator field from an integer field,
 QDP_S_eq_seed_i_I,
 QDP_RandomState *r@comma{} QLA_Int c@comma{} QDP_Int *a@comma{} @var{subset},
 seed r from constant c and field a}
 
-@subheading Uniform random number fills
-
-@func{
+@sfunc{
+Uniform random number fills,
 QDP_R_eq_random_S,
 QDP_Real *r@comma{} QDP_RandomState *a@comma{} @var{subset},
 r = uniform random number in (0@comma{}1) from seed a}
 
-@subheading Gaussian random number fills
-
-@funct{
+@sfunct{
+Gaussian random number fills,
 QDP_@var{T}_eq_gaussian_S,
 @var{Type} *r@comma{} QDP_RandomState *a@comma{} @var{subset},
 r = normal gaussian from seed a,
@@ -46,48 +43,45 @@ R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @functionhookfills 
 
+@float
 @section Unary Operations
-@subheading Bitwise not
+@end float
 
-@func{
+@sfunc{
+Bitwise not,
 QDP_I_eq_not_I,
 QDP_Int *r@comma{} QDP_Int *a@comma{} @var{subset},
 r = not(a)}
 
-@subheading Elementary unary functions on reals
-
-@funcf{
+@sfuncf{
+Elementary unary functions on reals,
 QDP_R_eq_@var{func}_R,
 QDP_Real *r@comma{} QDP_Real *a@comma{} @var{subset},
 r = @var{func}(a),
 sin@comma{} cos@comma{} tan@comma{} asin@comma{} acos@comma{} atan@comma{} sqrt@comma{} fabs@comma{} exp@comma{} log@comma{} sign@comma{} ceil@comma{} floor@comma{} sinh@comma{} cosh@comma{} tanh@comma{} log10}
 
-@subheading Elementary unary functions real to complex
-
-@func{
+@sfunc{
+Elementary unary functions real to complex,
 QDP_C_eq_cexpi_R,
 QDP_Complex *r@comma{} QDP_Real *a@comma{} @var{subset},
 r = exp(ia)}
 
-@subheading Elementary unary functions complex to real
-
-@funcf{
+@sfuncf{
+Elementary unary functions complex to real,
 QDP_R_eq_@var{func}_C,
 QDP_Real *r@comma{} QDP_Complex *a@comma{} @var{subset},
 r = @var{func}(a),
 norm@comma{} arg}
 
-@subheading Elementary unary functions on complex values
-
-@funcf{
+@sfuncf{
+Elementary unary functions on complex values,
 QDP_C_eq_@var{func}_C,
 QDP_Complex *r@comma{} QDP_Complex *a@comma{} @var{subset},
 r = @var{func}(a),
 cexp@comma{} csqrt@comma{} clog}
 
-@subheading Copying
-
-@funcvt{
+@sfuncvt{
+Copying,
 QDP_@var{T}_eq_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 QDP_@var{T}_veq_@var{T},
@@ -95,9 +89,8 @@ QDP_@var{T}_veq_@var{T},
 r = a,
 S@comma{} I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Incrementing
-
-@funcvte{
+@sfuncvto{
+Incrementing,
 QDP_@var{T}_@var{eqop}_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_@var{T},
@@ -106,36 +99,32 @@ r @var{eqop} a,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eqm@comma{} peq@comma{} meq}
 
-@subheading Transpose
-
-@functe{
+@sfuncto{
+Transpose,
 QDP_@var{T}_@var{eqop}_transpose_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 r @var{eqop} transpose(a),
 M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Complex conjugate
-
-@functe{
+@sfuncto{
+Complex conjugate,
 QDP_@var{T}_@var{eqop}_conj_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 r @var{eqop} conjugate(a),
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Hermitian conjugate
-
-@functe{
+@sfuncto{
+Hermitian conjugate,
 QDP_@var{T}_@var{eqop}_@var{T}a,
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 r @var{eqop} adjoint(a),
 C@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Local squared norm: uniform precision
-
-@funct{
+@sfunct{
+Local squared norm: uniform precision,
 QDP_R_eq_norm2_@var{T},
 QDP_Real *r@comma{} @var{Type} *a@comma{} @var{subset},
 r = norm2(a),
@@ -143,194 +132,171 @@ C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @functionhookunary 
 
+@float
 @section Type conversion and component extraction and insertion
-@subheading Convert float to double
+@end float
 
-@funct{
+@sfunct{
+Convert float to double,
 QDP_@var{T}_eq_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 r = a,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Convert double to float
-
-@funct{
+@sfunct{
+Convert double to float,
 QDP_@var{T}_eq_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 r = a,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Convert real to complex (zero imaginary part)
-
-@func{
+@sfunc{
+Convert real to complex (zero imaginary part),
 QDP_C_eq_R,
 QDP_Complex *r@comma{} QDP_Real *a@comma{} @var{subset},
 r = a + i0}
 
-@subheading Convert real and imaginary to complex
-
-@func{
+@sfunc{
+Convert real and imaginary to complex,
 QDP_C_eq_R_plus_i_R,
 QDP_Complex *r@comma{} QDP_Real *a@comma{} QDP_Real *b@comma{} @var{subset},
 r = a + i b}
 
-@subheading Real/Imaginary part of complex
-
-@funcf{
+@sfuncf{
+Real/Imaginary part of complex,
 QDP_R_eq_@var{func}_C,
 QDP_Real *r@comma{} QDP_Complex *a@comma{} @var{subset},
 r = @var{func}(a),
 re@comma{} im}
 
-@subheading Integer to real
-
-@func{
+@sfunc{
+Integer to real,
 QDP_R_eq_I,
 QDP_Real *r@comma{} QDP_Int *a@comma{} @var{subset},
 r = a}
 
-@subheading Real to integer (truncate/round)
-
-@funcf{
+@sfuncf{
+Real to integer (truncate/round),
 QDP_I_eq_@var{func}_R,
 QDP_Int *r@comma{} QDP_Real *a@comma{} @var{subset},
 r = @var{func}(a),
 trunc@comma{} round}
 
-@subheading Accessing a color matrix element
-
-@func{
+@sfunc{
+Accessing a color matrix element,
 QDP_C_eq_elem_M,
 QDP_Complex *r@comma{} QDP_ColorMatrix *a@comma{} int i@comma{} int j@comma{} @var{subset},
 r = a[i@comma{} j]}
 
-@subheading Inserting a color matrix element
-
-@func{
+@sfunc{
+Inserting a color matrix element,
 QDP_M_eq_elem_C,
 QDP_ColorMatrix *r@comma{} QDP_Complex *a@comma{} int i@comma{} int j@comma{} @var{subset},
 r[i@comma{} j] = a}
 
-@subheading Accessing a half fermion or Dirac fermion spinor element
-
-@funct{
+@sfunct{
+Accessing a half fermion or Dirac fermion spinor element,
 QDP_C_eq_elem_@var{T},
 QDP_Complex *r@comma{} @var{Type} *a@comma{} int color@comma{} int spin@comma{} @var{subset},
 r = a[color@comma{} spin],
 H@comma{} D}
 
-@subheading Inserting a half fermion or Dirac fermion spinor element
-
-@funct{
+@sfunct{
+Inserting a half fermion or Dirac fermion spinor element,
 QDP_@var{T}_eq_elem_C,
 @var{Type} *r@comma{} QDP_Complex *a@comma{} int color@comma{} int spin@comma{} @var{subset},
 r[color@comma{} spin] = a,
 H@comma{} D}
 
-@subheading Accessing a color vector element
-
-@func{
+@sfunc{
+Accessing a color vector element,
 QDP_C_eq_elem_V,
 QDP_Complex *r@comma{} QDP_ColorVector *a@comma{} int i@comma{} @var{subset},
 r = a[i]}
 
-@subheading Inserting a color vector element
-
-@func{
+@sfunc{
+Inserting a color vector element,
 QDP_V_eq_elem_C,
 QDP_ColorVector *r@comma{} QDP_Complex *a@comma{} int i@comma{} @var{subset},
 r[i] = a}
 
-@subheading Accessing a Dirac propagator matrix element
-
-@func{
+@sfunc{
+Accessing a Dirac propagator matrix element,
 QDP_C_eq_elem_P,
 QDP_Complex *r@comma{} QDP_DiracPropagator *a@comma{} int ic@comma{} int is@comma{} int jc@comma{} int js@comma{} @var{subset},
 r = a[ic@comma{} is@comma{} jc@comma{} js]}
 
-@subheading Inserting a Dirac propagator matrix element
-
-@func{
+@sfunc{
+Inserting a Dirac propagator matrix element,
 QDP_P_eq_elem_C,
 QDP_DiracPropagator *r@comma{} QDP_Complex *a@comma{} int ic@comma{} int is@comma{} int jc@comma{} int js@comma{} @var{subset},
 r[ic@comma{} is@comma{} jc@comma{} js] = a}
 
-@subheading Extracting a color vector from a color matrix column
-
-@func{
+@sfunc{
+Extracting a color vector from a color matrix column,
 QDP_V_eq_colorvec_M,
 QDP_ColorVector *r@comma{} QDP_ColorMatrix *a@comma{} int j@comma{} @var{subset},
 r[i] = a[i@comma{} j] (for all i)}
 
-@subheading Inserting a color vector into a color matrix column
-
-@func{
+@sfunc{
+Inserting a color vector into a color matrix column,
 QDP_M_eq_colorvec_V,
 QDP_ColorMatrix *r@comma{} QDP_ColorVector *a@comma{} int j@comma{} @var{subset},
 r[i@comma{} j] = a[i] (for all i)}
 
-@subheading Extracting a color vector from a half fermion or Dirac fermion
-
-@funct{
+@sfunct{
+Extracting a color vector from a half fermion or Dirac fermion,
 QDP_V_eq_colorvec_@var{T},
 QDP_ColorVector *r@comma{} @var{Type} *a@comma{} int spin@comma{} @var{subset},
 r[color] = a[color@comma{} spin] (for all color),
 H@comma{} D}
 
-@subheading Inserting a color vector into a half fermion or Dirac fermion
-
-@funct{
+@sfunct{
+Inserting a color vector into a half fermion or Dirac fermion,
 QDP_@var{T}_eq_colorvec_V,
 @var{Type} *r@comma{} QDP_ColorVector *a@comma{} int spin@comma{} @var{subset},
 r[color@comma{} spin] = a[color] (for all color),
 H@comma{} D}
 
-@subheading Extracting a Dirac vector from a Dirac propagator matrix column
-
-@func{
+@sfunc{
+Extracting a Dirac vector from a Dirac propagator matrix column,
 QDP_D_eq_diracvec_P,
 QDP_DiracFermion *r@comma{} QDP_DiracPropagator *a@comma{} int jc@comma{} int js@comma{} @var{subset},
 r[ic@comma{} is] = a[ic@comma{} is@comma{} jc@comma{} js] (for all ic@comma{} is)}
 
-@subheading Inserting a Dirac vector into a Dirac propagator matrix column
-
-@func{
+@sfunc{
+Inserting a Dirac vector into a Dirac propagator matrix column,
 QDP_P_eq_diracvec_D,
 QDP_DiracPropagator *r@comma{} QDP_DiracFermion *a@comma{} int jc@comma{} int js@comma{} @var{subset},
 r[ic@comma{} is@comma{} jc@comma{} js] = a[ic@comma{} is] (for all ic@comma{} is)}
 
-@subheading Trace of color matrix
-
-@func{
+@sfunc{
+Trace of color matrix,
 QDP_C_eq_trace_M,
 QDP_Complex *r@comma{} QDP_ColorMatrix *a@comma{} @var{subset},
 r = trace(a)}
 
-@subheading Real/Imaginary part of trace of color matrix
-
-@funcf{
+@sfuncf{
+Real/Imaginary part of trace of color matrix,
 QDP_R_eq_@var{func}_M,
 QDP_Real *r@comma{} QDP_ColorMatrix *a@comma{} @var{subset},
 r = @var{func}(a),
 re_trace@comma{} im_trace}
 
-@subheading Traceless antihermitian part of color matrix
-
-@func{
+@sfunc{
+Traceless antihermitian part of color matrix,
 QDP_M_eq_antiherm_M,
 QDP_ColorMatrix *r@comma{} QDP_ColorMatrix *a@comma{} @var{subset},
 r = (a - a^\dagger)/2 - i Im Tr a/n_c}
 
-@subheading Spin trace of Dirac propagator
-
-@func{
+@sfunc{
+Spin trace of Dirac propagator,
 QDP_M_eq_spintrace_P,
 QDP_ColorMatrix *r@comma{} QDP_DiracPropagator *a@comma{} @var{subset},
 r[ic@comma{} jc] = Sum_is a[ic@comma{} is@comma{} jc@comma{} is]}
 
-@subheading Dirac spin projection
-
-@funcve{
+@sfuncvo{
+Dirac spin projection,
 QDP_H_@var{eqop}_spproj_D,
 QDP_HalfFermion *r@comma{} QDP_DiracFermion *a@comma{} int dir@comma{} int sign@comma{} @var{subset},
 QDP_H_v@var{eqop}_spproj_D,
@@ -338,9 +304,8 @@ QDP_HalfFermion *r[]@comma{} QDP_DiracFermion *a[]@comma{} int dir[]@comma{} int
 r = spin project(a@comma{} dir@comma{} sign),
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Dirac spin reconstruction
-
-@funcve{
+@sfuncvo{
+Dirac spin reconstruction,
 QDP_D_@var{eqop}_sprecon_H,
 QDP_DiracFermion *r@comma{} QDP_HalfFermion *a@comma{} int dir@comma{} int sign@comma{} @var{subset},
 QDP_D_v@var{eqop}_sprecon_H,
@@ -348,9 +313,8 @@ QDP_DiracFermion *r[]@comma{} QDP_HalfFermion *a[]@comma{} int dir[]@comma{} int
 r = spin reconstruct(a@comma{} dir@comma{} sign),
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Dirac spin projection with reconstruction
-
-@funcve{
+@sfuncvo{
+Dirac spin projection with reconstruction,
 QDP_D_@var{eqop}_spproj_D,
 QDP_DiracFermion *r@comma{} QDP_DiracFermion *a@comma{} int dir@comma{} int sign@comma{} @var{subset},
 QDP_D_v@var{eqop}_spproj_D,
@@ -358,9 +322,8 @@ QDP_DiracFermion *r[]@comma{} QDP_DiracFermion *a[]@comma{} int dir[]@comma{} in
 r = spin reconstruct(spin project(a@comma{} dir@comma{} sign)@comma{} dir@comma{} sign),
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Matrix multiply and Dirac spin projection
-
-@funcve{
+@sfuncvo{
+Matrix multiply and Dirac spin projection,
 QDP_H_@var{eqop}_M@{a@}_times_D,
 QDP_HalfFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_DiracFermion *b@comma{} int dir@comma{} int sign@comma{} @var{subset},
 QDP_H_v@var{eqop}_M@{a@}_times_D,
@@ -368,9 +331,8 @@ QDP_HalfFermion *r[]@comma{} QDP_ColorMatrix *a[]@comma{} QDP_DiracFermion *b[]@
 r = spin project(a*b@comma{} dir@comma{} sign),
 eq_spproj@comma{} peq_spproj@comma{} meq_spproj@comma{} eqm_spproj}
 
-@subheading Matrix multiply and Dirac spin reconstruction
-
-@funcve{
+@sfuncvo{
+Matrix multiply and Dirac spin reconstruction,
 QDP_D_@var{eqop}_M@{a@}_times_H,
 QDP_DiracFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_HalfFermion *b@comma{} int dir@comma{} int sign@comma{} @var{subset},
 QDP_D_v@var{eqop}_M@{a@}_times_H,
@@ -378,9 +340,8 @@ QDP_DiracFermion *r[]@comma{} QDP_ColorMatrix *a[]@comma{} QDP_HalfFermion *b[]@
 r = spin reconstruct(a*b@comma{} dir@comma{} sign),
 eq_sprecon@comma{} peq_sprecon@comma{} meq_sprecon@comma{} eqm_sprecon}
 
-@subheading Matrix multiply and Dirac spin projection with reconstruction
-
-@funcve{
+@sfuncvo{
+Matrix multiply and Dirac spin projection with reconstruction,
 QDP_D_@var{eqop}_M@{a@}_times_D,
 QDP_DiracFermion *r@comma{} QDP_ColorMatrix *a@comma{} QDP_DiracFermion *b@comma{} int dir@comma{} int sign@comma{} @var{subset},
 QDP_D_v@var{eqop}_M@{a@}_times_D,
@@ -390,18 +351,19 @@ eq_spproj@comma{} peq_spproj@comma{} meq_spproj@comma{} eqm_spproj}
 
 @functionhooktype 
 
+@float
 @section Binary operations with constants
-@subheading Multiplication by integer constant
+@end float
 
-@funce{
+@sfunco{
+Multiplication by integer constant,
 QDP_I_@var{eqop}_i_times_I,
 QDP_Int *r@comma{} QLA_Int *a@comma{} QDP_Int *b@comma{} @var{subset},
 r @var{eqop} a * b,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Multiplication by real constant
-
-@funcvte{
+@sfuncvto{
+Multiplication by real constant,
 QDP_@var{T}_@var{eqop}_r_times_@var{T},
 @var{Type} *r@comma{} QLA_Real *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_r_times_@var{T},
@@ -410,9 +372,8 @@ r @var{eqop} a * b,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Multiplication by complex constant
-
-@funcvte{
+@sfuncvto{
+Multiplication by complex constant,
 QDP_@var{T}_@var{eqop}_c_times_@var{T},
 @var{Type} *r@comma{} QLA_Complex *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_c_times_@var{T},
@@ -421,92 +382,84 @@ r @var{eqop} a * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Multiplication by i
-
-@functe{
+@sfuncto{
+Multiplication by i,
 QDP_@var{T}_@var{eqop}_i_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{subset},
 r @var{eqop} i a,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Left multiplication by gamma matrix
-
-@funct{
+@sfunct{
+Left multiplication by gamma matrix,
 QDP_@var{T}_eq_gamma_times_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} int i@comma{} @var{subset},
 r = gamma(i) * a,
 D@comma{} P}
 
-@subheading Right multiplication by gamma matrix
-
-@func{
+@sfunc{
+Right multiplication by gamma matrix,
 QDP_P_eq_P_times_gamma,
 QDP_DiracPropagator *r@comma{} QDP_DiracPropagator *a@comma{} int i@comma{} @var{subset},
 r = a * gamma(i)}
 
 @functionhookbinary 
 
+@float
 @section Binary operations with fields
-@subheading Elementary binary functions on integers
+@end float
 
-@funcf{
+@sfuncf{
+Elementary binary functions on integers,
 QDP_I_eq_I_@var{func}_I,
 QDP_Int *r@comma{} QDP_Int *a@comma{} QDP_Int *b@comma{} @var{subset},
 r = a @var{func} b,
 lshift@comma{} rshift@comma{} mod@comma{} max@comma{} min@comma{} or@comma{} and@comma{} xor}
 
-@subheading Elementary binary functions on reals
-
-@funcf{
+@sfuncf{
+Elementary binary functions on reals,
 QDP_R_eq_R_@var{func}_R,
 QDP_Real *r@comma{} QDP_Real *a@comma{} QDP_Real *b@comma{} @var{subset},
 r = a @var{func} b,
 mod@comma{} max@comma{} min@comma{} pow@comma{} atan2}
 
-@subheading Multiplying real by integer power of 2
-
-@func{
+@sfunc{
+Multiplying real by integer power of 2,
 QDP_R_eq_R_ldexp_I,
 QDP_Real *r@comma{} QDP_Real *a@comma{} QDP_Int *b@comma{} @var{subset},
 r = a * 2^b}
 
-@subheading Addition
-
-@funct{
+@sfunct{
+Addition,
 QDP_@var{T}_eq_@var{T}_plus_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = a + b,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Subtraction
-
-@funct{
+@sfunct{
+Subtraction,
 QDP_@var{T}_eq_@var{T}_minus_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = a - b,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Multiplication: uniform types
-
-@functe{
+@sfuncto{
+Multiplication: uniform types,
 QDP_@var{T}_@var{eqop}_@var{T}_times_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r @var{eqop} a * b,
 I@comma{} R@comma{} C@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Division of integer, real, and complex fields
-
-@funct{
+@sfunct{
+Division of integer@comma{} real@comma{} and complex fields,
 QDP_@var{T}_eq_@var{T}_divide_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = a / b,
 I@comma{} R@comma{} C}
 
-@subheading Left multiplication by color matrix
-
-@funcvte{
+@sfuncvto{
+Left multiplication by color matrix,
 QDP_@var{T}_@var{eqop}_M_times_@var{T},
 @var{Type} *r@comma{} QDP_ColorMatrix *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_M_times_@var{T},
@@ -515,9 +468,8 @@ r @var{eqop} a * b,
 V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Left multiplication by adjoint of color matrix
-
-@funcvte{
+@sfuncvto{
+Left multiplication by adjoint of color matrix,
 QDP_@var{T}_@var{eqop}_Ma_times_@var{T},
 @var{Type} *r@comma{} QDP_ColorMatrix *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_@var{T}_v@var{eqop}_Ma_times_@var{T},
@@ -526,50 +478,44 @@ r @var{eqop} adjoint(a) * b,
 V@comma{} H@comma{} D@comma{} M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Right multiplication by color matrix
-
-@funce{
+@sfunco{
+Right multiplication by color matrix,
 QDP_P_@var{eqop}_P_times_M,
 QDP_DiracPropagator *r@comma{} QDP_DiracPropagator *a@comma{} QDP_ColorMatrix *b@comma{} @var{subset},
 r @var{eqop} a * b,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Right multiplication by adjoint of color matrix
-
-@functe{
+@sfuncto{
+Right multiplication by adjoint of color matrix,
 QDP_@var{T}_@var{eqop}_@var{T}_times_Ma,
 @var{Type} *r@comma{} @var{Type} *a@comma{} QDP_ColorMatrix *b@comma{} @var{subset},
 r @var{eqop} a * adjoint(b),
 M@comma{} P,
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Adjoint of color matrix times adjoint of color matrix
-
-@funce{
+@sfunco{
+Adjoint of color matrix times adjoint of color matrix,
 QDP_M_@var{eqop}_Ma_times_Ma,
 QDP_ColorMatrix *r@comma{} QDP_ColorMatrix *a@comma{} QDP_ColorMatrix *b@comma{} @var{subset},
 r @var{eqop} adjoint(a) * adjoint(b),
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@subheading Local inner product
-
-@funct{
+@sfunct{
+Local inner product,
 QDP_C_eq_@var{T}_dot_@var{T},
 QDP_Complex *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = Tr adjoint(a) * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Real part of local inner product
-
-@funct{
+@sfunct{
+Real part of local inner product,
 QDP_R_eq_re_@var{T}_dot_@var{T},
 QDP_Real *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = Re Tr adjoint(a) * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Color matrix from outer product
-
-@funcve{
+@sfuncvo{
+Color matrix from outer product,
 QDP_M_@var{eqop}_V_times_Va,
 QDP_ColorMatrix *r@comma{} QDP_ColorVector *a@comma{} QDP_ColorVector *b@comma{} @var{subset},
 QDP_M_v@var{eqop}_V_times_Va,
@@ -579,27 +525,27 @@ eq@comma{} peq@comma{} meq@comma{} eqm}
 
 @functionhookbinary 
 
+@float
 @section Ternary operations with fields
-@subheading Addition or subtraction with integer scalar multiplication
+@end float
 
-@funcf{
+@sfuncf{
+Addition or subtraction with integer scalar multiplication,
 QDP_I_eq_i_times_I_@var{func}_I,
 QDP_Int *r@comma{} QLA_Int *c@comma{} QDP_Int *a@comma{} QDP_Int *b@comma{} @var{subset},
 r = c * a +/- b,
 plus@comma{} minus}
 
-@subheading Addition or subtraction with real scalar multiplication
-
-@functf{
+@sfunctf{
+Addition or subtraction with real scalar multiplication,
 QDP_@var{T}_eq_r_times_@var{T}_@var{func}_@var{T},
 @var{Type} *r@comma{} QLA_Real *c@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = c * a +/- b,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 plus@comma{} minus}
 
-@subheading Addition or subtraction with complex scalar multiplication
-
-@functf{
+@sfunctf{
+Addition or subtraction with complex scalar multiplication,
 QDP_@var{T}_eq_c_times_@var{T}_@var{func}_@var{T},
 @var{Type} *r@comma{} QLA_Complex *c@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = c * a +/- b,
@@ -608,19 +554,20 @@ plus@comma{} minus}
 
 @functionhookternary 
 
+@float
 @section Boolean operations
-@subheading Comparisons of integers and reals
+@end float
 
-@functf{
+@sfunctf{
+Comparisons of integers and reals,
 QDP_I_eq_@var{T}_@var{func}_@var{T},
 QDP_Int *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 r = a @var{func} b,
 I@comma{} R,
 eq@comma{} ne@comma{} gt@comma{} lt@comma{} ge@comma{} le}
 
-@subheading Copy under a mask
-
-@funct{
+@sfunct{
+Copy under a mask,
 QDP_@var{T}_eq_@var{T}_mask_I,
 @var{Type} *r@comma{} @var{Type} *a@comma{} QDP_Int *b@comma{} @var{subset},
 r = a (if b is not 0),
@@ -628,10 +575,12 @@ I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @functionhookboolean 
 
+@float
 @section Reductions
-@subheading Global squared norm: uniform precision
+@end float
 
-@funcvt{
+@sfuncvt{
+Global squared norm: uniform precision,
 QDP_r_eq_norm2_@var{T},
 QLA_Real *r@comma{} @var{Type} *a@comma{} @var{subset},
 QDP_r_veq_norm2_@var{T},
@@ -639,9 +588,8 @@ QLA_Real r[]@comma{} @var{Type} *a[]@comma{} @var{subset}@comma{} int n,
 r = Sum norm2(a),
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Global inner product
-
-@funcvt{
+@sfuncvt{
+Global inner product,
 QDP_r_eq_@var{T}_dot_@var{T},
 QLA_Real *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_r_veq_@var{T}_dot_@var{T},
@@ -657,9 +605,8 @@ QLA_Complex r[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} @var{sub
 r = Sum Tr adjoint(a) * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Real part of global inner product
-
-@funcvt{
+@sfuncvt{
+Real part of global inner product,
 QDP_r_eq_re_@var{T}_dot_@var{T},
 QLA_Real *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
 QDP_r_veq_re_@var{T}_dot_@var{T},
@@ -667,9 +614,8 @@ QLA_Real r[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} @var{subset
 r = Sum Re Tr adjoint(a) * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Global sums
-
-@func{
+@sfunc{
+Global sums,
 QDP_r_eq_sum_I,
 QLA_Real *r@comma{} QDP_Int *a@comma{} @var{subset},
 r = Sum a}
@@ -680,9 +626,8 @@ QDP_@var{t}_eq_sum_@var{T},
 r = Sum a,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Multisubset Norms
-
-@funcvt{
+@sfuncvt{
+Multisubset Norms,
 QDP_r_eq_norm2_@var{T}_multi,
 QLA_Real r[]@comma{} @var{Type} *a@comma{} QDP_Subset subset[]@comma{} int n,
 QDP_r_veq_norm2_@var{T}_multi,
@@ -690,9 +635,8 @@ QLA_Real r[]@comma{} @var{Type} *a[]@comma{} QDP_Subset subset[]@comma{} int n,
 r[i] = Sum_subset[i] norm2(a),
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Multisubset inner products
-
-@funcvt{
+@sfuncvt{
+Multisubset inner products,
 QDP_r_eq_@var{T}_dot_@var{T}_multi,
 QLA_Real r[]@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} QDP_Subset subset[]@comma{} int n,
 QDP_r_veq_@var{T}_dot_@var{T}_multi,
@@ -708,9 +652,8 @@ QLA_Complex r[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} QDP_Subs
 r[i] = Sum_subset[i] adjoint(a) * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Multisubset real part of global inner product
-
-@funcvt{
+@sfuncvt{
+Multisubset real part of global inner product,
 QDP_r_eq_re_@var{T}_dot_@var{T}_multi,
 QLA_Real r[]@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} QDP_Subset subset[]@comma{} int n,
 QDP_r_veq_re_@var{T}_dot_@var{T}_multi,
@@ -718,9 +661,8 @@ QLA_Real r[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} QDP_Subset 
 r = Sum Re Tr adjoint(a) * b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Multisubset global sums
-
-@func{
+@sfunc{
+Multisubset global sums,
 QDP_r_eq_sum_I_multi,
 QLA_Real r[]@comma{} QDP_Int *a@comma{} QDP_Subset subset[]@comma{} int n,
 r[i] = Sum_subset[i] a}

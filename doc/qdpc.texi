@@ -315,6 +315,7 @@ floating point types are constructed from names for generic types.
 Thus @tM becomes @code{QDP_PC_ColorMatrix}, where the precision
 @code{P} is @code{F} or @code{D} according to the table below
 
+@float
 @multitable @columnfractions .3 .7
 @hline
 @item Abbreviation @tab Description
@@ -323,6 +324,7 @@ Thus @tM becomes @code{QDP_PC_ColorMatrix}, where the precision
 @item @code{D}     @tab double precision
 @hline
 @end multitable
+@end float
 
 @noindent
 and @code{C} is @code{2}, @code{3}, or @code{N}, if color is a
@@ -407,9 +409,9 @@ This procedure is stil under development so, for now, you're on your own.
 
 @strong{[The startup procedure needs more thought - CD]}
 
-@subsection Entry to QDP
-
-@funcx{
+@c @subheading Entry to QDP
+@sfunce{
+Entry to QDP,
 void QDP_initialize,
 int *argc@comma{} char ***argv,
 Starts QDP.,
@@ -423,9 +425,9 @@ It also defines the global variable
 @code{int QDP_this_node;}
 specifying the logical node number of the current node.
 
-@subsection Exit from QDP
-
-@funcx{
+@c @subheading Exit from QDP
+@sfunce{
+Exit from QDP,
 void QDP_finalize,
 void,
 Exits QDP.,
@@ -436,9 +438,9 @@ nodes. It concludes all communications, does housekeeping, if needed
 and performs a barrier wait for all nodes.  Then it returns control to
 the calling process.
 
-@subsection Panic exit from QDP
-
-@funcx{
+@c @subheading Panic exit from QDP
+@sfunce{
+Panic exit from QDP,
 void QDP_abort,
 int status,
 Panic shutdown of the process.,
@@ -447,17 +449,17 @@ QDP_abort(1);}
 This routine may be called by one or more nodes.  It sends kill
 signals to all nodes and exits with exit status @code{status}.
 
-@subsection Check for initialization
-
-@funcx{
+@c @subheading Check for initialization
+@sfunce{
+Check for initialization,
 int QDP_initialized,
 void,
 Checks if QDP is initialized.,
 if(!QDP_initialized()) QDP_initialize(&argc@comma{} &argv);}
 
-@subsection Control profiling
-
-@funcx{
+@c @subheading Control profiling
+@sfunce{
+Control profiling,
 int QDP_profcontrol,
 int new,
 Controls profiling.,
@@ -472,9 +474,9 @@ statistics within the profiled sections of code.
 A value of zero turns the collection of timing info off and
 nonzero values turn it on.  It is on by default.
 
-@subsection Control checking communications
-
-@funcx{
+@c @subheading Control checking communications
+@sfunce{
+Control checking communications,
 int QDP_check_comm,
 int new,
 Controls checking communications.,
@@ -504,19 +506,19 @@ layouts.  As long as the custom layout procedure provides the entry
 points and functionality described here, compatibility with the
 remainder of the QDP library is assured.
 
-@subsection Defining the layout
+@subheading Defining the layout
 
 Prior to creating the layout the layout parameters must be defined.
 This is done through function calls.
 
-@funcx{
+@funce{
 void QDP_set_latsize,
 int nd@comma{} int size[],
 Sets number of spacetime dimensions and lattice size.@*
 No default.  Must always be set.,
 QDP_set_latsize(4@comma{} size);}
 
-@funcx{
+@funce{
 void QDP_create_layout,
 void,
 Lays out the sites.,
@@ -554,49 +556,49 @@ Note that this may vary between nodes.
 The following global entry points are provided by the
 @code{QDP_create_layout} procedure:
 
-@subsection Number of dimensions
-
-@funcx{
+@c @subheading Number of dimensions
+@sfunce{
+Number of dimensions,
 int QDP_ndim,
 void,
 Returns the number of dimensions.,
 ndim = QDP_ndim();}
 
-@subsection Length of lattice in a given direction
-
-@funcx{
+@c @subheading Length of lattice in a given direction
+@sfunce{
+Length of lattice in a given direction,
 int QDP_coord_size,
 int i,
 Returns length of lattice in direction @code{i}.,
 nx = QDP_coord_size(0);}
 
-@subsection Length of lattice in all directions
-
-@funcx{
+@c @subheading Length of lattice in all directions
+@sfunce{
+Length of lattice in all directions,
 void QDP_latsize,
 int latsize[],
 Returns lattice dimensions into array @code{latsize}.,
 QDP_latsize(latsize);}
 
-@subsection Length of lattice in all directions
-
-@funcx{
+@c @subheading Length of lattice in all directions
+@sfunce{
+Length of lattice in all directions,
 size_t QDP_volume,
 void,
 Returns lattice volume.,
 vol = QDP_volume();}
 
-@subsection Node number of site
-
-@funcx{
+@c @subheading Node number of site
+@sfunce{
+Node number of site,
 int QDP_node_number,
 int x[],
 Returns logical node number containing site @code{x}.,
 node = QDP_node_number(x);}
 
-@subsection Linear index of site
-
-@funcx{
+@c @subheading Linear index of site
+@sfunce{
+Linear index of site,
 int QDP_index,
 int x[],
 Returns the linearized index for the lattice site @code{x}.,
@@ -605,27 +607,27 @@ k = QDP_index(x);}
 The linear index returned by @code{QDP_index} ranges from 0 to
 @code{QDP_sites_on_node} - 1.
 
-@subsection Number of sites on a node
-
-@funcx{
+@c @subheading Number of sites on a node
+@sfunce{
+Number of sites on a node,
 int QDP_numsites,
 int node,
 Return the number of sites on a node.  Same as @code{QDP_sites_on_node}
 if @code{node = QDP_this_node},
 k = QDP_numsites(i);}
 
-@subsection Map node and linear index to coordinate
-
-@funcx{
+@c @subheading Map node and linear index to coordinate
+@sfunce{
+Map node and linear index to coordinate,
 void QDP_get_coords,
 int x[]@comma{} int node@comma{} int index,
 Returns site coordinates @code{x} for the given node
 @code{node} and linear index @code{index}.,
 QDP_get_coords(x@comma{} 0@comma{} 31);}
 
-@subsection Defining the spacetime coordinate
-
-@funcx{
+@c @subheading Defining the spacetime coordinate
+@sfunce{
+Defining the spacetime coordinate,
 void QDP_I_eq_coord,
 @tI{} *r@comma{} int i,
 The @code{i}th spacetime coordinate.,
@@ -685,7 +687,7 @@ Supported variants of the assignment operator are tabulated below.
 
 Some functions allow all of these and some take only a simple replacement (eq).
 
-@subsection Constant Arguments
+@subheading Constant Arguments
 
 In some cases it is desirable to keep an argument constant over the
 entire subset.  For example the function
@@ -700,7 +702,7 @@ for @code{x} in subset @code{s}.
 In this case we specify that the argument is constant (coordinate-independent)
 by writing the type abbreviation in lower case: @code{c}.
 
-@subsection Color argument for @emph{SU(N)}
+@subheading Color argument for @emph{SU(N)}
 
 For the general color case @emph{SU(N)} the specific function requires an
 extra argument giving the number of colors.  It always comes first.
@@ -715,7 +717,7 @@ generic function is actually a macro and is automatically converted to
 this usage with @qdpNcMacro for the first argument.  However, if the
 specific name is used, the user must supply the argument.
 
-@subsection Adjoint
+@subheading Adjoint
 
 The adjoint of an operand is specified by a suffix @code{a} after the
 type abbreviation.  Thus
@@ -728,7 +730,7 @@ carries out the product
 
 for all sites @code{x} in subset @code{s}.
 
-@subsection Shift
+@subheading Shift
 
 A shift in an operand is specified by a prefix lowercase @code{s} before
 the type abbreviation.  (See the discussion of shifts below.) Thus
@@ -738,7 +740,7 @@ the type abbreviation.  (See the discussion of shifts below.) Thus
 shifts staggered fermion data along the direction specified by @code{dir}
 and @code{sign} for all sites @code{x} in destination subset @code{s}.
 
-@subsection Operations on arrays of fields
+@subheading Operations on arrays of fields
 
 Some of the routines can operate on multiple fields at a time.
 These functions are designated by placing a @code{v} in front of the
@@ -777,9 +779,9 @@ All QDP functions expect that lattice field arguments point to fields
 that have already been created.  The sole exception to this rule is
 the creation utility itself, which returns a pointer
 
-@subsection Creating a lattice field
-
-@functx{
+@c @subheading Creating a lattice field
+@sfuncte{
+Creating a lattice field,
 @var{Type} * QDP_create_@var{T},
 void,
 Creates lattice field of type @var{Type}.,
@@ -790,9 +792,9 @@ In prototype specifications throughout this document the notation
 @emph{Type} specifies the generic or specific datatype name matching the
 abbreviation @emph{T} according to the table in @ref{Datatypes}.
 
-@subsection Destroying a lattice field
-
-@functx{
+@c @subheading Destroying a lattice field
+@sfuncte{
+Destroying a lattice field,
 void QDP_destroy_@var{T},
 @var{Type} *a,
 Frees memory associated with field @code{a}.,
@@ -817,11 +819,11 @@ slice subset and one of the subsets in a 32-level checkerboard scheme.
 A subset definition remains valid until @code{QDP_destroy_subset} is
 called.
 
-@subsection Defining a subset
+@subheading Defining a subset
 
 Subsets are defined through the data type @code{QDP_Subset}
 
-@funcx{
+@funce{
 QDP_Subset * QDP_create_subset,
 int (*func)(int x[]@comma{} void *args)@comma{} void *args@comma{}
 int argsize@comma{} int n,
@@ -839,9 +841,9 @@ In this case the function must return zero if the site is in the
 subset and nonzero if not.  (Note, this is opposite the @emph{true},
 @emph{false} convention in C).
 
-@subsection Destroying subsets
-
-@funcx{
+@c @subheading Destroying subsets
+@sfunce{
+Destroying subsets,
 void QDP_destroy_subset,
 QDP_subset s[],
 Destroys all subsets created with @code{s}.,
@@ -852,7 +854,7 @@ The @code{QDP_subset *} value @emph{s} should be the object
 returned by @code{QDP_create_subset}.  All subsets in the array
 @emph{s} are destroyed.
 
-@subsection Reductions on subsets
+@subheading Reductions on subsets
 
 Reduction operations (norms, inner products, global sums) come in two
 variants according to whether the result is computed on a single
@@ -915,9 +917,9 @@ Thus a nearest neighbor shift operation specifying the even subset shifts
 odd site values from the source @emph{a} and places them on even site
 values on the destination field @emph{r}.
 
-@subsection Creating displacement shifts
+@subheading Creating displacement shifts
 
-@funcx{
+@funce{
 QDP_Shift QDP_create_shift,
 int d[],
 Creates a shift defined by the displacement vector @code{d}.,
@@ -928,9 +930,9 @@ knight[2][3] = QDP_create_shift(d);}
 Calling with a displacement vector @{1,0,0,0@} would reproduce
 the shift @code{QDP_neighbor[0]}.
 
-@subsection Creating arbitrary permutations
+@subheading Creating arbitrary permutations
 
-@funcx{
+@funce{
 QDP_Shift QDP_create_map,
 int *(func*)(int coord[Nd]@comma{} void *args)@comma{}
 void *args@comma{} int argsize,
@@ -953,11 +955,11 @@ The parameters @emph{args} are copied at the moment the shift is created,
 however, so they may be volatile.
 The size argument @emph{argsize} makes copying possible.
 
-@subsection Destroying a shift
+@subheading Destroying a shift
 
 The corresponding destruction function is @code{QDP_destroy_shift}.
 
-@funcx{
+@funce{
 void QDP_destroy_shift,
 QDP_Shift dir,
 Frees memory associated with the map @emph{dir}.,
@@ -979,9 +981,9 @@ communications layer.  For this purpose function calls are provided to
 put the QDP implementation and/or QDP objects into a known state,
 extract values, and reinsert them.
 
-@subsection Exposing QDP data
-
-@functx{
+@c @subheading Exposing QDP data
+@sfuncte{
+Exposing QDP data,
 @var{QLA_Type} * QDP_expose_@var{T},
 @var{Type} *src,
 Deliver data values from field @code{src}.,
@@ -994,9 +996,9 @@ data @emph{dest} of type @emph{T}.  The order of the data is given by
 @code{QDP_index}.  No QDP operations are permitted on exposed
 data until @code{QDP_reset} is called. (See next.)
 
-@subsection Returning control of QDP data
-
-@functx{
+@c @subheading Returning control of QDP data
+@sfuncte{
+Returning control of QDP data,
 void QDP_reset_@var{T},
 @var{Type} *field,
 Returns control of data values to QDP.,
@@ -1006,9 +1008,9 @@ QDP_reset_M(r);}
 This call signals to QDP that the user is ready to resume QDP
 operations with the data in the specified field.
 
-@subsection Extracting QDP data
-
-@functx{
+@c @subheading Extracting QDP data
+@sfuncte{
+Extracting QDP data,
 void QDP_extract_@var{T},
 @var{QLA_Type} *dest@comma{} @var{Type} *src,
 Copy data values from field @code{src} to array @code{dest}.,
@@ -1025,9 +1027,9 @@ with the subset are left unmodified.  The order of the data is given
 by @code{QDP_index}.  Since a copy is made, QDP operations
 involving the source field may proceed without disruption.
 
-@subsection Inserting QDP data
-
-@functx{
+@c @subheading Inserting QDP data
+@sfuncte{
+Inserting QDP data,
 void QDP_insert_@var{T},
 @var{Type} *dest@comma{} @var{QLA_Type} *src,
 Inserts data values from QLA array @code{src}.,
@@ -1039,13 +1041,13 @@ Other values are unmodified.  The data order must conform to
 @code{QDP_index}.  This call, analogous to a fill operation, is
 permitted at any time and does not interfere with QDP operations.
 
-@subsection Suspending QDP communications
+@subheading Suspending QDP communications
 
 If a user wishes to suspend QDP communications temporarily and carry
 on communications by other means, it is first necessary to call
 @code{QDP_suspend_comm}.
 
-@funcx{
+@funce{
 void QDP_suspend_comm,
 void,
 Suspends QDP communications.,
@@ -1054,11 +1056,11 @@ QDP_suspend_comm();}
 No QDP shifts can then be initiated until @code{QDP_resume} is called.
 However QDP linear algebra operations without shifts may proceed.
 
-@subsection Resuming QDP communications
+@subheading Resuming QDP communications
 
 To resume QDP communications one uses
 
-@funcx{
+@funce{
 void QDP_resume_comm,
 void,
 Restores QDP communications.,
@@ -1069,9 +1071,9 @@ QDP_resume_comm();}
 The following procedure is included to aid in optimization of the
 QDP implementation
 
-@subsection Marking discarded data
-
-@functx{
+@c @subheading Marking discarded data
+@sfuncte{
+Marking discarded data,
 void QDP_discard_@var{T},
 @var{Type} *a,
 Indicates data in @code{a} is no longer needed.,
@@ -1086,6 +1088,31 @@ incremented destination) in any subsequent operation.  However, once
 the field is used as an lvalue (fully replaced destination), data
 integrity is automatically reinstated.
 
+
+@macro functionhookfills
+@c @subheading Function fills
+@sfunct{
+Function fills,
+QDP_@var{T}_eq_func,
+@var{Type} *r@comma{} void (*func)(@var{QLA_Type} *dest@comma{} int coords[])@comma{} @var{subset},
+calls func(&r[x]@comma{} x) for all coordinates x in subset,
+I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
+@end macro
+
+@macro functionhookunary
+@end macro
+
+@macro functionhooktype
+@end macro
+
+@macro functionhookbinary
+@end macro
+
+@macro functionhookternary
+@end macro
+
+@macro functionhookboolean
+@end macro
 
 @c ====================================================================
 @node     Function Details
@@ -1113,9 +1140,10 @@ Unless otherwise indicated, operations occur on all sites in the
 specified subset.
 
 @section Functions involving shifts
-@subheading Shifting
 
-@funcvt{
+@c @subheading Shifting
+@sfuncvt{
+Shifting,
 QDP_@var{T}_eq_s@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} QDP_Shift s@comma{} QDP_ShiftDir d@comma{} @var{subset},
 QDP_@var{T}_veq_s@var{T},
@@ -1123,55 +1151,30 @@ QDP_@var{T}_veq_s@var{T},
 r = shift(a),
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Left multiplication by shifted color matrix
-
-@funct{
+@c @subheading Left multiplication by shifted color matrix
+@sfunct{
+Left multiplication by shifted color matrix,
 QDP_@var{T}_eq_sM_times_@var{T},
 @var{Type} *r@comma{} QDP_ColorMatrix *a@comma{} @var{Type} *b@comma{} QDP_Shift s@comma{} QDP_ShiftDir d@comma{} @var{subset},
 r = shift(a) * b,
 V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Left multiplication of shifted field by color matrix
-
-@funct{
+@c @subheading Left multiplication of shifted field by color matrix
+@sfunct{
+Left multiplication of shifted field by color matrix,
 QDP_@var{T}_eq_M_times_s@var{T},
 @var{Type} *r@comma{} QDP_ColorMatrix *a@comma{} @var{Type} *b@comma{} QDP_Shift s@comma{} QDP_ShiftDir d@comma{} @var{subset},
 r = a * shift(b),
 V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@subheading Left multiplication by color matrix then shift
-
-@funct{
+@c @subheading Left multiplication by color matrix then shift
+@sfunct{
+Left multiplication by color matrix then shift,
 QDP_@var{T}_eq_sM_times_s@var{T},
 @var{Type} *r@comma{} QDP_ColorMatrix *a@comma{} @var{Type} *b@comma{} QDP_Shift s@comma{} QDP_ShiftDir d@comma{} @var{subset},
 r = shift(a * b),
 V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@macro functionhookfills
-@subheading Function fills
-@funct{
-QDP_@var{T}_eq_func,
-@var{Type} *r@comma{} void (*func)(@var{QLA_Type} *dest@comma{} int coords[])@comma{} @var{subset},
-calls func(&r[x]@comma{} x) for all coordinates x in subset,
-I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
-@end macro
-
-@macro functionhookunary
-@end macro
-
-@macro functionhooktype
-@end macro
-
-@macro functionhookbinary
-@end macro
-
-@macro functionhookternary
-@end macro
-
-@macro functionhookboolean
-@end macro
-
 @include functions.texi
 
 @bye
-

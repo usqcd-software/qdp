@@ -14,14 +14,18 @@ sub comment0($) {
     $tag = lc $tag;
     print OUTFILE "\@functionhook$tag \n\n";
   }
+  print OUTFILE "\@float\n";
   print OUTFILE "\@section @_\n";
+  print OUTFILE "\@end float\n\n";
   ($last_section) = @_;
 }
 
 sub comment1($) {
   #print OUTFILE "\@subsection @_\n\n";
   #print OUTFILE "\@unnumberedsubsec @_\n\n";
-  print OUTFILE "\@subheading @_\n\n";
+  #print OUTFILE "\@subheading @_\n\n";
+  ($cmt1) = @_;
+  $cmt1 =~ s/,/\@comma{}/g;
 }
 
 sub comment2($) {
@@ -55,9 +59,13 @@ sub make_functions(\%) {
   $vargs = "";
   $macro = "\@func";
   $t = "";
-  $e = "";
+  $o = "";
   $f = "";
   @vz = ();
+
+  if($cmt1) {
+    $macro = "\@sfunc";
+  }
 
   if($arg->{DEST_TYPES}) {
     @z = @{$arg->{DEST_TYPES}};
@@ -105,8 +113,8 @@ sub make_functions(\%) {
       $prot .= "_".$z[0];
     } else {
       $prot .= "_\@var{eqop}";
-      ($e = join(", ",@z)) =~ s/,/\@comma{}/g;
-      $macro .= "e";
+      ($o = join(", ",@z)) =~ s/,/\@comma{}/g;
+      $macro .= "o";
     }
   }
 
@@ -266,13 +274,15 @@ sub make_functions(\%) {
   $d =~ s/<([^>]*)>/\@var{\1}/g;
 
   print OUTFILE $macro, "{\n";
+  print OUTFILE "$cmt1,\n" if($cmt1);
   print OUTFILE $prot, ",\n";
   print OUTFILE $args, ",\n";
   print OUTFILE $d;
   print OUTFILE ",\n", $t if($t);
-  print OUTFILE ",\n", $e if($e);
+  print OUTFILE ",\n", $o if($o);
   print OUTFILE ",\n", $f if($f);
   print OUTFILE "}\n\n";
+  $cmt1 = "";
 }
 
 # Last we actually create the functions

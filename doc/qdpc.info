@@ -7,7 +7,7 @@ File: qdpc.info,  Node: Top,  Next: Introduction,  Up: (dir)
 QDP/C User Manual
 *****************
 
-Version 1.3.1
+Version 1.5.1
 
    This document provides a detailed description of the C
 implementation of the
@@ -352,9 +352,9 @@ procedure is stil under development so, for now, you're on your own.
 4.1.1 Entry to QDP
 ------------------
 
-Syntax:     `void QDP_initialize(int *argc, char ***argv);'
-Meaning:    Starts QDP.
-Example:    `QDP_initialize(&argc, &argv);'
+Syntax:     `a(b);'
+Meaning:    c
+Example:    `'
 
    The routine `QDP_initialize' is called once by all nodes and starts
 QDP operations.  It initialiazes message passing, but does not setup
@@ -1438,7 +1438,7 @@ Multiplication by real constant
 
 Syntax      `QDP_T_EQOP_r_times_T(TYPE *r, QLA_Real *a, TYPE *b,
             SUBSET);'
-            `QDP_T_vEQOP_r_times_T(TYPE *r[], QLA_Real *a[], TYPE *b[],
+            `QDP_T_vEQOP_r_times_T(TYPE *r[], QLA_Real a[], TYPE *b[],
             SUBSET, int n);'
 Meaning     r EQOP a * b
 TYPE        `R, C, V, H, D, M, P'
@@ -1449,7 +1449,7 @@ Multiplication by complex constant
 
 Syntax      `QDP_T_EQOP_c_times_T(TYPE *r, QLA_Complex *a, TYPE *b,
             SUBSET);'
-            `QDP_T_vEQOP_c_times_T(TYPE *r[], QLA_Complex *a[], TYPE
+            `QDP_T_vEQOP_c_times_T(TYPE *r[], QLA_Complex a[], TYPE
             *b[], SUBSET, int n);'
 Meaning     r EQOP a * b
 TYPE        `C, V, H, D, M, P'
@@ -1752,6 +1752,6 @@ Node: Introduction593
 Node: Compilation with QDP2052
 Node: Datatypes7650
 Node: QDP Functions12601
-Node: Function Details36899
+Node: Function Details36820
 
 End Tag Table
