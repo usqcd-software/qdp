@@ -53,14 +53,21 @@
 #include <qdp_types.h>
 
 /* Headers we always define */
+#include <qdp_io.h>
 #include <qdp_int.h>
+#include <qdp_f.h>
+#include <qdp_d.h>
+#include <qdp_f2.h>
+#include <qdp_f3.h>
+#include <qdp_fn.h>
+#include <qdp_d2.h>
+#include <qdp_d3.h>
+#include <qdp_dn.h>
 
 /* Headers we define regardless of color */
 #if ( QDP_Precision == 'F' )
-#include <qdp_f.h>
 #include <qdp_f_generic.h>
 #elif ( QDP_Precision == 'D' )
-#include <qdp_d.h>
 #include <qdp_d_generic.h>
 #else
 #error Invalid QDP_Precision
@@ -71,15 +78,12 @@
 #if ( QDP_Precision == 'F' )
 
 #if   ( QDP_Colors == 3 )
-#include <qdp_f3.h>
 #include <qdp_f3_generic.h>
 #include <qdp_f3_color_generic.h>
 #elif ( QDP_Colors == 2 )
-#include <qdp_f2.h>
 #include <qdp_f2_generic.h>
 #include <qdp_f2_color_generic.h>
 #elif ( QDP_Colors == 'N' )
-#include <qdp_fn.h>
 #include <qdp_fn_generic.h>
 #include <qdp_fn_color_generic.h>
 #endif
@@ -87,21 +91,16 @@
 #elif ( QDP_Precision == 'D' )
 
 #if   ( QDP_Colors == 3 )
-#include <qdp_d3.h>
 #include <qdp_d3_generic.h>
 #include <qdp_d3_color_generic.h>
 #elif ( QDP_Colors == 2 )
-#include <qdp_d2.h>
 #include <qdp_d2_generic.h>
 #include <qdp_d2_color_generic.h>
 #elif ( QDP_Colors == 'N' )
-#include <qdp_dn.h>
 #include <qdp_dn_generic.h>
 #include <qdp_dn_color_generic.h>
 #endif
 
 #endif /* QDP_Precision */
-
-#include <qdp_io.h>
 
 #endif /* _QDP_H */
