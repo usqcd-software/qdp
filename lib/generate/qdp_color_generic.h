@@ -1,9 +1,9 @@
 /* QDP color generic header for $PC */
 
-#ifdef _QDP_COLOR_GENERIC_H
-#error already included a generic header: _QDP_COLOR_GENERIC_H
+#ifdef _QDP_$P_COLOR_GENERIC_H
+#error already included a generic header: _QDP_$P_COLOR_GENERIC_H
 #else
-#define _QDP_COLOR_GENERIC_H
+#define _QDP_$P_COLOR_GENERIC_H
 
 !PCTYPES
 #define $QDPPTYPE $QDPPCTYPE
