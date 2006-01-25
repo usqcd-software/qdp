@@ -298,9 +298,9 @@ if($cflag) {
       $begin_qlaelibs = 1;
     } else {
       $line = $_;
-      $line =~ s/\$P/$precision/g;
       $line =~ s/\$PC/$pc/g;
       $line =~ s/\$PORPC/$porpc/g;
+      $line =~ s/\$P/$precision/g;
       $line =~ s/\$LIB/$lib/g;
       $line =~ s/\$lib/$llib/g;
       $line =~ s/\$clib/$clib/g;
