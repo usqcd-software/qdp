@@ -73,6 +73,7 @@
 
 #include <qdp_f2.h>
 #include <qdp_d2.h>
+#include <qdp_df2.h>
 #include <qdp_f2_color_generic.h>
 #include <qdp_d2_color_generic.h>
 
@@ -86,6 +87,7 @@
 
 #include <qdp_f3.h>
 #include <qdp_d3.h>
+#include <qdp_df3.h>
 #include <qdp_f3_color_generic.h>
 #include <qdp_d3_color_generic.h>
 
@@ -99,6 +101,7 @@
 
 #include <qdp_fn.h>
 #include <qdp_dn.h>
+#include <qdp_dfn.h>
 #include <qdp_fn_color_generic.h>
 #include <qdp_dn_color_generic.h>
 
