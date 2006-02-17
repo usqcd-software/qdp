@@ -123,6 +123,7 @@ sub make_functions(\%) {
     $vxa = $xa;
     $xa =~ s/,[ ]*$//;
     $args .= ", $xa";
+    $vxa =~ s/(QLA_\S*\s+)[*]/$1/g;
     $vxa =~ s/,/[],/g;
     $vxa =~ s/,[ ]*$//;
     $vargs .= ", $vxa";
@@ -188,6 +189,7 @@ sub make_functions(\%) {
     $vxa = $xa;
     $xa =~ s/,[ ]*$//;
     $args .= ", $xa";
+    $vxa =~ s/(QLA_\S*\s+)[*]/$1/g;
     $vxa =~ s/,/[],/g;
     $vxa =~ s/,[ ]*$//;
     $vargs .= ", $vxa";
@@ -236,6 +238,7 @@ sub make_functions(\%) {
     $vxa = $xa;
     $xa =~ s/,[ ]*$//;
     $args .= ", $xa";
+    $vxa =~ s/(QLA_\S*\s+)[*]/$1/g;
     $vxa =~ s/,/[],/g;
     $vxa =~ s/,[ ]*$//;
     $vargs .= ", $vxa";
