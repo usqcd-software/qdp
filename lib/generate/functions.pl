@@ -687,7 +687,7 @@ comment2("r = a + b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @shift_types ],
-   EQ_OPS      => [ 'eq' ],
+   EQ_OPS      => [ 'eq', 'veq' ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'plus' ],
    SRC2_TYPES  => [ 'DEST' ],
@@ -699,7 +699,7 @@ comment2("r = a - b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @shift_types ],
-   EQ_OPS      => [ 'eq' ],
+   EQ_OPS      => [ 'eq', 'veq' ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'minus' ],
    SRC2_TYPES  => [ 'DEST' ],
@@ -851,12 +851,13 @@ comment2("r = c * a +/- b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @float_types ],
-   EQ_OPS      => [ 'eq_r_times' ],
+   EQ_OPS      => [ 'eq_r_times', 'veq_r_times' ],
    EXTRA_ARGS1 => "QLA_".$pr."Real *c, ",
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'plus','minus' ],
    SRC2_TYPES  => [ 'DEST' ],
   )}});
+
 
 comment1("Addition or subtraction with complex scalar multiplication");
 comment2("r = c * a +/- b");
@@ -864,7 +865,7 @@ comment2("r = c * a +/- b");
 make_functions(%{{
   (
    DEST_TYPES  => [ @complex_types ],
-   EQ_OPS      => [ 'eq_c_times' ],
+   EQ_OPS      => [ 'eq_c_times', 'veq_c_times' ],
    EXTRA_ARGS1 => "QLA_".$pr."Complex *c, ",
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'plus','minus' ],

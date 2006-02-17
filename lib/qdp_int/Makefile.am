@@ -48,6 +48,8 @@ QDP_I_peq_I.c \
 QDP_I_peq_i_times_I.c \
 QDP_I_peq_I_times_I.c \
 QDP_I_veq_I.c \
+QDP_I_veq_I_minus_I.c \
+QDP_I_veq_I_plus_I.c \
 QDP_I_veqm_I.c \
 QDP_I_veq_sI.c \
 QDP_I_vmeq_I.c \
@@ -106,6 +108,8 @@ QDP_I_peq_I.o \
 QDP_I_peq_i_times_I.o \
 QDP_I_peq_I_times_I.o \
 QDP_I_veq_I.o \
+QDP_I_veq_I_minus_I.o \
+QDP_I_veq_I_plus_I.o \
 QDP_I_veqm_I.o \
 QDP_I_veq_sI.o \
 QDP_I_vmeq_I.o \

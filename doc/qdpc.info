@@ -349,72 +349,72 @@ procedure is stil under development so, for now, you're on your own.
 
    *[The startup procedure needs more thought - CD]*
 
-4.1.1 Entry to QDP
-------------------
+Entry to QDP
+------------
 
-Syntax:     `a(b);'
-Meaning:    c
-Example:    `'
+Syntax      `void QDP_initialize(int *argc, char ***argv);'
+Meaning     Starts QDP.
+Example     `QDP_initialize(&argc, &argv);'
 
-   The routine `QDP_initialize' is called once by all nodes and starts
-QDP operations.  It initialiazes message passing, but does not setup
-the site layout (see `QDP_create_layout' and related functions).  It
-also defines the global variable `int QDP_this_node;' specifying the
-logical node number of the current node.
+The routine `QDP_initialize' is called once by all nodes and starts QDP
+operations.  It initialiazes message passing, but does not setup the
+site layout (see `QDP_create_layout' and related functions).  It also
+defines the global variable `int QDP_this_node;' specifying the logical
+node number of the current node.
 
-4.1.2 Exit from QDP
+Exit from QDP
+-------------
+
+Syntax      `void QDP_finalize(void);'
+Meaning     Exits QDP.
+Example     `QDP_finalize();'
+
+This call provides for an orderly shutdown.  It is called by all nodes.
+It concludes all communications, does housekeeping, if needed and
+performs a barrier wait for all nodes.  Then it returns control to the
+calling process.
+
+Panic exit from QDP
 -------------------
 
-Syntax:     `void QDP_finalize(void);'
-Meaning:    Exits QDP.
-Example:    `QDP_finalize();'
+Syntax      `void QDP_abort(int status);'
+Meaning     Panic shutdown of the process.
+Example     `QDP_abort(1);'
 
-   This call provides for an orderly shutdown.  It is called by all
-nodes. It concludes all communications, does housekeeping, if needed
-and performs a barrier wait for all nodes.  Then it returns control to
-the calling process.
+This routine may be called by one or more nodes.  It sends kill signals
+to all nodes and exits with exit status `status'.
 
-4.1.3 Panic exit from QDP
--------------------------
+Check for initialization
+------------------------
 
-Syntax:     `void QDP_abort(int status);'
-Meaning:    Panic shutdown of the process.
-Example:    `QDP_abort(1);'
+Syntax      `int QDP_initialized(void);'
+Meaning     Checks if QDP is initialized.
+Example     `if(!QDP_initialized()) QDP_initialize(&argc, &argv);'
 
-   This routine may be called by one or more nodes.  It sends kill
-signals to all nodes and exits with exit status `status'.
+Control profiling
+-----------------
 
-4.1.4 Check for initialization
-------------------------------
+Syntax      `int QDP_profcontrol(int new);'
+Meaning     Controls profiling.
+Example     `old = QDP_profcontrol(new);'
 
-Syntax:     `int QDP_initialized(void);'
-Meaning:    Checks if QDP is initialized.
-Example:    `if(!QDP_initialized()) QDP_initialize(&argc, &argv);'
-
-4.1.5 Control profiling
------------------------
-
-Syntax:     `int QDP_profcontrol(int new);'
-Meaning:    Controls profiling.
-Example:    `old = QDP_profcontrol(new);'
-
-   Profiling results are only available for code that is compiled with
-the macro `QDP_PROFILE' defined.  This must be defined before the qdp.h
+Profiling results are only available for code that is compiled with the
+macro `QDP_PROFILE' defined.  This must be defined before the qdp.h
 header is included.  When `QDP_finalize' is called a list of QDP
 function and call times will be sent to stdio on node 0.  This function
 toggles the accumulation of the profiling statistics within the
 profiled sections of code.  A value of zero turns the collection of
 timing info off and nonzero values turn it on.  It is on by default.
 
-4.1.6 Control checking communications
--------------------------------------
+Control checking communications
+-------------------------------
 
-Syntax:     `int QDP_check_comm(int new);'
-Meaning:    Controls checking communications.
-Example:    `old = QDP_check_comm(new);'
+Syntax      `int QDP_check_comm(int new);'
+Meaning     Controls checking communications.
+Example     `old = QDP_check_comm(new);'
 
-   A nonzero value turns the internal communications checksums on and
-zero turns it off.  It is off by default.
+A nonzero value turns the internal communications checksums on and zero
+turns it off.  It is off by default.
 
 4.2 Layout utilities
 ====================
@@ -437,20 +437,20 @@ layouts.  As long as the custom layout procedure provides the entry
 points and functionality described here, compatibility with the
 remainder of the QDP library is assured.
 
-4.2.1 Defining the layout
--------------------------
+Defining the layout
+-------------------
 
 Prior to creating the layout the layout parameters must be defined.
 This is done through function calls.
 
-Syntax:     `void QDP_set_latsize(int nd, int size[]);'
-Meaning:    Sets number of spacetime dimensions and lattice size.
+Syntax      `void QDP_set_latsize(int nd, int size[]);'
+Meaning     Sets number of spacetime dimensions and lattice size.
             No default.  Must always be set.
-Example:    `QDP_set_latsize(4, size);'
+Example     `QDP_set_latsize(4, size);'
 
-Syntax:     `void QDP_create_layout(void);'
-Meaning:    Lays out the sites.
-Example:    `QDP_create_layout();'
+Syntax      `void QDP_create_layout(void);'
+Meaning     Lays out the sites.
+Example     `QDP_create_layout();'
 
    All layout parameters must be initialized through the `set' function
 calls prior to creating the layout.
@@ -481,78 +481,78 @@ Note that this may vary between nodes.
    The following global entry points are provided by the
 `QDP_create_layout' procedure:
 
-4.2.2 Number of dimensions
---------------------------
+Number of dimensions
+--------------------
 
-Syntax:     `int QDP_ndim(void);'
-Meaning:    Returns the number of dimensions.
-Example:    `ndim = QDP_ndim();'
+Syntax      `int QDP_ndim(void);'
+Meaning     Returns the number of dimensions.
+Example     `ndim = QDP_ndim();'
 
-4.2.3 Length of lattice in a given direction
---------------------------------------------
+Length of lattice in a given direction
+--------------------------------------
 
-Syntax:     `int QDP_coord_size(int i);'
-Meaning:    Returns length of lattice in direction `i'.
-Example:    `nx = QDP_coord_size(0);'
+Syntax      `int QDP_coord_size(int i);'
+Meaning     Returns length of lattice in direction `i'.
+Example     `nx = QDP_coord_size(0);'
 
-4.2.4 Length of lattice in all directions
------------------------------------------
+Length of lattice in all directions
+-----------------------------------
 
-Syntax:     `void QDP_latsize(int latsize[]);'
-Meaning:    Returns lattice dimensions into array `latsize'.
-Example:    `QDP_latsize(latsize);'
+Syntax      `void QDP_latsize(int latsize[]);'
+Meaning     Returns lattice dimensions into array `latsize'.
+Example     `QDP_latsize(latsize);'
 
-4.2.5 Length of lattice in all directions
------------------------------------------
+Length of lattice in all directions
+-----------------------------------
 
-Syntax:     `size_t QDP_volume(void);'
-Meaning:    Returns lattice volume.
-Example:    `vol = QDP_volume();'
+Syntax      `size_t QDP_volume(void);'
+Meaning     Returns lattice volume.
+Example     `vol = QDP_volume();'
 
-4.2.6 Node number of site
--------------------------
+Node number of site
+-------------------
 
-Syntax:     `int QDP_node_number(int x[]);'
-Meaning:    Returns logical node number containing site `x'.
-Example:    `node = QDP_node_number(x);'
+Syntax      `int QDP_node_number(int x[]);'
+Meaning     Returns logical node number containing site `x'.
+Example     `node = QDP_node_number(x);'
 
-4.2.7 Linear index of site
---------------------------
+Linear index of site
+--------------------
 
-Syntax:     `int QDP_index(int x[]);'
-Meaning:    Returns the linearized index for the lattice site `x'.
-Example:    `k = QDP_index(x);'
+Syntax      `int QDP_index(int x[]);'
+Meaning     Returns the linearized index for the lattice site `x'.
+Example     `k = QDP_index(x);'
 
-   The linear index returned by `QDP_index' ranges from 0 to
+The linear index returned by `QDP_index' ranges from 0 to
 `QDP_sites_on_node' - 1.
 
-4.2.8 Number of sites on a node
--------------------------------
+Number of sites on a node
+-------------------------
 
-Syntax:     `int QDP_numsites(int node);'
-Meaning:    Return the number of sites on a node.  Same as
+Syntax      `int QDP_numsites(int node);'
+Meaning     Return the number of sites on a node.  Same as
             `QDP_sites_on_node' if `node = QDP_this_node'
-Example:    `k = QDP_numsites(i);'
+Example     `k = QDP_numsites(i);'
 
-4.2.9 Map node and linear index to coordinate
----------------------------------------------
+Map node and linear index to coordinate
+---------------------------------------
 
-Syntax:     `void QDP_get_coords(int x[], int node, int index);'
-Meaning:    Returns site coordinates `x' for the given node `node' and
+Syntax      `void QDP_get_coords(int x[], int node, int index);'
+Meaning     Returns site coordinates `x' for the given node `node' and
             linear index `index'.
-Example:    `QDP_get_coords(x, 0, 31);'
+Example     `QDP_get_coords(x, 0, 31);'
 
-4.2.10 Defining the spacetime coordinate
-----------------------------------------
+Defining the spacetime coordinate
+---------------------------------
 
-Syntax:     `void QDP_I_eq_coord(QDP_Int *r, int i);'
-Meaning:    The `i'th spacetime coordinate.
-Example:    `QDP_Int *coord_z;
+Syntax      `void QDP_I_eq_coord(QDP_Int *r, int i);'
+Meaning     The `i'th spacetime coordinate.
+Example     `QDP_Int *coord_z;
             QDP_I_eq_coord(coord_z, 2);'
 
-   The call `QDP_I_eq_coord(&coord[i],i)' fills an integer lattice
-field `coord[i]' with a value on each site equal to the integer value
-of the _i_th space-time coordinate on that site.
+The call `QDP_I_eq_coord(&coord[i],i)' fills an integer lattice field
+`coord[i]' with a value on each site equal to the integer value of the
+_i_th space-time coordinate on that site.
 
 4.3 Naming Conventions for Data Parallel Functions
 ==================================================
@@ -595,8 +595,8 @@ eqm            =-
    Some functions allow all of these and some take only a simple
 replacement (eq).
 
-4.3.1 Constant Arguments
-------------------------
+Constant Arguments
+------------------
 
 In some cases it is desirable to keep an argument constant over the
 entire subset.  For example the function
@@ -612,8 +612,8 @@ in
 constant (coordinate-independent) by writing the type abbreviation in
 lower case: `c'.
 
-4.3.2 Color argument for _SU(N)_
---------------------------------
+Color argument for _SU(N)_
+--------------------------
 
 For the general color case _SU(N)_ the specific function requires an
 extra argument giving the number of colors.  It always comes first.
@@ -628,8 +628,8 @@ function is actually a macro and is automatically converted to this
 usage with `QDP_Nc' for the first argument.  However, if the specific
 name is used, the user must supply the argument.
 
-4.3.3 Adjoint
--------------
+Adjoint
+-------
 
 The adjoint of an operand is specified by a suffix `a' after the type
 abbreviation.  Thus
@@ -642,8 +642,8 @@ abbreviation.  Thus
 
    for all sites `x' in subset `s'.
 
-4.3.4 Shift
------------
+Shift
+-----
 
 A shift in an operand is specified by a prefix lowercase `s' before the
 type abbreviation.  (See the discussion of shifts below.) Thus
@@ -653,8 +653,8 @@ type abbreviation.  (See the discussion of shifts below.) Thus
    shifts staggered fermion data along the direction specified by `dir'
 and `sign' for all sites `x' in destination subset `s'.
 
-4.3.5 Operations on arrays of fields
-------------------------------------
+Operations on arrays of fields
+------------------------------
 
 Some of the routines can operate on multiple fields at a time.  These
 functions are designated by placing a `v' in front of the _eqop_
@@ -690,20 +690,20 @@ All QDP functions expect that lattice field arguments point to fields
 that have already been created.  The sole exception to this rule is the
 creation utility itself, which returns a pointer
 
-4.4.1 Creating a lattice field
-------------------------------
+Creating a lattice field
+------------------------
 
 Syntax      `TYPE * QDP_create_T(void);'
 Meaning     Creates lattice field of type TYPE.
 TYPE        `S, I, R, C, V, H, D, M, P'
 Example     `u = QDP_create_M();'
 
-   In prototype specifications throughout this document the notation
+In prototype specifications throughout this document the notation
 _Type_ specifies the generic or specific datatype name matching the
 abbreviation _T_ according to the table in *Note Datatypes::.
 
-4.4.2 Destroying a lattice field
---------------------------------
+Destroying a lattice field
+--------------------------
 
 Syntax      `void QDP_destroy_T(TYPE *a);'
 Meaning     Frees memory associated with field `a'.
@@ -727,15 +727,15 @@ an even site may also be assigned to a time slice subset and one of the
 subsets in a 32-level checkerboard scheme.  A subset definition remains
 valid until `QDP_destroy_subset' is called.
 
-4.5.1 Defining a subset
------------------------
+Defining a subset
+-----------------
 
 Subsets are defined through the data type `QDP_Subset'
 
-Syntax:     `QDP_Subset * QDP_create_subset(int (*func)(int x[], void
+Syntax      `QDP_Subset * QDP_create_subset(int (*func)(int x[], void
             *args), void *args, int argsize, int n);'
-Meaning:    Creates an array of `n' subsets based on `func'.
-Example:    `QDP_Subset ts[nt];
+Meaning     Creates an array of `n' subsets based on `func'.
+Example     `QDP_Subset ts[nt];
             ts = QDP_create_subset(timeslice, NULL, 0, nt);'
 
    The extra arguments `args' are passed directly to the function and
@@ -746,19 +746,19 @@ permissible to call `QDP_create_subset' with n = 1.  In this case the
 function must return zero if the site is in the subset and nonzero if
 not.  (Note, this is opposite the _true_, _false_ convention in C).
 
-4.5.2 Destroying subsets
-------------------------
+Destroying subsets
+------------------
 
-Syntax:     `void QDP_destroy_subset(QDP_subset s[]);'
-Meaning:    Destroys all subsets created with `s'.
-Example:    `QDP_destroy_subset(ts);'
+Syntax      `void QDP_destroy_subset(QDP_subset s[]);'
+Meaning     Destroys all subsets created with `s'.
+Example     `QDP_destroy_subset(ts);'
 
-   This procedure frees all memory associated with the subset object
-_s_.  The `QDP_subset *' value _s_ should be the object returned by
+This procedure frees all memory associated with the subset object _s_.
+The `QDP_subset *' value _s_ should be the object returned by
 `QDP_create_subset'.  All subsets in the array _s_ are destroyed.
 
-4.5.3 Reductions on subsets
----------------------------
+Reductions on subsets
+---------------------
 
 Reduction operations (norms, inner products, global sums) come in two
 variants according to whether the result is computed on a single subset
@@ -816,32 +816,32 @@ nearest neighbor shift operation specifying the even subset shifts odd
 site values from the source _a_ and places them on even site values on
 the destination field _r_.
 
-4.6.1 Creating displacement shifts
-----------------------------------
+Creating displacement shifts
+----------------------------
 
-Syntax:     `QDP_Shift QDP_create_shift(int d[]);'
-Meaning:    Creates a shift defined by the displacement vector `d'.
-Example:    `int d[4] = {0,1,2,0};
+Syntax      `QDP_Shift QDP_create_shift(int d[]);'
+Meaning     Creates a shift defined by the displacement vector `d'.
+Example     `int d[4] = {0,1,2,0};
             QDP_Shift knight[4][4];
             knight[2][3] = QDP_create_shift(d);'
 
-   Calling with a displacement vector {1,0,0,0} would reproduce the
-shift `QDP_neighbor[0]'.
+Calling with a displacement vector {1,0,0,0} would reproduce the shift
+`QDP_neighbor[0]'.
 
-4.6.2 Creating arbitrary permutations
--------------------------------------
+Creating arbitrary permutations
+-------------------------------
 
-Syntax:     `QDP_Shift QDP_create_map(int *(func*)(int coord[Nd], void
+Syntax      `QDP_Shift QDP_create_map(int *(func*)(int coord[Nd], void
             *args), void *args, int argsize);'
-Meaning:    Creates a shift specified by the permutation map `func'.
-Example:    `int mu = 1;
+Meaning     Creates a shift specified by the permutation map `func'.
+Example     `int mu = 1;
             QDP_Shift mirror[4];
             mirror[mu] = QDP_create_map(reflect, &mu, sizeof(mu));'
 
-   The return value is used in the various linear algebra calls
-involving shifts.  The arguments _args_ are passed through to the
-calling function.  The _argsize_ parameter specifies the byte length of
-the argument array or structure.
+The return value is used in the various linear algebra calls involving
+shifts.  The arguments _args_ are passed through to the calling
+function.  The _argsize_ parameter specifies the byte length of the
+argument array or structure.
 
    The implementation may choose to postpone construction of a shift.
 Thus it is required that the callback function _func_ be static and
@@ -850,14 +850,14 @@ same result, even if the call is postponed.  The parameters _args_ are
 copied at the moment the shift is created, however, so they may be
 volatile.  The size argument _argsize_ makes copying possible.
 
-4.6.3 Destroying a shift
-------------------------
+Destroying a shift
+------------------
 
 The corresponding destruction function is `QDP_destroy_shift'.
 
-Syntax:     `void QDP_destroy_shift(QDP_Shift dir);'
-Meaning:    Frees memory associated with the map _dir_.
-Example:    `QDP_destroy_shift(dir);'
+Syntax      `void QDP_destroy_shift(QDP_Shift dir);'
+Meaning     Frees memory associated with the map _dir_.
+Example     `QDP_destroy_shift(dir);'
 
 4.7 I/O utilities
 =================
@@ -877,40 +877,40 @@ communications layer.  For this purpose function calls are provided to
 put the QDP implementation and/or QDP objects into a known state,
 extract values, and reinsert them.
 
-4.8.1 Exposing QDP data
------------------------
+Exposing QDP data
+-----------------
 
 Syntax      `QLA_TYPE * QDP_expose_T(TYPE *src);'
 Meaning     Deliver data values from field `src'.
 TYPE        `I, R, C, V, H, D, M, P'
 Example     `r = QDP_expose_M(a);'
 
-   This function grants direct access to the data values contained in
-the QDP field _src_.  The return value is a pointer to an array of QLA
-data _dest_ of type _T_.  The order of the data is given by
-`QDP_index'.  No QDP operations are permitted on exposed data until
-`QDP_reset' is called. (See next.)
+This function grants direct access to the data values contained in the
+QDP field _src_.  The return value is a pointer to an array of QLA data
+_dest_ of type _T_.  The order of the data is given by `QDP_index'.  No
+QDP operations are permitted on exposed data until `QDP_reset' is
+called. (See next.)
 
-4.8.2 Returning control of QDP data
------------------------------------
+Returning control of QDP data
+-----------------------------
 
 Syntax      `void QDP_reset_T(TYPE *field);'
 Meaning     Returns control of data values to QDP.
 TYPE        `I, R, C, V, H, D, M, P'
 Example     `QDP_reset_M(r);'
 
-   This call signals to QDP that the user is ready to resume QDP
+This call signals to QDP that the user is ready to resume QDP
 operations with the data in the specified field.
 
-4.8.3 Extracting QDP data
--------------------------
+Extracting QDP data
+-------------------
 
 Syntax      `void QDP_extract_T(QLA_TYPE *dest, TYPE *src);'
 Meaning     Copy data values from field `src' to array `dest'.
 TYPE        `I, R, C, V, H, D, M, P'
 Example     `QDP_extract_M(r, a, QDP_even);'
 
-   The user must allocate space of size
+The user must allocate space of size
 `QDP_sites_on_node*sizeof(QLA_Type)' for the destination array before
 calling this function, regardless of the size of the subset.  This
 function copies the data values contained in the QDP field _src_ to the
@@ -920,41 +920,41 @@ subset are left unmodified.  The order of the data is given by
 `QDP_index'.  Since a copy is made, QDP operations involving the source
 field may proceed without disruption.
 
-4.8.4 Inserting QDP data
-------------------------
+Inserting QDP data
+------------------
 
 Syntax      `void QDP_insert_T(TYPE *dest, QLA_TYPE *src);'
 Meaning     Inserts data values from QLA array `src'.
 TYPE        `I, R, C, V, H, D, M, P'
 Example     `QDP_insert_M(a, r);'
 
-   Only data associated with the specified subset are inserted.  Other
+Only data associated with the specified subset are inserted.  Other
 values are unmodified.  The data order must conform to `QDP_index'.
 This call, analogous to a fill operation, is permitted at any time and
 does not interfere with QDP operations.
 
-4.8.5 Suspending QDP communications
------------------------------------
+Suspending QDP communications
+-----------------------------
 
 If a user wishes to suspend QDP communications temporarily and carry on
 communications by other means, it is first necessary to call
 `QDP_suspend_comm'.
 
-Syntax:     `void QDP_suspend_comm(void);'
-Meaning:    Suspends QDP communications.
-Example:    `QDP_suspend_comm();'
+Syntax      `void QDP_suspend_comm(void);'
+Meaning     Suspends QDP communications.
+Example     `QDP_suspend_comm();'
 
    No QDP shifts can then be initiated until `QDP_resume' is called.
 However QDP linear algebra operations without shifts may proceed.
 
-4.8.6 Resuming QDP communications
----------------------------------
+Resuming QDP communications
+---------------------------
 
 To resume QDP communications one uses
 
-Syntax:     `void QDP_resume_comm(void);'
-Meaning:    Restores QDP communications.
-Example:    `QDP_resume_comm();'
+Syntax      `void QDP_resume_comm(void);'
+Meaning     Restores QDP communications.
+Example     `QDP_resume_comm();'
 
 4.9 Optimization Calls
 ======================
@@ -962,15 +962,15 @@ Example:    `QDP_resume_comm();'
 The following procedure is included to aid in optimization of the QDP
 implementation
 
-4.9.1 Marking discarded data
-----------------------------
+Marking discarded data
+----------------------
 
 Syntax      `void QDP_discard_T(TYPE *a);'
 Meaning     Indicates data in `a' is no longer needed.
 TYPE        `I, R, C, V, H, D, M, P'
 Example     `QDP_discard_M(utemp);'
 
-   The field is not destroyed and memory is not released.  For that
+The field is not destroyed and memory is not released.  For that
 purpose, see `QDP_destroy'.  This call allows the implementation to
 cancel the deferred resolution of a lazy shift.  It is a runtime error
 to attempt to use discarded data as an rvalue (source operand or
@@ -1507,6 +1507,8 @@ Addition
 --------
 
 Syntax      `QDP_T_eq_T_plus_T(TYPE *r, TYPE *a, TYPE *b, SUBSET);'
+            `QDP_T_veq_T_plus_T(TYPE *r[], TYPE *a[], TYPE *b[], SUBSET,
+            int n);'
 Meaning     r = a + b
 TYPE        `I, R, C, V, H, D, M, P'
 
@@ -1514,6 +1516,8 @@ Subtraction
 -----------
 
 Syntax      `QDP_T_eq_T_minus_T(TYPE *r, TYPE *a, TYPE *b, SUBSET);'
+            `QDP_T_veq_T_minus_T(TYPE *r[], TYPE *a[], TYPE *b[],
+            SUBSET, int n);'
 Meaning     r = a - b
 TYPE        `I, R, C, V, H, D, M, P'
 
@@ -1619,6 +1623,8 @@ Addition or subtraction with real scalar multiplication
 
 Syntax      `QDP_T_eq_r_times_T_FUNC_T(TYPE *r, QLA_Real *c, TYPE *a,
             TYPE *b, SUBSET);'
+            `QDP_T_veq_r_times_T_FUNC_T(TYPE *r[], QLA_Real *c[], TYPE
+            *a[], TYPE *b[], SUBSET, int n);'
 Meaning     r = c * a +/- b
 TYPE        `R, C, V, H, D, M, P'
 FUNC        `plus, minus'
@@ -1628,6 +1634,8 @@ Addition or subtraction with complex scalar multiplication
 
 Syntax      `QDP_T_eq_c_times_T_FUNC_T(TYPE *r, QLA_Complex *c, TYPE *a,
             TYPE *b, SUBSET);'
+            `QDP_T_veq_c_times_T_FUNC_T(TYPE *r[], QLA_Complex *c[],
+            TYPE *a[], TYPE *b[], SUBSET, int n);'
 Meaning     r = c * a +/- b
 TYPE        `C, V, H, D, M, P'
 FUNC        `plus, minus'
@@ -1752,6 +1760,6 @@ Node: Introduction593
 Node: Compilation with QDP2052
 Node: Datatypes7650
 Node: QDP Functions12601
-Node: Function Details36820
+Node: Function Details36416
 
 End Tag Table

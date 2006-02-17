@@ -429,17 +429,21 @@ QDP_R_eq_R_ldexp_I,
 QDP_Real *r@comma{} QDP_Real *a@comma{} QDP_Int *b@comma{} @var{subset},
 r = a * 2^b}
 
-@sfunct{
+@sfuncvt{
 Addition,
 QDP_@var{T}_eq_@var{T}_plus_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
+QDP_@var{T}_veq_@var{T}_plus_@var{T},
+@var{Type} *r[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r = a + b,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
-@sfunct{
+@sfuncvt{
 Subtraction,
 QDP_@var{T}_eq_@var{T}_minus_@var{T},
 @var{Type} *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
+QDP_@var{T}_veq_@var{T}_minus_@var{T},
+@var{Type} *r[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r = a - b,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
@@ -536,18 +540,22 @@ QDP_Int *r@comma{} QLA_Int *c@comma{} QDP_Int *a@comma{} QDP_Int *b@comma{} @var
 r = c * a +/- b,
 plus@comma{} minus}
 
-@sfunctf{
+@sfuncvtf{
 Addition or subtraction with real scalar multiplication,
 QDP_@var{T}_eq_r_times_@var{T}_@var{func}_@var{T},
 @var{Type} *r@comma{} QLA_Real *c@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
+QDP_@var{T}_veq_r_times_@var{T}_@var{func}_@var{T},
+@var{Type} *r[]@comma{} QLA_Real *c[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r = c * a +/- b,
 R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 plus@comma{} minus}
 
-@sfunctf{
+@sfuncvtf{
 Addition or subtraction with complex scalar multiplication,
 QDP_@var{T}_eq_c_times_@var{T}_@var{func}_@var{T},
 @var{Type} *r@comma{} QLA_Complex *c@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
+QDP_@var{T}_veq_c_times_@var{T}_@var{func}_@var{T},
+@var{Type} *r[]@comma{} QLA_Complex *c[]@comma{} @var{Type} *a[]@comma{} @var{Type} *b[]@comma{} @var{subset}@comma{} int n,
 r = c * a +/- b,
 C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
 plus@comma{} minus}

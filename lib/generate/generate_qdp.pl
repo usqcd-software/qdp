@@ -444,6 +444,12 @@ sub func_body($$$$$$$$) {
 
   my($qla1, $qla2, $qla3, $qla4) = qla_name($dest, $op, $src1, $func, $src2);
 
+  if($dest->{VECT}) {
+    $x1 =~ s/(QLA_\S*\s+)[*]/$1&/g;
+    $x2 =~ s/(QLA_\S*\s+)[*]/$1&/g;
+    $x3 =~ s/(QLA_\S*\s+)[*]/$1&/g;
+  }
+
   my($y0) = ('');
   if($color eq 'N') { $y0 = ' nc,'; }
   my($y1) = $x1;
@@ -754,6 +760,9 @@ sub qdp_args($$$$$$) {
     $x1 =~ s/,/[],/g;
     $x2 =~ s/,/[],/g;
     $x3 =~ s/,/[],/g;
+    $x1 =~ s/(QLA_\S*\s+)[*]/$1/g;
+    $x2 =~ s/(QLA_\S*\s+)[*]/$1/g;
+    $x3 =~ s/(QLA_\S*\s+)[*]/$1/g;
   }
   my($s1t) = $src1->{TYPE};
   my($s2t) = $src2->{TYPE};

@@ -139,7 +139,11 @@ QDP_DN_D_peq_sprecon_H.c \
 QDP_DN_D_peq_sprecon_Ma_times_H.c \
 QDP_DN_D_peq_sprecon_M_times_H.c \
 QDP_DN_D_veq_c_times_D.c \
+QDP_DN_D_veq_c_times_D_minus_D.c \
+QDP_DN_D_veq_c_times_D_plus_D.c \
 QDP_DN_D_veq_D.c \
+QDP_DN_D_veq_D_minus_D.c \
+QDP_DN_D_veq_D_plus_D.c \
 QDP_DN_D_veq_Ma_times_D.c \
 QDP_DN_D_veqm_c_times_D.c \
 QDP_DN_D_veqm_D.c \
@@ -154,6 +158,8 @@ QDP_DN_D_veqm_sprecon_Ma_times_H.c \
 QDP_DN_D_veqm_sprecon_M_times_H.c \
 QDP_DN_D_veq_M_times_D.c \
 QDP_DN_D_veq_r_times_D.c \
+QDP_DN_D_veq_r_times_D_minus_D.c \
+QDP_DN_D_veq_r_times_D_plus_D.c \
 QDP_DN_D_veq_sD.c \
 QDP_DN_D_veq_spproj_D.c \
 QDP_DN_D_veq_spproj_Ma_times_D.c \
@@ -274,7 +280,11 @@ QDP_DN_H_peq_spproj_D.c \
 QDP_DN_H_peq_spproj_Ma_times_D.c \
 QDP_DN_H_peq_spproj_M_times_D.c \
 QDP_DN_H_veq_c_times_H.c \
+QDP_DN_H_veq_c_times_H_minus_H.c \
+QDP_DN_H_veq_c_times_H_plus_H.c \
 QDP_DN_H_veq_H.c \
+QDP_DN_H_veq_H_minus_H.c \
+QDP_DN_H_veq_H_plus_H.c \
 QDP_DN_H_veq_Ma_times_H.c \
 QDP_DN_H_veqm_c_times_H.c \
 QDP_DN_H_veqm_H.c \
@@ -286,6 +296,8 @@ QDP_DN_H_veqm_spproj_Ma_times_D.c \
 QDP_DN_H_veqm_spproj_M_times_D.c \
 QDP_DN_H_veq_M_times_H.c \
 QDP_DN_H_veq_r_times_H.c \
+QDP_DN_H_veq_r_times_H_minus_H.c \
+QDP_DN_H_veq_r_times_H_plus_H.c \
 QDP_DN_H_veq_sH.c \
 QDP_DN_H_veq_spproj_D.c \
 QDP_DN_H_veq_spproj_Ma_times_D.c \
@@ -398,16 +410,22 @@ QDP_DN_M_peq_sM_times_sM.c \
 QDP_DN_M_peq_transpose_M.c \
 QDP_DN_M_peq_V_times_Va.c \
 QDP_DN_M_veq_c_times_M.c \
+QDP_DN_M_veq_c_times_M_minus_M.c \
+QDP_DN_M_veq_c_times_M_plus_M.c \
 QDP_DN_M_veq_Ma_times_M.c \
 QDP_DN_M_veq_M.c \
 QDP_DN_M_veqm_c_times_M.c \
 QDP_DN_M_veqm_Ma_times_M.c \
 QDP_DN_M_veqm_M.c \
+QDP_DN_M_veq_M_minus_M.c \
 QDP_DN_M_veqm_M_times_M.c \
+QDP_DN_M_veq_M_plus_M.c \
 QDP_DN_M_veqm_r_times_M.c \
 QDP_DN_M_veq_M_times_M.c \
 QDP_DN_M_veqm_V_times_Va.c \
 QDP_DN_M_veq_r_times_M.c \
+QDP_DN_M_veq_r_times_M_minus_M.c \
+QDP_DN_M_veq_r_times_M_plus_M.c \
 QDP_DN_M_veq_sM.c \
 QDP_DN_M_veq_V_times_Va.c \
 QDP_DN_M_vmeq_c_times_M.c \
@@ -484,25 +502,7 @@ QDP_DN_P_meq_Ma_times_sP.c \
 QDP_DN_P_meq_M_times_P.c \
 QDP_DN_P_meq_M_times_sP.c \
 QDP_DN_P_meq_Pa.c \
-QDP_DN_P_meq_P.c \
-QDP_DN_P_meq_P_times_Ma.c \
-QDP_DN_P_meq_P_times_M.c \
-QDP_DN_P_meq_P_times_P.c \
-QDP_DN_P_meq_r_times_P.c \
-QDP_DN_P_meq_sMa_times_P.c \
-QDP_DN_P_meq_sMa_times_sP.c \
-QDP_DN_P_meq_sM_times_P.c \
-QDP_DN_P_meq_sM_times_sP.c \
-QDP_DN_P_meq_transpose_P.c \
-QDP_DN_P_peq_conj_P.c \
-QDP_DN_P_peq_c_times_P.c \
-QDP_DN_P_peq_i_P.c \
-QDP_DN_P_peq_Ma_times_P.c \
-QDP_DN_P_peq_Ma_times_sP.c \
-QDP_DN_P_peq_M_times_P.c \
-QDP_DN_P_peq_M_times_sP.c \
-QDP_DN_P_peq_Pa.c \
-QDP_DN_P_peq_P.c
+QDP_DN_P_meq_P.c
 
 QDPOBJ1 = \
 QDP_DN_c_eq_D_dot_D.o \
@@ -641,7 +641,11 @@ QDP_DN_D_peq_sprecon_H.o \
 QDP_DN_D_peq_sprecon_Ma_times_H.o \
 QDP_DN_D_peq_sprecon_M_times_H.o \
 QDP_DN_D_veq_c_times_D.o \
+QDP_DN_D_veq_c_times_D_minus_D.o \
+QDP_DN_D_veq_c_times_D_plus_D.o \
 QDP_DN_D_veq_D.o \
+QDP_DN_D_veq_D_minus_D.o \
+QDP_DN_D_veq_D_plus_D.o \
 QDP_DN_D_veq_Ma_times_D.o \
 QDP_DN_D_veqm_c_times_D.o \
 QDP_DN_D_veqm_D.o \
@@ -656,6 +660,8 @@ QDP_DN_D_veqm_sprecon_Ma_times_H.o \
 QDP_DN_D_veqm_sprecon_M_times_H.o \
 QDP_DN_D_veq_M_times_D.o \
 QDP_DN_D_veq_r_times_D.o \
+QDP_DN_D_veq_r_times_D_minus_D.o \
+QDP_DN_D_veq_r_times_D_plus_D.o \
 QDP_DN_D_veq_sD.o \
 QDP_DN_D_veq_spproj_D.o \
 QDP_DN_D_veq_spproj_Ma_times_D.o \
@@ -776,7 +782,11 @@ QDP_DN_H_peq_spproj_D.o \
 QDP_DN_H_peq_spproj_Ma_times_D.o \
 QDP_DN_H_peq_spproj_M_times_D.o \
 QDP_DN_H_veq_c_times_H.o \
+QDP_DN_H_veq_c_times_H_minus_H.o \
+QDP_DN_H_veq_c_times_H_plus_H.o \
 QDP_DN_H_veq_H.o \
+QDP_DN_H_veq_H_minus_H.o \
+QDP_DN_H_veq_H_plus_H.o \
 QDP_DN_H_veq_Ma_times_H.o \
 QDP_DN_H_veqm_c_times_H.o \
 QDP_DN_H_veqm_H.o \
@@ -788,6 +798,8 @@ QDP_DN_H_veqm_spproj_Ma_times_D.o \
 QDP_DN_H_veqm_spproj_M_times_D.o \
 QDP_DN_H_veq_M_times_H.o \
 QDP_DN_H_veq_r_times_H.o \
+QDP_DN_H_veq_r_times_H_minus_H.o \
+QDP_DN_H_veq_r_times_H_plus_H.o \
 QDP_DN_H_veq_sH.o \
 QDP_DN_H_veq_spproj_D.o \
 QDP_DN_H_veq_spproj_Ma_times_D.o \
@@ -900,16 +912,22 @@ QDP_DN_M_peq_sM_times_sM.o \
 QDP_DN_M_peq_transpose_M.o \
 QDP_DN_M_peq_V_times_Va.o \
 QDP_DN_M_veq_c_times_M.o \
+QDP_DN_M_veq_c_times_M_minus_M.o \
+QDP_DN_M_veq_c_times_M_plus_M.o \
 QDP_DN_M_veq_Ma_times_M.o \
 QDP_DN_M_veq_M.o \
 QDP_DN_M_veqm_c_times_M.o \
 QDP_DN_M_veqm_Ma_times_M.o \
 QDP_DN_M_veqm_M.o \
+QDP_DN_M_veq_M_minus_M.o \
 QDP_DN_M_veqm_M_times_M.o \
+QDP_DN_M_veq_M_plus_M.o \
 QDP_DN_M_veqm_r_times_M.o \
 QDP_DN_M_veq_M_times_M.o \
 QDP_DN_M_veqm_V_times_Va.o \
 QDP_DN_M_veq_r_times_M.o \
+QDP_DN_M_veq_r_times_M_minus_M.o \
+QDP_DN_M_veq_r_times_M_plus_M.o \
 QDP_DN_M_veq_sM.o \
 QDP_DN_M_veq_V_times_Va.o \
 QDP_DN_M_vmeq_c_times_M.o \
@@ -986,27 +1004,27 @@ QDP_DN_P_meq_Ma_times_sP.o \
 QDP_DN_P_meq_M_times_P.o \
 QDP_DN_P_meq_M_times_sP.o \
 QDP_DN_P_meq_Pa.o \
-QDP_DN_P_meq_P.o \
-QDP_DN_P_meq_P_times_Ma.o \
-QDP_DN_P_meq_P_times_M.o \
-QDP_DN_P_meq_P_times_P.o \
-QDP_DN_P_meq_r_times_P.o \
-QDP_DN_P_meq_sMa_times_P.o \
-QDP_DN_P_meq_sMa_times_sP.o \
-QDP_DN_P_meq_sM_times_P.o \
-QDP_DN_P_meq_sM_times_sP.o \
-QDP_DN_P_meq_transpose_P.o \
-QDP_DN_P_peq_conj_P.o \
-QDP_DN_P_peq_c_times_P.o \
-QDP_DN_P_peq_i_P.o \
-QDP_DN_P_peq_Ma_times_P.o \
-QDP_DN_P_peq_Ma_times_sP.o \
-QDP_DN_P_peq_M_times_P.o \
-QDP_DN_P_peq_M_times_sP.o \
-QDP_DN_P_peq_Pa.o \
-QDP_DN_P_peq_P.o
+QDP_DN_P_meq_P.o
 
 QDPSRC2 = \
+QDP_DN_P_meq_P_times_Ma.c \
+QDP_DN_P_meq_P_times_M.c \
+QDP_DN_P_meq_P_times_P.c \
+QDP_DN_P_meq_r_times_P.c \
+QDP_DN_P_meq_sMa_times_P.c \
+QDP_DN_P_meq_sMa_times_sP.c \
+QDP_DN_P_meq_sM_times_P.c \
+QDP_DN_P_meq_sM_times_sP.c \
+QDP_DN_P_meq_transpose_P.c \
+QDP_DN_P_peq_conj_P.c \
+QDP_DN_P_peq_c_times_P.c \
+QDP_DN_P_peq_i_P.c \
+QDP_DN_P_peq_Ma_times_P.c \
+QDP_DN_P_peq_Ma_times_sP.c \
+QDP_DN_P_peq_M_times_P.c \
+QDP_DN_P_peq_M_times_sP.c \
+QDP_DN_P_peq_Pa.c \
+QDP_DN_P_peq_P.c \
 QDP_DN_P_peq_P_times_Ma.c \
 QDP_DN_P_peq_P_times_M.c \
 QDP_DN_P_peq_P_times_P.c \
@@ -1017,6 +1035,8 @@ QDP_DN_P_peq_sM_times_P.c \
 QDP_DN_P_peq_sM_times_sP.c \
 QDP_DN_P_peq_transpose_P.c \
 QDP_DN_P_veq_c_times_P.c \
+QDP_DN_P_veq_c_times_P_minus_P.c \
+QDP_DN_P_veq_c_times_P_plus_P.c \
 QDP_DN_P_veq_Ma_times_P.c \
 QDP_DN_P_veqm_c_times_P.c \
 QDP_DN_P_veqm_Ma_times_P.c \
@@ -1025,7 +1045,11 @@ QDP_DN_P_veqm_P.c \
 QDP_DN_P_veqm_r_times_P.c \
 QDP_DN_P_veq_M_times_P.c \
 QDP_DN_P_veq_P.c \
+QDP_DN_P_veq_P_minus_P.c \
+QDP_DN_P_veq_P_plus_P.c \
 QDP_DN_P_veq_r_times_P.c \
+QDP_DN_P_veq_r_times_P_minus_P.c \
+QDP_DN_P_veq_r_times_P_plus_P.c \
 QDP_DN_P_veq_sP.c \
 QDP_DN_P_vmeq_c_times_P.c \
 QDP_DN_P_vmeq_Ma_times_P.c \
@@ -1165,6 +1189,8 @@ QDP_DN_V_peq_sM_times_sV.c \
 QDP_DN_V_peq_sM_times_V.c \
 QDP_DN_V_peq_V.c \
 QDP_DN_V_veq_c_times_V.c \
+QDP_DN_V_veq_c_times_V_minus_V.c \
+QDP_DN_V_veq_c_times_V_plus_V.c \
 QDP_DN_V_veq_Ma_times_V.c \
 QDP_DN_V_veqm_c_times_V.c \
 QDP_DN_V_veqm_Ma_times_V.c \
@@ -1173,8 +1199,12 @@ QDP_DN_V_veqm_r_times_V.c \
 QDP_DN_V_veq_M_times_V.c \
 QDP_DN_V_veqm_V.c \
 QDP_DN_V_veq_r_times_V.c \
+QDP_DN_V_veq_r_times_V_minus_V.c \
+QDP_DN_V_veq_r_times_V_plus_V.c \
 QDP_DN_V_veq_sV.c \
 QDP_DN_V_veq_V.c \
+QDP_DN_V_veq_V_minus_V.c \
+QDP_DN_V_veq_V_plus_V.c \
 QDP_DN_V_vmeq_c_times_V.c \
 QDP_DN_V_vmeq_Ma_times_V.c \
 QDP_DN_V_vmeq_M_times_V.c \
@@ -1192,6 +1222,24 @@ QDP_DN_write_P.c \
 QDP_DN_write_V.c
 
 QDPOBJ2 = \
+QDP_DN_P_meq_P_times_Ma.o \
+QDP_DN_P_meq_P_times_M.o \
+QDP_DN_P_meq_P_times_P.o \
+QDP_DN_P_meq_r_times_P.o \
+QDP_DN_P_meq_sMa_times_P.o \
+QDP_DN_P_meq_sMa_times_sP.o \
+QDP_DN_P_meq_sM_times_P.o \
+QDP_DN_P_meq_sM_times_sP.o \
+QDP_DN_P_meq_transpose_P.o \
+QDP_DN_P_peq_conj_P.o \
+QDP_DN_P_peq_c_times_P.o \
+QDP_DN_P_peq_i_P.o \
+QDP_DN_P_peq_Ma_times_P.o \
+QDP_DN_P_peq_Ma_times_sP.o \
+QDP_DN_P_peq_M_times_P.o \
+QDP_DN_P_peq_M_times_sP.o \
+QDP_DN_P_peq_Pa.o \
+QDP_DN_P_peq_P.o \
 QDP_DN_P_peq_P_times_Ma.o \
 QDP_DN_P_peq_P_times_M.o \
 QDP_DN_P_peq_P_times_P.o \
@@ -1202,6 +1250,8 @@ QDP_DN_P_peq_sM_times_P.o \
 QDP_DN_P_peq_sM_times_sP.o \
 QDP_DN_P_peq_transpose_P.o \
 QDP_DN_P_veq_c_times_P.o \
+QDP_DN_P_veq_c_times_P_minus_P.o \
+QDP_DN_P_veq_c_times_P_plus_P.o \
 QDP_DN_P_veq_Ma_times_P.o \
 QDP_DN_P_veqm_c_times_P.o \
 QDP_DN_P_veqm_Ma_times_P.o \
@@ -1210,7 +1260,11 @@ QDP_DN_P_veqm_P.o \
 QDP_DN_P_veqm_r_times_P.o \
 QDP_DN_P_veq_M_times_P.o \
 QDP_DN_P_veq_P.o \
+QDP_DN_P_veq_P_minus_P.o \
+QDP_DN_P_veq_P_plus_P.o \
 QDP_DN_P_veq_r_times_P.o \
+QDP_DN_P_veq_r_times_P_minus_P.o \
+QDP_DN_P_veq_r_times_P_plus_P.o \
 QDP_DN_P_veq_sP.o \
 QDP_DN_P_vmeq_c_times_P.o \
 QDP_DN_P_vmeq_Ma_times_P.o \
@@ -1350,6 +1404,8 @@ QDP_DN_V_peq_sM_times_sV.o \
 QDP_DN_V_peq_sM_times_V.o \
 QDP_DN_V_peq_V.o \
 QDP_DN_V_veq_c_times_V.o \
+QDP_DN_V_veq_c_times_V_minus_V.o \
+QDP_DN_V_veq_c_times_V_plus_V.o \
 QDP_DN_V_veq_Ma_times_V.o \
 QDP_DN_V_veqm_c_times_V.o \
 QDP_DN_V_veqm_Ma_times_V.o \
@@ -1358,8 +1414,12 @@ QDP_DN_V_veqm_r_times_V.o \
 QDP_DN_V_veq_M_times_V.o \
 QDP_DN_V_veqm_V.o \
 QDP_DN_V_veq_r_times_V.o \
+QDP_DN_V_veq_r_times_V_minus_V.o \
+QDP_DN_V_veq_r_times_V_plus_V.o \
 QDP_DN_V_veq_sV.o \
 QDP_DN_V_veq_V.o \
+QDP_DN_V_veq_V_minus_V.o \
+QDP_DN_V_veq_V_plus_V.o \
 QDP_DN_V_vmeq_c_times_V.o \
 QDP_DN_V_vmeq_Ma_times_V.o \
 QDP_DN_V_vmeq_M_times_V.o \
