@@ -81,7 +81,8 @@ sub get_nsites($$) {
 sub def_prof($$) {
   ($func, $args) = @_;
 
-  if( $func =~ /_[A-Z]_v*eq_s[A-Z]/ ) {
+  #if( $func =~ /_[A-Z]_v*eq_s[A-Z]/ ) {
+  if( $func =~ /_s[A-Z]/ ) {
 
     $nsites = get_nsites($func, "qp[QDP_restart]");
 
@@ -115,6 +116,7 @@ sub def_prof($$) {
     QDP_keep_time = 1; \\
     QDP_comm_time = 0; \\
     QDP_math_time = 0; \\
+    QDP_restart = 0; \\
     _time = QDP_time(); \\
     $func$args; \\
     qp[QDP_restart].time += QDP_time() - _time; \\

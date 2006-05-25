@@ -1,23 +1,94 @@
 ===========================================================================
-SciDAC QDP C interface
+2006-05-25      version 1.5.6
 ===========================================================================
-Version 1.5.0
-December 4, 2005
-===========================================================================
-Version 1.4.0
-November 10, 2005
+2006-05-25: James Osborn
+	Fix compilation on Mac OS/X.
+	Lower case types now have a '1' afterward in the filename.
 
-See Changelog for changes.
+2006-05-08: James Osborn
+        Fixed profiling of shift and multiply functions.
+
+===========================================================================
+2006-02-17      version 1.5.5
+===========================================================================
+2006-02-17: James Osborn
+        Added a few functions.
+
+===========================================================================
+2006-02-09      version 1.5.4
+===========================================================================
+2006-02-09: James Osborn
+        One more try at fixing header includes.
+
+===========================================================================
+2006-01-25      version 1.5.3
+===========================================================================
+2006-01-25: Only include specific headers for default Nc.
+
+===========================================================================
+2006-01-24      version 1.5.2
+===========================================================================
+2006-01-24: Now always include specific headers for all precisions and Nc.
+2006-01-20: Fixed documentation formatting.
+
+===========================================================================
+2006-01-19      version 1.5.1
+===========================================================================
+2006-01-18: Changed (fixed) API for functions like V_veq_c_times_V.
+
+===========================================================================
+2005-12-04      version 1.5.0
+===========================================================================
+2005-12-02: Don't use peq form of QLA global reduction functions.
+2005-12-02: Added mem_align and mem_flags functions.
+2005-12-02: Let automake handle docs now.
+
+===========================================================================
+2005-11-20      version 1.4.1
+===========================================================================
+2005-11-19: Fixed bug in vread/vwrite functions.
+2005-11-19: Removed restrict from all protoyypes.
+
+===========================================================================
+2005-11-10      version 1.4
+===========================================================================
 This version requires QLA >= 1.4.0.
-===========================================================================
-Version 1.3.0
-May 29, 2005
 
+2005-11-10: Fixed propagator IO to conform to SciDAC standard.
+2005-10-03: Added some functions to help with Wilson type fermions.
+
+===========================================================================
+2005-09-29      version 1.3.3
+===========================================================================
+Fixed problem with unused but still present optimized makefiles.
+Added message dumping to /tmp/qdpmsgdump.XXXX if CRC error is caught.
+
+===========================================================================
+2005-09-20      version 1.3.2
+===========================================================================
+Fixed bug in checksum code.  Should actually catch bad messages now.
+
+===========================================================================
+2005-09-18      version 1.3.1
+===========================================================================
+Improved generated code for vector functions.
+Added checksum code in communications.
+New function QDP_check_comm toggles checksumming.
+Updated documentation.
+
+===========================================================================
+2005-05-29      version 1.3.0
+===========================================================================
 First version in Jlab CVS.
-===========================================================================
-Version 1.2.2
-August 14, 2004
+Directory structure modified to follow more common conventions.
+Added function "int QDP_numsites(int node)" needed by QIO and modified
+QDP_create_subset to take extra arguments for the subset function.
+Many other internal fixes and improvements since the last entry here.
 
+===========================================================================
+2004-08-14      version 1.2.2
+===========================================================================
 Conversion to use autoconf and automake.
 Now only uses QMP-2.0 for communications.
+
 ===========================================================================

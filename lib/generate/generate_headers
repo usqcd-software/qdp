@@ -10,12 +10,12 @@ profile="${thisdir}profile.pl"
 perl $gen_types $1 ${thisdir}qdp_pc.h $incdir/qdp_$1.h
 perl $gen_qdp -h -l$1 -d $incdir
 
-if expr match $1 '[df][23n]*$'; then
+if expr $1 : '[df][23n]*$'; then
 perl $gen_types $1 ${thisdir}qdp_generic.h $incdir/qdp_$1_generic.h
 perl $generic g $1 $incdir/qdp_$1.h $incdir/qdp_$1_generic.h
 fi
 
-if expr match $1 '[df][df]*[23n]$'; then
+if expr $1 : '[df][df]*[23n]$'; then
 perl $gen_types $1 ${thisdir}qdp_color_generic.h $incdir/qdp_$1_color_generic.h
 perl $generic c $1 $incdir/qdp_$1.h $incdir/qdp_$1_color_generic.h
 fi

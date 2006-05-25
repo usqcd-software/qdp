@@ -823,7 +823,8 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
       gmem = sm->gmem;
       do {
 	for(i=gmem->begin; i<gmem->end; ++i) {
-	  crc = crc32(crc,gmem->mem+gmem->sitelist[i]*gmem->stride,gmem->size);
+	  crc = crc32(crc, (unsigned char *)
+		      gmem->mem + gmem->sitelist[i]*gmem->stride, gmem->size);
 	}
       } while((gmem=gmem->next)!=NULL);
       *crc_pt = crc;

@@ -743,11 +743,18 @@ sub type_abbr($) {
 }
 
 # construct name of QDP function
-sub qdp_name($$$$$) {
-  my($dest, $op, $src1, $func, $src2) = @_;
+sub qdp_name($$$$$$) {
+  my($dest, $op, $src1, $func, $src2, $mangle) = @_;
+
   my($da) = $dest->{ABBR};
-  my($s1aa) = $src1->{ABBR}.$src1->{ADJ};
-  my($s2aa) = $src2->{ABBR}.$src2->{ADJ};
+  if(($mangle)&&($dest->{ABBR}=~/[a-z]/)) { $da .= "1"; }
+  my($s1a) = $src1->{ABBR};
+  if(($mangle)&&($src1->{ABBR}=~/[a-z]/)) { $s1a .= "1"; }
+  my($s2a) = $src2->{ABBR};
+  if(($mangle)&&($src2->{ABBR}=~/[a-z]/)) { $s2a .= "1"; }
+
+  my($s1aa) = $s1a.$src1->{ADJ};
+  my($s2aa) = $s2a.$src2->{ADJ};
   my($multi) = "";
   if($dest->{MULTI}) { $multi = "_multi"; }
   return "QDP".$pc.$da."_".$op.$s1aa.$func.$s2aa.$multi;
@@ -909,7 +916,8 @@ sub write_function(\%$\%$\%\%) {
 
     if($func) { $func = "_".$func; }
 
-    my($name) = qdp_name($dest, $op, $src1, $func, $src2);
+    my($name) = qdp_name($dest, $op, $src1, $func, $src2, 0);
+    my($mangled_name) = qdp_name($dest, $op, $src1, $func, $src2, 1);
     if($op =~ /^v(.*)/) {
       $op = $1;
       $dest->{VECT} = 1;
@@ -923,7 +931,7 @@ sub write_function(\%$\%$\%\%) {
     } else {
       my($head) = "void\n".$name.$args."\n";
       my($body) = func_body($dest, $op, $src1, $func, $src2, $x1, $x2, $x3);
-      open CFILE, '>'.$outdir.$name.".c";
+      open CFILE, '>'.$outdir.$mangled_name.".c";
       print CFILE get_c_comment();
       print CFILE "#include \"qdp".$hlib."_internal.h\"\n\n";
       print CFILE $head.$body;

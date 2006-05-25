@@ -7,7 +7,7 @@ File: qdpc.info,  Node: Top,  Next: Introduction,  Up: (dir)
 QDP/C User Manual
 *****************
 
-Version 1.5.1
+Version 1.5.5
 
    This document provides a detailed description of the C
 implementation of the
@@ -1623,7 +1623,7 @@ Addition or subtraction with real scalar multiplication
 
 Syntax      `QDP_T_eq_r_times_T_FUNC_T(TYPE *r, QLA_Real *c, TYPE *a,
             TYPE *b, SUBSET);'
-            `QDP_T_veq_r_times_T_FUNC_T(TYPE *r[], QLA_Real *c[], TYPE
+            `QDP_T_veq_r_times_T_FUNC_T(TYPE *r[], QLA_Real c[], TYPE
             *a[], TYPE *b[], SUBSET, int n);'
 Meaning     r = c * a +/- b
 TYPE        `R, C, V, H, D, M, P'
@@ -1634,8 +1634,8 @@ Addition or subtraction with complex scalar multiplication
 
 Syntax      `QDP_T_eq_c_times_T_FUNC_T(TYPE *r, QLA_Complex *c, TYPE *a,
             TYPE *b, SUBSET);'
-            `QDP_T_veq_c_times_T_FUNC_T(TYPE *r[], QLA_Complex *c[],
-            TYPE *a[], TYPE *b[], SUBSET, int n);'
+            `QDP_T_veq_c_times_T_FUNC_T(TYPE *r[], QLA_Complex c[], TYPE
+            *a[], TYPE *b[], SUBSET, int n);'
 Meaning     r = c * a +/- b
 TYPE        `C, V, H, D, M, P'
 FUNC        `plus, minus'
