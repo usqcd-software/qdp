@@ -1,3 +1,15 @@
+2006-05-25 19:38  osborn
+
+	* AUTHORS, NEWS, README, configure, configure.ac, doc/qdpc.info,
+	  lib/generate/generate_headers, lib/generate/generate_qdp.pl,
+	  lib/generate/profile.pl, lib/qdp_common/com_common.c,
+	  lib/qdp_d/Makefile.am, lib/qdp_d2/Makefile.am,
+	  lib/qdp_d3/Makefile.am, lib/qdp_dn/Makefile.am,
+	  lib/qdp_f/Makefile.am, lib/qdp_f2/Makefile.am,
+	  lib/qdp_f3/Makefile.am, lib/qdp_fn/Makefile.am,
+	  lib/qdp_int/Makefile.am: Fixed compilation on Mac OS/X.  Fixed
+	  profiling of shift and multiply functions.
+
 2006-02-17 15:04  osborn
 
 	* doc/: functions.texi, make_function_tables.pl, qdpc.texi: Updated
