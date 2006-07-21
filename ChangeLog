@@ -175,8 +175,10 @@
 2005-09-18 17:00  osborn
 
 	* examples/Makefile.am, examples/sample_ks.c, lib/Makefile.am,
-	  lib/optimized/qdp_f3/Makefile.am, lib/qdp_common/layout_hyper.c:
-	  Fixed distcheck and a few other minor chenges.
+	  lib/optimized/qdp_f3/Makefile.am, lib/qdp_common/layout_hyper.c,
+	  lib/optimized/qdp_f3/src/QDP_F3_D_vpeq_wilsonspin_M_times_D.c,
+	  lib/optimized/qdp_f3/src/QDP_F3_V_vpeq_M_times_V.c: Fixed
+	  distcheck and a few other minor chenges.
 
 2005-09-18 14:56  osborn
 
@@ -214,6 +216,12 @@
 
 	* doc/Makefile.am: Removed dependencies for doc/functions.texi so
 	  it won't get rebuilt.
+
+2005-05-29 21:42  osborn
+
+	* lib/optimized/qdp_f3/src/: QDP_F3_D_vpeq_wilsonspin_M_times_D.c,
+	  QDP_F3_V_vpeq_M_times_V.c: Added missing files in
+	  lib/optimized/qdp_f3/src.
 
 2005-05-29 20:05  osborn
 
