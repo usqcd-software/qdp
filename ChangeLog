@@ -1,3 +1,9 @@
+2006-08-23 16:35  osborn
+
+	* NEWS, configure, configure.ac, doc/qdpc.info, doc/qdpc.texi,
+	  doc/qdpdefs.texi, include/qdp_string.h: Pass CC and CFLAGS to
+	  distcheck target.  Updated docs and added I/O section.
+
 2006-05-25 19:38  tag qdp1-5-6
 
 2006-05-25 19:38  osborn
