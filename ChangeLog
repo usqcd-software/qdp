@@ -1,3 +1,8 @@
+2006-08-23 19:08  osborn
+
+	* doc/: functions.texi, make_function_tables.pl, qdpc.info,
+	  qdpc.texi: More fixes to docs.
+
 2006-08-23 17:28  osborn
 
 	* aclocal.m4, configure, configure.ac, doc/qdpc.info,
