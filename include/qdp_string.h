@@ -14,8 +14,8 @@ QDP_String *QDP_string_create(void);
 void QDP_string_destroy(QDP_String *qs);
 void QDP_string_set(QDP_String *qs, char *string);
 void QDP_string_copy(QDP_String *dest, QDP_String *src);
-size_t QDP_string_bytes(QDP_String *qs);
-char * QDP_string_ptr(QDP_String *qs);
+size_t QDP_string_length(QDP_String *qs);
+char *QDP_string_ptr(QDP_String *qs);
 
 #ifdef __cplusplus
 }

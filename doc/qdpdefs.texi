@@ -155,6 +155,16 @@ I, R, C, V, H, D, M, P
 @c * function printing macros *
 @c ****************************
 
+@macro func {func, args, def}
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@end multitable
+@end cartouche
+@end macro
+
 @macro funct {func, args, def, types}
 @cartouche
 @multitable @columnfractions .15 .85
@@ -409,6 +419,38 @@ I, R, C, V, H, D, M, P
 @item @var{Type} @tab @code{\types\}
 @hline
 @item @var{func} @tab @code{\funcs\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro ssfunce {subsubheading, func, args, def, example}
+@float
+@subsubheading \subsubheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax   @tab @code{\func\(\args\);}
+@hline
+@item Meaning  @tab \def\
+@hline
+@item Example  @tab @code{\example\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
+@macro ssfuncte {subsubheading, func, args, def, types, example}
+@float
+@subsubheading \subsubheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{Type} @tab @code{\types\}
+@hline
+@item Example    @tab @code{\example\}
 @end multitable
 @end cartouche
 @end float

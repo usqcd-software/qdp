@@ -1,13 +1,10 @@
-This is ../../qdp-cvs/doc/qdpc.info, produced by makeinfo version 4.7
+This is ../../qdp-cvs/doc/qdpc.info, produced by makeinfo version 4.8
 from ../../qdp-cvs/doc/qdpc.texi.
 
 
 File: qdpc.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
-QDP/C User Manual
-*****************
-
-Version 1.5.5
+   Version 1.5.6
 
    This document provides a detailed description of the C
 implementation of the
@@ -15,11 +12,11 @@ SciDAC Level 2 QDP Data Parallel interface.
 
 * Menu:
 
-* Introduction::          Introduction to QDP/C.
-* Compilation with QDP::  How to compile a program that uses QDP.
-* Datatypes::             Datatypes.
-* QDP Functions::         QDP Functions.
-* Function Details::      Function Details.
+* Introduction::                Introduction to QDP/C.
+* Compilation with QDP::        How to compile a program that uses QDP.
+* Datatypes::                   Datatypes.
+* QDP Functions::               QDP Functions.
+* Function Details::            Function Details.
 
 
 File: qdpc.info,  Node: Introduction,  Next: Compilation with QDP,  Prev: Top,  Up: Top
@@ -62,6 +59,15 @@ File: qdpc.info,  Node: Compilation with QDP,  Next: Datatypes,  Prev: Introduct
 
 2 Compilation with QDP
 **********************
+
+* Menu:
+
+* Generic header and macros::
+* Libraries::
+* Nonuniform color and precision::
+
+
+File: qdpc.info,  Node: Generic header and macros,  Next: Libraries,  Prev: Compilation with QDP,  Up: Compilation with QDP
 
 2.1 Generic header and macros
 =============================
@@ -121,6 +127,9 @@ backslash to keep them from being eaten by the shell.
 
 The maximum number of colors is determined by the QLA library.
 
+
+File: qdpc.info,  Node: Libraries,  Next: Nonuniform color and precision,  Prev: Generic header and macros,  Up: Compilation with QDP
+
 2.2 Libraries
 =============
 
@@ -157,6 +166,9 @@ Name               Purpose
 `libqdp_fn.a'      N color single precision
 `libqdp_dn.a'      N color double precision
 `libqdp_dfn.a'     N color precision conversion
+
+
+File: qdpc.info,  Node: Nonuniform color and precision,  Prev: Libraries,  Up: Compilation with QDP
 
 2.3 Nonuniform color and precision
 ==================================
@@ -217,6 +229,16 @@ of the primitives over all sites.  We do not define data types
 restricted to a subset of the lattice - rather, lattice fields occupy
 the entire lattice.
 
+* Menu:
+
+* Generic Names::
+* Specific Types for Color and Precision::
+* Color and Precision Uniformity::
+* Breaking Color and Precision Uniformity::
+
+
+File: qdpc.info,  Node: Generic Names,  Next: Specific Types for Color and Precision,  Prev: Datatypes,  Up: Datatypes
+
 3.1 Generic Names
 =================
 
@@ -254,6 +276,9 @@ color matrix with color to be set through a global macro.
    A long double precision type with abbreviation `Q' is defined for
 QLA, but currently not for QDP.
 
+
+File: qdpc.info,  Node: Specific Types for Color and Precision,  Next: Color and Precision Uniformity,  Prev: Generic Names,  Up: Datatypes
+
 3.2 Specific Types for Color and Precision
 ==========================================
 
@@ -283,6 +308,9 @@ three-color spinor field.  The general color choice `N' can also be
 used for specialized SU(2) or SU(3) at the cost of degrading
 performance.
 
+
+File: qdpc.info,  Node: Color and Precision Uniformity,  Next: Breaking Color and Precision Uniformity,  Prev: Specific Types for Color and Precision,  Up: Datatypes
+
 3.3 Color and Precision Uniformity
 ==================================
 
@@ -302,6 +330,9 @@ automatically translates data type names and function names to the
 appropriate specific type names through typedefs and macros.  With such
 a scheme and careful coding, changing only two macros and the QDP
 library converts code from one color and precision choice to another.
+
+
+File: qdpc.info,  Node: Breaking Color and Precision Uniformity,  Prev: Color and Precision Uniformity,  Up: Datatypes
 
 3.4 Breaking Color and Precision Uniformity
 ===========================================
@@ -337,6 +368,21 @@ The QDP functions are grouped into the following categories:
    * Temporary exit and reentry
 
    * Optimization calls
+
+* Menu:
+
+* Entry and exit from QDP::
+* Layout utilities::
+* Naming Conventions for Data Parallel Functions::
+* Creating and destroying lattice fields::
+* Subsets::
+* Shifts::
+* I/O utilities::
+* Temporary entry and exit from QDP::
+* Optimization Calls::
+
+
+File: qdpc.info,  Node: Entry and exit from QDP,  Next: Layout utilities,  Prev: QDP Functions,  Up: QDP Functions
 
 4.1 Entry and exit from QDP
 ===========================
@@ -415,6 +461,9 @@ Example     `old = QDP_check_comm(new);'
 
 A nonzero value turns the internal communications checksums on and zero
 turns it off.  It is off by default.
+
+
+File: qdpc.info,  Node: Layout utilities,  Next: Naming Conventions for Data Parallel Functions,  Prev: Entry and exit from QDP,  Up: QDP Functions
 
 4.2 Layout utilities
 ====================
@@ -554,6 +603,9 @@ The call `QDP_I_eq_coord(&coord[i],i)' fills an integer lattice field
 `coord[i]' with a value on each site equal to the integer value of the
 _i_th space-time coordinate on that site.
 
+
+File: qdpc.info,  Node: Naming Conventions for Data Parallel Functions,  Next: Creating and destroying lattice fields,  Prev: Layout utilities,  Up: QDP Functions
+
 4.3 Naming Conventions for Data Parallel Functions
 ==================================================
 
@@ -595,6 +647,17 @@ eqm            =-
    Some functions allow all of these and some take only a simple
 replacement (eq).
 
+* Menu:
+
+* Constant Arguments::
+* Color argument::
+* Adjoint::
+* Shift::
+* Operations on arrays of fields::
+
+
+File: qdpc.info,  Node: Constant Arguments,  Next: Color argument,  Prev: Naming Conventions for Data Parallel Functions,  Up: Naming Conventions for Data Parallel Functions
+
 Constant Arguments
 ------------------
 
@@ -612,6 +675,9 @@ in
 constant (coordinate-independent) by writing the type abbreviation in
 lower case: `c'.
 
+
+File: qdpc.info,  Node: Color argument,  Next: Adjoint,  Prev: Constant Arguments,  Up: Naming Conventions for Data Parallel Functions
+
 Color argument for _SU(N)_
 --------------------------
 
@@ -628,6 +694,9 @@ function is actually a macro and is automatically converted to this
 usage with `QDP_Nc' for the first argument.  However, if the specific
 name is used, the user must supply the argument.
 
+
+File: qdpc.info,  Node: Adjoint,  Next: Shift,  Prev: Color argument,  Up: Naming Conventions for Data Parallel Functions
+
 Adjoint
 -------
 
@@ -642,6 +711,9 @@ abbreviation.  Thus
 
    for all sites `x' in subset `s'.
 
+
+File: qdpc.info,  Node: Shift,  Next: Operations on arrays of fields,  Prev: Adjoint,  Up: Naming Conventions for Data Parallel Functions
+
 Shift
 -----
 
@@ -652,6 +724,9 @@ type abbreviation.  (See the discussion of shifts below.) Thus
 
    shifts staggered fermion data along the direction specified by `dir'
 and `sign' for all sites `x' in destination subset `s'.
+
+
+File: qdpc.info,  Node: Operations on arrays of fields,  Prev: Shift,  Up: Naming Conventions for Data Parallel Functions
 
 Operations on arrays of fields
 ------------------------------
@@ -671,8 +746,8 @@ QDP_F3_ColorVector *b, QDP_Subset s );'
 
 becomes
 
-   `QDP_F3_V_peq_M_times_V( QDP_F3_ColorVector *r[], QDP_F3_ColorMatrix
-*a[],
+   `QDP_F3_V_vpeq_M_times_V( QDP_F3_ColorVector *r[],
+QDP_F3_ColorMatrix *a[],
 QDP_F3_ColorVector *b[], QDP_Subset s, int n );'
 
 This has the same effect as the following code
@@ -682,6 +757,9 @@ This has the same effect as the following code
 however it may be implemented in a more efficient manner.  It is
 permissible to have multiple array elements point to the same field.
 The result will always agree with that of the above `for' loop.
+
+
+File: qdpc.info,  Node: Creating and destroying lattice fields,  Next: Subsets,  Prev: Naming Conventions for Data Parallel Functions,  Up: QDP Functions
 
 4.4 Creating and destroying lattice fields
 ==========================================
@@ -710,6 +788,9 @@ Meaning     Frees memory associated with field `a'.
 TYPE        `S, I, R, C, V, H, D, M, P'
 Example     `QDP_destroy_M(u);'
 
+
+File: qdpc.info,  Node: Subsets,  Next: Shifts,  Prev: Creating and destroying lattice fields,  Up: QDP Functions
+
 4.5 Subsets
 ===========
 
@@ -726,6 +807,14 @@ and sites may be assigned to more than one subset.  Thus, for example
 an even site may also be assigned to a time slice subset and one of the
 subsets in a 32-level checkerboard scheme.  A subset definition remains
 valid until `QDP_destroy_subset' is called.
+
+* Menu:
+
+* Defining a subset::
+* Reductions on subsets::
+
+
+File: qdpc.info,  Node: Defining a subset,  Next: Reductions on subsets,  Prev: Subsets,  Up: Subsets
 
 Defining a subset
 -----------------
@@ -757,6 +846,9 @@ This procedure frees all memory associated with the subset object _s_.
 The `QDP_subset *' value _s_ should be the object returned by
 `QDP_create_subset'.  All subsets in the array _s_ are destroyed.
 
+
+File: qdpc.info,  Node: Reductions on subsets,  Prev: Defining a subset,  Up: Subsets
+
 Reductions on subsets
 ---------------------
 
@@ -779,6 +871,9 @@ _b_ on the even sites and stores the result in _z_.  The operation
 summed separately on each timeslice and stores the sums in the array
 _z_, so that the value in _z[i]_ results from the sum on the subset
 _ts[i]_.
+
+
+File: qdpc.info,  Node: Shifts,  Next: I/O utilities,  Prev: Subsets,  Up: QDP Functions
 
 4.6 Shifts
 ==========
@@ -816,6 +911,15 @@ nearest neighbor shift operation specifying the even subset shifts odd
 site values from the source _a_ and places them on even site values on
 the destination field _r_.
 
+* Menu:
+
+* Creating displacement shifts::
+* Creating arbitrary permutations::
+* Destroying a shift::
+
+
+File: qdpc.info,  Node: Creating displacement shifts,  Next: Creating arbitrary permutations,  Prev: Shifts,  Up: Shifts
+
 Creating displacement shifts
 ----------------------------
 
@@ -827,6 +931,9 @@ Example     `int d[4] = {0,1,2,0};
 
 Calling with a displacement vector {1,0,0,0} would reproduce the shift
 `QDP_neighbor[0]'.
+
+
+File: qdpc.info,  Node: Creating arbitrary permutations,  Next: Destroying a shift,  Prev: Creating displacement shifts,  Up: Shifts
 
 Creating arbitrary permutations
 -------------------------------
@@ -850,6 +957,9 @@ same result, even if the call is postponed.  The parameters _args_ are
 copied at the moment the shift is created, however, so they may be
 volatile.  The size argument _argsize_ makes copying possible.
 
+
+File: qdpc.info,  Node: Destroying a shift,  Prev: Creating arbitrary permutations,  Up: Shifts
+
 Destroying a shift
 ------------------
 
@@ -859,10 +969,16 @@ Syntax      `void QDP_destroy_shift(QDP_Shift dir);'
 Meaning     Frees memory associated with the map _dir_.
 Example     `QDP_destroy_shift(dir);'
 
+
+File: qdpc.info,  Node: I/O utilities,  Next: Temporary entry and exit from QDP,  Prev: Shifts,  Up: QDP Functions
+
 4.7 I/O utilities
 =================
 
 *[Under development.]*
+
+
+File: qdpc.info,  Node: Temporary entry and exit from QDP,  Next: Optimization Calls,  Prev: I/O utilities,  Up: QDP Functions
 
 4.8 Temporary entry and exit from QDP
 =====================================
@@ -933,6 +1049,14 @@ values are unmodified.  The data order must conform to `QDP_index'.
 This call, analogous to a fill operation, is permitted at any time and
 does not interfere with QDP operations.
 
+* Menu:
+
+* Suspending QDP communications::
+* Resuming QDP communications::
+
+
+File: qdpc.info,  Node: Suspending QDP communications,  Next: Resuming QDP communications,  Prev: Temporary entry and exit from QDP,  Up: Temporary entry and exit from QDP
+
 Suspending QDP communications
 -----------------------------
 
@@ -947,6 +1071,9 @@ Example     `QDP_suspend_comm();'
    No QDP shifts can then be initiated until `QDP_resume' is called.
 However QDP linear algebra operations without shifts may proceed.
 
+
+File: qdpc.info,  Node: Resuming QDP communications,  Prev: Suspending QDP communications,  Up: Temporary entry and exit from QDP
+
 Resuming QDP communications
 ---------------------------
 
@@ -955,6 +1082,9 @@ To resume QDP communications one uses
 Syntax      `void QDP_resume_comm(void);'
 Meaning     Restores QDP communications.
 Example     `QDP_resume_comm();'
+
+
+File: qdpc.info,  Node: Optimization Calls,  Prev: Temporary entry and exit from QDP,  Up: QDP Functions
 
 4.9 Optimization Calls
 ======================
@@ -1002,6 +1132,13 @@ introduce the shorthand
 
    Unless otherwise indicated, operations occur on all sites in the
 specified subset.
+
+* Menu:
+
+* Functions involving shifts::
+
+
+File: qdpc.info,  Node: Functions involving shifts,  Prev: Function Details,  Up: Function Details
 
 5.1 Functions involving shifts
 ==============================
@@ -1756,10 +1893,39 @@ TYPE        `R, C, V, H, D, M, P'
 
 Tag Table:
 Node: Top105
-Node: Introduction593
-Node: Compilation with QDP2052
-Node: Datatypes7650
-Node: QDP Functions12601
-Node: Function Details36416
+Node: Introduction589
+Node: Compilation with QDP2048
+Node: Generic header and macros2281
+Node: Libraries4475
+Node: Nonuniform color and precision6154
+Node: Datatypes8102
+Node: Generic Names8736
+Node: Specific Types for Color and Precision10612
+Node: Color and Precision Uniformity11903
+Node: Breaking Color and Precision Uniformity13247
+Node: QDP Functions13759
+Node: Entry and exit from QDP14441
+Node: Layout utilities17264
+Node: Naming Conventions for Data Parallel Functions22013
+Node: Constant Arguments23968
+Node: Color argument24584
+Node: Adjoint25394
+Node: Shift25764
+Node: Operations on arrays of fields26222
+Node: Creating and destroying lattice fields27478
+Node: Subsets28549
+Node: Defining a subset29625
+Node: Reductions on subsets30973
+Node: Shifts31874
+Node: Creating displacement shifts33803
+Node: Creating arbitrary permutations34317
+Node: Destroying a shift35475
+Node: I/O utilities35825
+Node: Temporary entry and exit from QDP36004
+Node: Suspending QDP communications39004
+Node: Resuming QDP communications39649
+Node: Optimization Calls39995
+Node: Function Details40899
+Node: Functions involving shifts41930
 
 End Tag Table
