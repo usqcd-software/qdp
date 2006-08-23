@@ -18,9 +18,9 @@ with the SciDAC Software Committee
 
 @c Title for non-TeX output
 @ifnottex
-@node Top
+@node Top, Introduction, (dir), (dir)
 @c @top QDP/C User Manual
-Version 1.5.6
+Version 1.5.7
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -95,7 +95,7 @@ standards.
 @c ====================================================================
 
 @menu
-* Header and macros::   
+* Header and macros::           
 * Libraries::                   
 * Nonuniform color and precision::  
 @end menu
@@ -168,7 +168,7 @@ For SU(4) one might do
 #include <qdp.h>
 @end example
 
-@node Libraries, Nonuniform color and precision, Generic header and macros, Compilation with QDP
+@node Libraries, Nonuniform color and precision, Header and macros, Compilation with QDP
 @section Libraries
 
 Normally, it is necessary to link four QDP libraries for a given
@@ -1056,7 +1056,7 @@ and write any lattice field in the SciDAC format including ILDG lattices.
 It also provides routines for inserting metadata and global binary data
 into the files.
 
-@subsection{Opening and closing binary files}
+@subsection Opening and closing binary files
 
 As with standard Unix, a file must be opened before reading or
 writing.  However, we distinguish file handles for both cases.
@@ -1133,7 +1133,7 @@ QDP_close_write(writer);
 
 In both cases the integer return value is 0 for success and 1 for failure.
 
-@subsection{Reading and writing QDP fields}
+@subsection Reading and writing QDP fields
 
 @c @subsubsection{Reading a field}
 @ssfuncte{
@@ -1167,7 +1167,7 @@ The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has created the @code{QDP_String} for the record metadata
 and the fields for the data in advance.
 
-@subsubheading{Reading only the record information}
+@subsubheading Reading only the record information
 
 It may be convenient to examine the record metadata first to decide whether
 to read or skip the accompanying binary data.
@@ -1224,7 +1224,7 @@ The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has prepared the record metadata and the array data
 in advance.
 
-@subsection{Reading and writing QLA arrays}
+@subsection Reading and writing QLA arrays
 
 QLA data is global data that carries no lattice site index.
 Typically these values result from a global reduction. For example, a
@@ -1275,7 +1275,7 @@ assumed the user has prepared the record metadata and the field data
 in advance.
 
 
-@subsection{String Handling}
+@subsection String Handling
 
 The file and record metadata is passed to QDP in @code{QDP_string} objects.
 These can be created, destroyed and converted to/from C strings with

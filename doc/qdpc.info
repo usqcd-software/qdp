@@ -2,9 +2,9 @@ This is ../../qdp-cvs/doc/qdpc.info, produced by makeinfo version 4.8
 from ../../qdp-cvs/doc/qdpc.texi.
 
 
-File: qdpc.info,  Node: Top,  Next: Introduction,  Up: (dir)
+File: qdpc.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
 
-   Version 1.5.6
+   Version 1.5.7
 
    This document provides a detailed description of the C
 implementation of the
@@ -31,20 +31,30 @@ Computing (SciDAC) program.
 
    The QDP Level 2 API has the following features:
 
-   * Provides data parallel operations (logically SIMD) on all sites
-     across the lattice or on subsets of these sites.
+   * Can specify a physical lattice of any size and number of
+     dimensions.
 
-   * Operates on lattice objects, which have an implementation-dependent
-     data layout that is not visible above this API.
+   * Automatically handles the layout of the lattice across the machine.
 
-   * Hides details of how the implementation maps onto a given
-     architecture, namely how the logical problem grid (i.e. lattice) is
-     mapped onto the machine architecture.
+   * Provides functions for creating and destroying fields on the
+     lattice along with a large set of data parallel operations
+     (logically SIMD) acting on all sites across the lattice or on
+     subsets of these sites.
+
+   * Allows creation of arbitrary subsets of sites.
+
+   * All math operations are handled by the SciDAC QLA library which has
+     optimized versions for SSE (Intel, AMD) and 440 (QCDOC, BG/L)
+     architectures.
 
    * Allows asynchronous (non-blocking) shifts of lattice level objects
-     over any permutation map of sites onto sites. However, from the
-     user's view these instructions appear blocking and in fact may be
-     so in some implementation.
+     over any permutation map of sites onto sites.
+
+   * Automatically handles dependency of shifts and waits on the
+     results only when needed.
+
+   * Uses the SciDAC QMP library for communications which is available
+     for all MPI platforms and QCDOC.
 
    * Provides some combined shift and linear algebra instructions for
      convenience and optimization.
@@ -52,7 +62,13 @@ Computing (SciDAC) program.
    * Provides fill operations (filling a lattice quantity from a scalar
      value(s)), global reduction operations, and lattice-wide
      operations on various data-type primitives, such as matrices,
-     vectors, and tensor products of matrices (propagators).
+     vectors and propagators.
+
+   * Has flexible I/O capabilities allowing reading and writing of all
+     lattice fields and also global data.
+
+   * Uses SciDAC QIO library for I/O which is compatible with the USQCD
+     and ILDG standards.
 
 
 File: qdpc.info,  Node: Compilation with QDP,  Next: Datatypes,  Prev: Introduction,  Up: Top
@@ -62,45 +78,46 @@ File: qdpc.info,  Node: Compilation with QDP,  Next: Datatypes,  Prev: Introduct
 
 * Menu:
 
-* Generic header and macros::
+* Header and macros::
 * Libraries::
 * Nonuniform color and precision::
 
 
-File: qdpc.info,  Node: Generic header and macros,  Next: Libraries,  Prev: Compilation with QDP,  Up: Compilation with QDP
+File: qdpc.info,  Node: Header and macros,  Next: Libraries,  Prev: Compilation with QDP,  Up: Compilation with QDP
 
-2.1 Generic header and macros
-=============================
+2.1 Header and macros
+=====================
 
-As described above, normally the user selects a prevailing color and
-precision for the entire calculation.  In that case it is permissible
-to use the generic function names and datatypes, making it possible to
-change colors and precision with a simple recompilation, if desired.
-For this purpose the generic header file is `qdp.h'.  The following
-macros must be defined by the user prior to including this header file:
+The main header file for QDP is `qdp.h' and must be included in all QDP
+programs.  This will automatically include any other header files that
+are necessary for the specified number of colors and will also include
+the QLA headers. Typically the user will want to select a prevailing
+color and precision for the entire calculation.  This allows one to use
+generic function names and datatypes, making it possible to change
+colors and precision with a simple recompilation, if desired.  The
+following macros can be defined by the user prior to including this
+header file:
 
-Required       Choices
-Macro          
-`QDP_Precision''D', 'F'
-`QDP_Nc'       number of colors
+Optional       Choices           Default
+Macros                           
+`QDP_Precision''F', 1, 'D', 2    'F'
+`QDP_Nc'       number of colors  3
+`QDP_Colors'   2, 3, 'N'         3
 
-Single quotes are required around nonnumeric values.  In the C
-implementation of QDP the number of spins is set to 4 when the library
-is built.
+Single quotes are required around nonnumeric values.  The
+`QDP_Precision' macro sets the default precision to either single (1 or
+'F') or double (2 or 'D').  The `QDP_Nc' macro sets the default number
+of colors and can be any positive integer.  Note however that QLA may
+have been compiled with a limit on the maximum allowed value.
+`QDP_Colors' determines which QDP and QLA library versions will be used
+for calculations.  It is automatically set to  _2_ when `QDP_Nc' is _2_,
+_3_ when _3_, and _N_ otherwise.  If for some reason a users wishes to
+work with the _N_ namespace for two or three colors, rather than the
+more efficient _2_ or _3_ namespace, they may do so by setting this
+macro to _'N'_ explicitly.
 
-   An additional macro is available to the user, but is normally set to
-its default value according to the macro `QDP_Nc'.
-
-Optional       Choices
-Macro          
-`QDP_Colors'   2, 3, 'N'
-
-This is the macro that determines the color namespace for the generic
-functions.  Its default value is _2_ when `QDP_Nc' is _2_, _3_ when
-_3_, and _N_ otherwise.  If for some reason a users wishes to work with
-the _N_ namespace for two or three colors, rather than the more
-efficient _2_ or _3_ namespace, he/she may do so by setting this macro
-to _'N'_ explicitly.
+   The number of spins is fixed in QDP to be the same value that the QLA
+library that QDP was compiled against has which defaults to 4.
 
    A sample preamble for double precision SU(3) reads
 
@@ -114,39 +131,44 @@ function names and datatypes are automatically mapped to the
 appropriate specific types.  Of course the precision and color macros
 can also be defined through a compiler flag, as in
 
-   `gcc -DQDP_Precision=\'D\' -DQDP_Nc=3 ...'
+   `gcc -DQDP_Precision=2 -DQDP_Nc=3 ...'
 
-The single quotes are required and they must each be preceded by a
-backslash to keep them from being eaten by the shell.
-
-   For SU(4) one might do
+For SU(4) one might do
 
      #define QDP_Precision 'F'
      #define QDP_Nc 4
      #include <qdp.h>
 
-The maximum number of colors is determined by the QLA library.
-
 
-File: qdpc.info,  Node: Libraries,  Next: Nonuniform color and precision,  Prev: Generic header and macros,  Up: Compilation with QDP
+File: qdpc.info,  Node: Libraries,  Next: Nonuniform color and precision,  Prev: Header and macros,  Up: Compilation with QDP
 
 2.2 Libraries
 =============
 
-Normally, it is necessary to link five QDP libraries for a given choice
-of color and precision.  Other libraries may be required by the
-implementation.  Routines involving only integers and the random state
-are common to all choices.  Routines involving only real or complex
-numbers are common to all colors.  Thus for single precision SU(3) the
-required libraries are linked through
+Normally, it is necessary to link four QDP libraries for a given choice
+of color and precision.  Other libraries may be required if mixing
+precisions or numbers of color.  Routines involving only integers and
+the random state are common to all choices.  Routines involving only
+real or complex numbers are common to all colors.  Thus for single
+precision SU(3) the required libraries are linked through
 
-   `-lqdp_common -lqdp_int -lqdp_f -lqdp_f3 -lm'
+   `-lqdp_f3 -lqdp_f -lqdp_int -lqdp_common'
 
-with the library search path set to `QDP_HOME/lib'.  A complete list of
-the QDP libraries is given below.  Each library will depend on the
-corresponding QLA library.  Also since global sums are done in a higher
-precision, using them requires linking to QLA libraries of the next
-higher precision in addition to the corresponding conversion library.
+with the library search path set to `QDP_HOME/lib'.  Each library will
+depend on the corresponding QLA library.  Also since global sums are
+done in a higher precision, using them requires linking to QLA
+libraries of the next higher precision in addition to the corresponding
+conversion library.  For the above example one would also need
+
+   `-lqla_f3 -lqla_f -lqla_d3 -lqla_d -lqla_df3 -lqla_df -lqla_int
+-lqla_random -lqla_cmath -lm'
+
+in addition to the QIO and QMP libraries which typically are
+
+   `-lqio -llime -lqmp'
+
+and any other system dependent libraries such as MPI.  A complete list
+of the QDP libraries is given below.
 
 Name               Purpose
 `libqdp_common.a'  QDP utilities
@@ -175,28 +197,24 @@ File: qdpc.info,  Node: Nonuniform color and precision,  Prev: Libraries,  Up: C
 
 Users wishing to vary color and precision within a single calculation
 must use specific type names and function names whenever these types
-and names differ from the prevailing precision and color.  For example,
-if an SU(3) calculation is done primarly in single precision, but has
-double precision components, the following preamble is appropriate:
+and names differ from the prevailing precision and color.  If using
+different colors that the specified value then one must also include
+the necessary headers.  For example, if a single precision SU(3)
+calculation also uses some SU(2) datatypes or operations, the following
+preamble is appropriate:
 
      #define QDP_Precision 'F'
      #define QDP_Nc 3
      #include <qdp.h>
-     #include <qdp_d.h>
-     #include <qdp_df.h>
-     #include <qdp_d3.h>
-     #include <qdp_df3.h>
+     #include <qdp_f2.h>
 
 and the following linkage to get the corresponding libraries:
 
-`-lqdp_common -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_df
--lqdp_df3 -lm'
+`-lqdp_f2 -lqdp_f3 -lqdp_f -lqdp_int -lqdp_common'
 
-   As in the previous example, the single precision components for
-SU(3) are automatically included through `qdp.h'.  Then we need the
-corresponding double precision components.  And we also need the `DF'
-libraries to do conversions between single and double precision.  They,
-too have colored and noncolored members.
+   Note that the single, double and conversion headers for the
+prevailing color are automatically included through `qdp.h'.  Only when
+mixing colors does one need to specify individual headers.
 
    The following table lists all the QDP headers.
 
@@ -387,13 +405,12 @@ File: qdpc.info,  Node: Entry and exit from QDP,  Next: Layout utilities,  Prev:
 4.1 Entry and exit from QDP
 ===========================
 
-QDP can be started at any time, however field operations cannot be used
-until the layout is created.  In the mean time it will be possible for
-the user to read input parameters and broadcast them to all nodes.  It
-may also be possible to get parameters from the environment.  This
-procedure is stil under development so, for now, you're on your own.
-
-   *[The startup procedure needs more thought - CD]*
+QDP must first be initialized before any QDP functions are to be used
+except for `QDP_is_initialized()' which may be called anytime.
+Initializing QDP also initializes QMP if it has not already been done.
+Thus the user can safely start QMP before QDP and do any necessary
+broadcasts or other operations.  Before any QDP field operations are
+done one must also create the  lattice layout.
 
 Entry to QDP
 ------------
@@ -403,10 +420,10 @@ Meaning     Starts QDP.
 Example     `QDP_initialize(&argc, &argv);'
 
 The routine `QDP_initialize' is called once by all nodes and starts QDP
-operations.  It initialiazes message passing, but does not setup the
-site layout (see `QDP_create_layout' and related functions).  It also
-defines the global variable `int QDP_this_node;' specifying the logical
-node number of the current node.
+operations.  It initialiazes message passing (if not already done),
+but does not setup the site layout (see `QDP_create_layout' and related
+functions).  It also defines the global variable `int QDP_this_node;'
+specifying the logical node number of the current node.
 
 Exit from QDP
 -------------
@@ -416,9 +433,9 @@ Meaning     Exits QDP.
 Example     `QDP_finalize();'
 
 This call provides for an orderly shutdown.  It is called by all nodes.
-It concludes all communications, does housekeeping, if needed and
-performs a barrier wait for all nodes.  Then it returns control to the
-calling process.
+It also finalizes QMP only if it was initialized by QDP.  If profiling
+was turned on in any functions then node 0 will dump some statistics to
+`stdout'.  Then it returns control to the calling process.
 
 Panic exit from QDP
 -------------------
@@ -447,9 +464,9 @@ Example     `old = QDP_profcontrol(new);'
 Profiling results are only available for code that is compiled with the
 macro `QDP_PROFILE' defined.  This must be defined before the qdp.h
 header is included.  When `QDP_finalize' is called a list of QDP
-function and call times will be sent to stdio on node 0.  This function
-toggles the accumulation of the profiling statistics within the
-profiled sections of code.  A value of zero turns the collection of
+function and call times will be sent to stdout on node 0.  This
+function toggles the accumulation of the profiling statistics within
+the profiled sections of code.  A value of zero turns the collection of
 timing info off and nonzero values turn it on.  It is on by default.
 
 Control checking communications
@@ -477,14 +494,9 @@ objects are allowed.  If a user removes data from a QDP lattice object
 on a site-by-site basis, the global entry points provided here are
 needed to locate the site data.
 
-   Some implementations may have a built-in tightly constrained layout.
-In flexible implementations there may be several layout choices,
-thereby allowing the user the freedom to select one that works best
-with a given application.  Furthermore, such implementations may allow
-the user to create a custom layout to replace one of the standard
-layouts.  As long as the custom layout procedure provides the entry
-points and functionality described here, compatibility with the
-remainder of the QDP library is assured.
+   The current QDP/C implementation allows only hypercubic layouts with
+the same sublattice dimensions on every node.  It would be relatively
+easy to add other layouts if the need arised.
 
 Defining the layout
 -------------------
@@ -740,23 +752,24 @@ values (QLA types) and other parameters are turned into arrays.  The
 length of the arrays is then given as the last argument.  For example
 the function
 
-   `QDP_F3_V_peq_M_times_V( QDP_F3_ColorVector *r, QDP_F3_ColorMatrix
+   `QDP_F3_V_peq_M_times_V(QDP_F3_ColorVector *r, QDP_F3_ColorMatrix
 *a,
 QDP_F3_ColorVector *b, QDP_Subset s );'
 
 becomes
 
-   `QDP_F3_V_vpeq_M_times_V( QDP_F3_ColorVector *r[],
-QDP_F3_ColorMatrix *a[],
+   `QDP_F3_V_vpeq_M_times_V(QDP_F3_ColorVector *r[], QDP_F3_ColorMatrix
+*a[],
 QDP_F3_ColorVector *b[], QDP_Subset s, int n );'
 
 This has the same effect as the following code
 
    `for(i=0; i<n; i++) QDP_F3_V_peq_M_times_V( r[i], a[i], b[i], s );'
 
-however it may be implemented in a more efficient manner.  It is
-permissible to have multiple array elements point to the same field.
-The result will always agree with that of the above `for' loop.
+however it may be implemented in a more efficient manner (*note
+Optimization Calls::).  It is permissible to have multiple array
+elements point to the same field.  The result will always agree with
+that of the above `for' loop.
 
 
 File: qdpc.info,  Node: Creating and destroying lattice fields,  Next: Subsets,  Prev: Naming Conventions for Data Parallel Functions,  Up: QDP Functions
@@ -764,9 +777,10 @@ File: qdpc.info,  Node: Creating and destroying lattice fields,  Next: Subsets, 
 4.4 Creating and destroying lattice fields
 ==========================================
 
-All QDP functions expect that lattice field arguments point to fields
-that have already been created.  The sole exception to this rule is the
-creation utility itself, which returns a pointer
+All QDP fields are creted and destroyed with the following functions.
+The alignment and type of memory (on architectures that support it) is
+detrmined by the default alignment and flags (*note Optimization
+Calls::).
 
 Creating a lattice field
 ------------------------
@@ -975,7 +989,264 @@ File: qdpc.info,  Node: I/O utilities,  Next: Temporary entry and exit from QDP,
 4.7 I/O utilities
 =================
 
-*[Under development.]*
+QDP provides a convenient interface to the QIO library which can read
+and write any lattice field in the SciDAC format including ILDG
+lattices.  It also provides routines for inserting metadata and global
+binary data into the files.
+
+4.7.1 Opening and closing binary files
+--------------------------------------
+
+As with standard Unix, a file must be opened before reading or writing.
+However, we distinguish file handles for both cases.
+
+Open a file for reading
+.......................
+
+Syntax      `QDP_Reader *QDP_open_read(QDP_String *md, char *filename);'
+Meaning     Opens a named file for reading and reads the file metadata.
+Example     `QDP_Reader *infile;
+            QDP_String *file_xml = QDP_string_create();
+            infile = QDP_open_read(file_xml, filename); '
+
+The `QDP_Reader' return value is the file handle used in subsequent
+references to the file.  A null return value signals an error. The I/O
+system takes responsibility for allocating and freeing space for the
+handle.  It is assumed the user has preperly created the `QDP_String'
+that will hold the file metadata so it can be read from the head of the
+file and inserted.  The volume format (see `QDP_open_write' below) is
+autodetected,  so is not specified.
+
+Open a file for writing
+.......................
+
+Syntax      `QDP_Writer *QDP_open_write(QDP_String *md, char *filename,
+            int volfmt);'
+Meaning     Opens a named file for writing and writes the file metadata.
+Example     `QDP_Writer *outfile;
+            QDP_String *file_xml = QDP_string_create();
+            QDP_string_set(file_xml, xml_string);
+            outfile = QDP_open_write(file_xml, filename, QDP_SINGLEFILE);
+            '
+
+The `QDP_Writer' return value is the file handle used in subsequent
+references to the file.  A null return value signals an error. The I/O
+system takes responsibility for allocating and freeing space for the
+handle.  It is assumed the user has already created the file metadata
+in `file_xml', so it can be written at the head of the file.  The
+`volfmt' argument is either `QDP_SINGLEFILE' or `QDP_MULTIFILE'.
+`QDP_SINGLEFILE' creates a single file for the output from all nodes
+while `QDP_MULTIFILE' creates one file per node.
+
+Close an input file
+...................
+
+Syntax      `int QDP_close_read(QDP_Reader *reader);'
+Meaning     Closes an input file.
+Example     `QDP_close_read(reader); '
+
+Close an output file
+....................
+
+Syntax      `int QDP_close_write(QDP_Writer *writer);'
+Meaning     Closes an output file.
+Example     `QDP_close_write(writer); '
+
+In both cases the integer return value is 0 for success and 1 for
+failure.
+
+4.7.2 Reading and writing QDP fields
+------------------------------------
+
+Reading a field
+...............
+
+Syntax      `int QDP_read_T(QDP_Reader *in, QDP_String *record_xml,
+            QDP_TYPE *field);'
+Meaning     Reads the field and its metadata from the next record in the
+            specified file.
+TYPE        `S, I, R, C, V, H, D, M, P'
+Example     `QDP_Real *field = QDP_create_R();
+            QDP_read_R(reader, record_xml, field); '
+
+The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the `QDP_String' for the record metadata
+and the field for the data in advance.  The datatype of the record must
+match the field type.
+
+Reading an array of fields
+..........................
+
+Syntax      `int QDP_read_vT(QDP_Reader *in, QDP_String *record_xml,
+            QDP_TYPE *field[], int n);'
+Meaning     Reads the array of fields and its metadata from the next
+            record in the specified file.
+TYPE        `S, I, R, C, V, H, D, M, P'
+Example     `QDP_ColorMatrix *field[4];
+            for(i=0; i<4; i++) field[i] = QDP_create_M();
+            QDP_read_vM(reader, record_xml, field, 4); '
+
+The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the `QDP_String' for the record metadata
+and the fields for the data in advance.
+
+Reading only the record information
+...................................
+
+It may be convenient to examine the record metadata first to decide
+whether to read or skip the accompanying binary data.
+
+Syntax      `int QDP_read_record_info(QDP_Reader *in, QDP_String
+            *record_xml);'
+Meaning     Reads the only the metadata from the next record in the
+            specified file.
+Example     `QDP_read_record_info(reader, record_xml); '
+
+   A subsequent call to `QDP_read_'T returns a copy of the same
+metadata along with the lattice field.
+
+Skipping to the next record
+...........................
+
+Syntax      `int QDP_next_record(QDP_Reader *in);'
+Meaning     Advances to the beginning of the next record.
+Example     `QDP_next_record(reader); '
+
+Writing a field
+...............
+
+Syntax      `int QDP_write_T(QDP_Writer *out, QDP_String *record_xml,
+            QDP_TYPE *field);'
+Meaning     Writes the field and its metadata as the next record in the
+            specified file.
+TYPE        `S, I, R, C, V, H, D, M, P'
+Example     `QDP_Real *field = QDP_create_R();
+            QDP_R_eq_zero(field, QDP_all);
+            QDP_write_R(writer, record_xml, field); '
+
+The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the `QDP_String' for the record metadata
+and the array for the data in advance.
+
+Writing an array of fields
+..........................
+
+Syntax      `int QDP_write_vT(QDP_Writer *out, QDP_String *record_xml,
+            QDP_TYPE *field[], int n);'
+Meaning     Writes the array of fields and its metadata as the next
+            record in the specified file.
+TYPE        `S, I, R, C, V, H, D, M, P'
+Example     `QDP_ColorMatrix *field[4];
+            for(i=0; i<4; i++) field[i] = QDP_create_M();
+            for(i=0; i<4; i++) QDP_M_eq_zero(field[i], QDP_all);
+            QDP_write_vM(writer, record_xml, field, 4); '
+
+The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has prepared the record metadata and the array data in
+advance.
+
+4.7.3 Reading and writing QLA arrays
+------------------------------------
+
+QLA data is global data that carries no lattice site index.  Typically
+these values result from a global reduction. For example, a correlation
+function might be computed on every time slice of the lattice and
+summed globally over the entire machine.  From the standpoint of data
+parallel I/O operation the data is treated as a global quantity with
+the same name and value on every processor.  When it is written to a
+file, it is assumed that the values are the same on each node, so only
+one node needs to write its value.  When it is read from a file, the
+I/O system does a broadcast to every node, so the result of reading is
+a global value.
+
+   An interface is provided for reading and writing arrays of QLA data.
+Single QLA values can be passed as an array of length one.  The naming
+conventions for the routines follow conventions of the QDP API.  Notice
+that the encoded QLA data type is lower case and the argument is a
+pointer to a QLA type.
+
+Reading a QLA array
+...................
+
+Syntax      `int QDP_read_vT(QDP_Reader *in, QDP_String *record_xml,
+            QLA_TYPE *array, int n);'
+Meaning     Reads the QLA array and its metadata from the next record in
+            the specified file.
+TYPE        `S, I, R, C, V, H, D, M, P'
+Example     `QLA_Complex array[nt];
+            QDP_read_vc(reader, record_xml, array, nt); '
+
+The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the record metadata and the field data in
+advance.
+
+Writing an array of QLA values
+..............................
+
+Syntax      `int QDP_write_vT(QDP_Writer *out, QDP_String *record_xml,
+            QLA_TYPE *array, int n);'
+Meaning     Writes the QLA array and its metadata as the next record in
+            the specified file.
+TYPE        `S, I, R, C, V, H, D, M, P'
+Example     `QLA_Complex array[nt];
+            QDP_c_eq_V_dot_V_multi(array, prop, src, timeslices, nt);
+            QDP_write_vc(writer, record_xml, array, nt); '
+
+The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has prepared the record metadata and the field data in
+advance.
+
+4.7.4 String Handling
+---------------------
+
+The file and record metadata is passed to QDP in `QDP_string' objects.
+These can be created, destroyed and converted to/from C strings with
+the following routines.
+
+Creating an empty QDP string
+............................
+
+Syntax      `QDP_String *QDP_string_create(void);'
+Meaning     Creates an empty string.
+Example     `fileinfo = QDP_string_create(); '
+
+Destroying a QDP string
+.......................
+
+Syntax      `void QDP_string_destroy(QDP_String *xml);'
+Meaning     Frees the `QDP_string' object and its contents.
+Example     `QDP_string_destroy(xml); '
+
+Set a QDP string from a C string
+................................
+
+Syntax      `void QDP_string_set(QDP_String *qstring, char *cstring);'
+Meaning     Sets the QDP string to contain a copy of the null-terminated
+            character array `cstring'.
+Example     `QDP_string *fileinfo = QDP_string_create();
+            QDP_string_set(fileinfo, string); '
+
+Copying a QDP string
+....................
+
+Syntax      `void QDP_string_copy(QDP_String *dest, QDP_String *src);'
+Meaning     Copies the string.
+Example     `QDP_string_copy(newxml, oldxml); '
+
+Accessing the string length
+...........................
+
+Syntax      `size_t QDP_string_length(QDP_String *qs);'
+Meaning     Returns the length of the string.
+Example     `length = QDP_string_length(xml); '
+
+Accessing the character string
+..............................
+
+Syntax      `char *QDP_string_ptr(QDP_String *qs);'
+Meaning     Returns a pointer to the null-terminated character array in
+            the string.
+Example     `printf("%sn", QDP_string_ptr(xml)); '
 
 
 File: qdpc.info,  Node: Temporary entry and exit from QDP,  Next: Optimization Calls,  Prev: I/O utilities,  Up: QDP Functions
@@ -1089,7 +1360,7 @@ File: qdpc.info,  Node: Optimization Calls,  Prev: Temporary entry and exit from
 4.9 Optimization Calls
 ======================
 
-The following procedure is included to aid in optimization of the QDP
+The following procedures are included to aid in optimization of the QDP
 implementation
 
 Marking discarded data
@@ -1102,11 +1373,82 @@ Example     `QDP_discard_M(utemp);'
 
 The field is not destroyed and memory is not released.  For that
 purpose, see `QDP_destroy'.  This call allows the implementation to
-cancel the deferred resolution of a lazy shift.  It is a runtime error
-to attempt to use discarded data as an rvalue (source operand or
+ignore the data dependency that may have been created from a shift
+which allows the shift to be efficiently reused later.  It is a runtime
+error to attempt to use discarded data as an rvalue (source operand or
 incremented destination) in any subsequent operation.  However, once
 the field is used as an lvalue (fully replaced destination), data
 integrity is automatically reinstated.
+
+   This should be called on the result of a shift once the result is no
+longer needed.  It is safe to call it for any field as long as the data
+is no longer needed.  It is highy recommended for the sake of
+efficiency that one always call this as soon as the result of a shift
+is no longer needed.  It can also be used to make sure that a field is
+not being used elsewhere without first being set since using a
+discarded field without first setting it produces an error.
+
+Block size operations
+---------------------
+
+Syntax      `int QDP_get_block_size(void);'
+Meaning     Returns the block size.
+
+Syntax      `void QDP_set_block_size(int bs);'
+Meaning     Sets the block size.
+
+   These functions allow one to set the block size used for the
+operations on arrays of QDP fields.  Instead of running over all sites
+of each field individually, it can run over a few sites for each field
+in turn and then move to the next few sites on each field and so on
+until all sites are done.  The number of sites done at a time is
+determined by the block size.
+
+Memory alignment
+----------------
+
+Syntax      `int QDP_get_mem_align(void);'
+Meaning     Returns the default memory alignment.
+
+Syntax      `void QDP_set_mem_align(int align);'
+Meaning     Sets the default memory alignment.
+
+   Some architectures might perform better for fields with certain
+alignments.  This allows one to set the default alignment used when
+fields are created.  It only affects newly created fields.  Currently
+the default is set to 16 bytes if not set by the user which should be
+sufficient for most current platforms.  It is expected that the QDP
+library will automatically use whatever value is necessary to utilize
+the optimized QLA routines for architectures which QLA has been
+optimized for.  Therefore the user normally would not need to set this
+and it is recommended that they don't unless they specifically find it
+useful for a platform not already optimized in QLA.  The user can also
+use the macro `QDP_ALIGN_DEFAULT' to specify the default alignment
+provided by QMP for that machine.
+
+Memory attributes
+-----------------
+
+Syntax      `int QDP_get_mem_flags(void);'
+Meaning     Returns the default memory flags
+
+Syntax      `void QDP_set_mem_flags(int flags);'
+Meaning     Sets the default memory flags
+Example     `QDP_set_mem_flags(QDP_MEM_FAST|QDP_MEM_COMMS); '
+
+   This allows the user to set the characteristics of the memory used
+for newly created fields if the architecture supports them.  The QDP
+memory flags have the same meaning as the corresponding QMP flags.  The
+integer value is the combination (bitwise or) of the flags given below.
+The actual effect of each combination is specific to the implementation
+and the architecture.
+
+Memory Flag            Meaning
+QDP_MEM_NONCACHE       Use noncached memory.
+QDP_MEM_COMMS          Use memory that is optimized for communucations.
+QDP_MEM_FAST           Use fastest memory available (such as EDRAM on
+                       QCDOC).
+QDP_MEM_DEFAULT        Use default value for architecture (from QMP).
 
 
 File: qdpc.info,  Node: Function Details,  Prev: QDP Functions,  Up: Top
@@ -1893,39 +2235,39 @@ TYPE        `R, C, V, H, D, M, P'
 
 Tag Table:
 Node: Top105
-Node: Introduction589
-Node: Compilation with QDP2048
-Node: Generic header and macros2281
-Node: Libraries4475
-Node: Nonuniform color and precision6154
-Node: Datatypes8102
-Node: Generic Names8736
-Node: Specific Types for Color and Precision10612
-Node: Color and Precision Uniformity11903
-Node: Breaking Color and Precision Uniformity13247
-Node: QDP Functions13759
-Node: Entry and exit from QDP14441
-Node: Layout utilities17264
-Node: Naming Conventions for Data Parallel Functions22013
-Node: Constant Arguments23968
-Node: Color argument24584
-Node: Adjoint25394
-Node: Shift25764
-Node: Operations on arrays of fields26222
-Node: Creating and destroying lattice fields27478
-Node: Subsets28549
-Node: Defining a subset29625
-Node: Reductions on subsets30973
-Node: Shifts31874
-Node: Creating displacement shifts33803
-Node: Creating arbitrary permutations34317
-Node: Destroying a shift35475
-Node: I/O utilities35825
-Node: Temporary entry and exit from QDP36004
-Node: Suspending QDP communications39004
-Node: Resuming QDP communications39649
-Node: Optimization Calls39995
-Node: Function Details40899
-Node: Functions involving shifts41930
+Node: Introduction603
+Node: Compilation with QDP2493
+Node: Header and macros2718
+Node: Libraries5083
+Node: Nonuniform color and precision7052
+Node: Datatypes8859
+Node: Generic Names9493
+Node: Specific Types for Color and Precision11369
+Node: Color and Precision Uniformity12660
+Node: Breaking Color and Precision Uniformity14004
+Node: QDP Functions14516
+Node: Entry and exit from QDP15198
+Node: Layout utilities18075
+Node: Naming Conventions for Data Parallel Functions22497
+Node: Constant Arguments24452
+Node: Color argument25068
+Node: Adjoint25878
+Node: Shift26248
+Node: Operations on arrays of fields26706
+Node: Creating and destroying lattice fields27990
+Node: Subsets29086
+Node: Defining a subset30162
+Node: Reductions on subsets31510
+Node: Shifts32411
+Node: Creating displacement shifts34340
+Node: Creating arbitrary permutations34854
+Node: Destroying a shift36012
+Node: I/O utilities36362
+Node: Temporary entry and exit from QDP46348
+Node: Suspending QDP communications49348
+Node: Resuming QDP communications49993
+Node: Optimization Calls50339
+Node: Function Details54363
+Node: Functions involving shifts55394
 
 End Tag Table

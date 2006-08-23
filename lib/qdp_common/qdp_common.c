@@ -420,7 +420,7 @@ QDP_string_set(QDP_String *qs, char *string)
 
 /* Size of string */
 size_t
-QDP_string_length(const QDP_String *const qs)
+QDP_string_length(QDP_String *qs)
 {
   return qs->length;
 }
