@@ -1,5 +1,7 @@
+@node Fills and random numbers,,,Function Details
 @float
 @section Fills and random numbers
+
 @end float
 
 @sfunct{
@@ -43,8 +45,10 @@ R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @functionhookfills 
 
+@node Unary Operations,,,Function Details
 @float
 @section Unary Operations
+
 @end float
 
 @sfunc{
@@ -132,8 +136,10 @@ C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @functionhookunary 
 
+@node Type conversion and component extraction and insertion,,,Function Details
 @float
 @section Type conversion and component extraction and insertion
+
 @end float
 
 @sfunct{
@@ -351,8 +357,10 @@ eq_spproj@comma{} peq_spproj@comma{} meq_spproj@comma{} eqm_spproj}
 
 @functionhooktype 
 
+@node Binary operations with constants,,,Function Details
 @float
 @section Binary operations with constants
+
 @end float
 
 @sfunco{
@@ -405,8 +413,10 @@ r = a * gamma(i)}
 
 @functionhookbinary 
 
+@node Binary operations with fields,,,Function Details
 @float
 @section Binary operations with fields
+
 @end float
 
 @sfuncf{
@@ -529,8 +539,10 @@ eq@comma{} peq@comma{} meq@comma{} eqm}
 
 @functionhookbinary 
 
+@node Ternary operations with fields,,,Function Details
 @float
 @section Ternary operations with fields
+
 @end float
 
 @sfuncf{
@@ -562,8 +574,10 @@ plus@comma{} minus}
 
 @functionhookternary 
 
+@node Boolean operations,,,Function Details
 @float
 @section Boolean operations
+
 @end float
 
 @sfunctf{
@@ -583,8 +597,10 @@ I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 
 @functionhookboolean 
 
+@node Reductions,,,Function Details
 @float
 @section Reductions
+
 @end float
 
 @sfuncvt{

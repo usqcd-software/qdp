@@ -1056,6 +1056,14 @@ and write any lattice field in the SciDAC format including ILDG lattices.
 It also provides routines for inserting metadata and global binary data
 into the files.
 
+@menu
+* Opening and closing binary files::  
+* Reading and writing QDP fields::  
+* Reading and writing QLA arrays::  
+* String Handling::             
+@end menu
+
+@node Opening and closing binary files, Reading and writing QDP fields, I/O utilities, I/O utilities
 @subsection Opening and closing binary files
 
 As with standard Unix, a file must be opened before reading or
@@ -1133,6 +1141,7 @@ QDP_close_write(writer);
 
 In both cases the integer return value is 0 for success and 1 for failure.
 
+@node Reading and writing QDP fields, Reading and writing QLA arrays, Opening and closing binary files, I/O utilities
 @subsection Reading and writing QDP fields
 
 @c @subsubsection{Reading a field}
@@ -1224,6 +1233,7 @@ The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has prepared the record metadata and the array data
 in advance.
 
+@node Reading and writing QLA arrays, String Handling, Reading and writing QDP fields, I/O utilities
 @subsection Reading and writing QLA arrays
 
 QLA data is global data that carries no lattice site index.
@@ -1275,6 +1285,7 @@ assumed the user has prepared the record metadata and the field data
 in advance.
 
 
+@node String Handling,  , Reading and writing QLA arrays, I/O utilities
 @subsection String Handling
 
 The file and record metadata is passed to QDP in @code{QDP_string} objects.
@@ -1410,12 +1421,6 @@ Other values are unmodified.  The data order must conform to
 @code{QDP_index}.  This call, analogous to a fill operation, is
 permitted at any time and does not interfere with QDP operations.
 
-@menu
-* Suspending QDP communications::  
-* Resuming QDP communications::  
-@end menu
-
-@node Suspending QDP communications, Resuming QDP communications, Temporary entry and exit from QDP, Temporary entry and exit from QDP
 @subheading Suspending QDP communications
 
 If a user wishes to suspend QDP communications temporarily and carry
@@ -1431,7 +1436,6 @@ QDP_suspend_comm();}
 No QDP shifts can then be initiated until @code{QDP_resume} is called.
 However QDP linear algebra operations without shifts may proceed.
 
-@node Resuming QDP communications,  , Suspending QDP communications, Temporary entry and exit from QDP
 @subheading Resuming QDP communications
 
 To resume QDP communications one uses
@@ -1565,6 +1569,7 @@ QDP_@var{T}_eq_func,
 @var{Type} *r@comma{} void (*func)(@var{QLA_Type} *dest@comma{} int coords[])@comma{} @var{subset},
 calls func(&r[x]@comma{} x) for all coordinates x in subset,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
+@*
 @end macro
 
 @macro functionhookunary
@@ -1609,6 +1614,14 @@ specified subset.
 
 @menu
 * Functions involving shifts::  
+* Fills and random numbers::
+* Unary Operations::
+* Type conversion and component extraction and insertion::
+* Binary operations with constants::
+* Binary operations with fields::
+* Ternary operations with fields::
+* Boolean operations::
+* Reductions::
 @end menu
 
 @node Functions involving shifts,  , Function Details, Function Details

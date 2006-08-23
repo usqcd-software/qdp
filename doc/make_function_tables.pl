@@ -14,8 +14,9 @@ sub comment0($) {
     $tag = lc $tag;
     print OUTFILE "\@functionhook$tag \n\n";
   }
+  print OUTFILE "\@node @_,,,Function Details\n";
   print OUTFILE "\@float\n";
-  print OUTFILE "\@section @_\n";
+  print OUTFILE "\@section @_\n\n";
   print OUTFILE "\@end float\n\n";
   ($last_section) = @_;
 }

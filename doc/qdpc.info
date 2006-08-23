@@ -994,6 +994,16 @@ and write any lattice field in the SciDAC format including ILDG
 lattices.  It also provides routines for inserting metadata and global
 binary data into the files.
 
+* Menu:
+
+* Opening and closing binary files::
+* Reading and writing QDP fields::
+* Reading and writing QLA arrays::
+* String Handling::
+
+
+File: qdpc.info,  Node: Opening and closing binary files,  Next: Reading and writing QDP fields,  Prev: I/O utilities,  Up: I/O utilities
+
 4.7.1 Opening and closing binary files
 --------------------------------------
 
@@ -1054,6 +1064,9 @@ Example     `QDP_close_write(writer); '
 
 In both cases the integer return value is 0 for success and 1 for
 failure.
+
+
+File: qdpc.info,  Node: Reading and writing QDP fields,  Next: Reading and writing QLA arrays,  Prev: Opening and closing binary files,  Up: I/O utilities
 
 4.7.2 Reading and writing QDP fields
 ------------------------------------
@@ -1145,6 +1158,9 @@ The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has prepared the record metadata and the array data in
 advance.
 
+
+File: qdpc.info,  Node: Reading and writing QLA arrays,  Next: String Handling,  Prev: Reading and writing QDP fields,  Up: I/O utilities
+
 4.7.3 Reading and writing QLA arrays
 ------------------------------------
 
@@ -1195,6 +1211,9 @@ Example     `QLA_Complex array[nt];
 The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has prepared the record metadata and the field data in
 advance.
+
+
+File: qdpc.info,  Node: String Handling,  Prev: Reading and writing QLA arrays,  Up: I/O utilities
 
 4.7.4 String Handling
 ---------------------
@@ -1320,14 +1339,6 @@ values are unmodified.  The data order must conform to `QDP_index'.
 This call, analogous to a fill operation, is permitted at any time and
 does not interfere with QDP operations.
 
-* Menu:
-
-* Suspending QDP communications::
-* Resuming QDP communications::
-
-
-File: qdpc.info,  Node: Suspending QDP communications,  Next: Resuming QDP communications,  Prev: Temporary entry and exit from QDP,  Up: Temporary entry and exit from QDP
-
 Suspending QDP communications
 -----------------------------
 
@@ -1341,9 +1352,6 @@ Example     `QDP_suspend_comm();'
 
    No QDP shifts can then be initiated until `QDP_resume' is called.
 However QDP linear algebra operations without shifts may proceed.
-
-
-File: qdpc.info,  Node: Resuming QDP communications,  Prev: Suspending QDP communications,  Up: Temporary entry and exit from QDP
 
 Resuming QDP communications
 ---------------------------
@@ -1478,6 +1486,14 @@ specified subset.
 * Menu:
 
 * Functions involving shifts::
+* Fills and random numbers::
+* Unary Operations::
+* Type conversion and component extraction and insertion::
+* Binary operations with constants::
+* Binary operations with fields::
+* Ternary operations with fields::
+* Boolean operations::
+* Reductions::
 
 
 File: qdpc.info,  Node: Functions involving shifts,  Prev: Function Details,  Up: Function Details
@@ -1518,6 +1534,9 @@ Syntax      `QDP_T_eq_sM_times_sT(TYPE *r, QDP_ColorMatrix *a, TYPE *b,
             QDP_Shift s, QDP_ShiftDir d, SUBSET);'
 Meaning     r = shift(a * b)
 TYPE        `V, H, D, M, P'
+
+
+File: qdpc.info,  Node: Fills and random numbers,  Up: Function Details
 
 5.2 Fills and random numbers
 ============================
@@ -1569,6 +1588,9 @@ Syntax      `QDP_T_eq_func(TYPE *r, void (*func)(QLA_TYPE *dest, int
             coords[]), SUBSET);'
 Meaning     calls func(&r[x], x) for all coordinates x in subset
 TYPE        `I, R, C, V, H, D, M, P'
+
+
+File: qdpc.info,  Node: Unary Operations,  Up: Function Details
 
 5.3 Unary Operations
 ====================
@@ -1654,6 +1676,9 @@ Local squared norm: uniform precision
 Syntax      `QDP_R_eq_norm2_T(QDP_Real *r, TYPE *a, SUBSET);'
 Meaning     r = norm2(a)
 TYPE        `C, V, H, D, M, P'
+
+
+File: qdpc.info,  Node: Type conversion and component extraction and insertion,  Up: Function Details
 
 5.4 Type conversion and component extraction and insertion
 ==========================================================
@@ -1901,6 +1926,9 @@ Syntax      `QDP_D_EQOP_M{a}_times_D(QDP_DiracFermion *r,
 Meaning     r = spin reconstruct(spin project(a*b, dir, sign), dir, sign)
 EQOP        `eq_spproj, peq_spproj, meq_spproj, eqm_spproj'
 
+
+File: qdpc.info,  Node: Binary operations with constants,  Up: Function Details
+
 5.5 Binary operations with constants
 ====================================
 
@@ -1955,6 +1983,9 @@ Right multiplication by gamma matrix
 Syntax      `QDP_P_eq_P_times_gamma(QDP_DiracPropagator *r,
             QDP_DiracPropagator *a, int i, SUBSET);'
 Meaning     r = a * gamma(i)
+
+
+File: qdpc.info,  Node: Binary operations with fields,  Up: Function Details
 
 5.6 Binary operations with fields
 =================================
@@ -2086,6 +2117,9 @@ Syntax      `QDP_M_EQOP_V_times_Va(QDP_ColorMatrix *r, QDP_ColorVector
 Meaning     r[i, j] EQOP a[i] * b[j]
 EQOP        `eq, peq, meq, eqm'
 
+
+File: qdpc.info,  Node: Ternary operations with fields,  Up: Function Details
+
 5.7 Ternary operations with fields
 ==================================
 
@@ -2119,6 +2153,9 @@ Meaning     r = c * a +/- b
 TYPE        `C, V, H, D, M, P'
 FUNC        `plus, minus'
 
+
+File: qdpc.info,  Node: Boolean operations,  Up: Function Details
+
 5.8 Boolean operations
 ======================
 
@@ -2136,6 +2173,9 @@ Copy under a mask
 Syntax      `QDP_T_eq_T_mask_I(TYPE *r, TYPE *a, QDP_Int *b, SUBSET);'
 Meaning     r = a (if b is not 0)
 TYPE        `I, R, C, V, H, D, M, P'
+
+
+File: qdpc.info,  Node: Reductions,  Up: Function Details
 
 5.9 Reductions
 ==============
@@ -2263,11 +2303,21 @@ Node: Creating displacement shifts34340
 Node: Creating arbitrary permutations34854
 Node: Destroying a shift36012
 Node: I/O utilities36362
-Node: Temporary entry and exit from QDP46348
-Node: Suspending QDP communications49348
-Node: Resuming QDP communications49993
-Node: Optimization Calls50339
-Node: Function Details54363
-Node: Functions involving shifts55394
+Node: Opening and closing binary files36888
+Node: Reading and writing QDP fields39429
+Node: Reading and writing QLA arrays42957
+Node: String Handling45293
+Node: Temporary entry and exit from QDP47027
+Node: Optimization Calls50634
+Node: Function Details54658
+Node: Functions involving shifts55942
+Node: Fills and random numbers57225
+Node: Unary Operations58723
+Node: Type conversion and component extraction and insertion60999
+Node: Binary operations with constants69480
+Node: Binary operations with fields71151
+Node: Ternary operations with fields75263
+Node: Boolean operations76545
+Node: Reductions77063
 
 End Tag Table
