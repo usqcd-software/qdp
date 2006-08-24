@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([qdp],[1.5.7],[josborn at physics.bu.edu])
+AC_INIT([qdp],[1.5.8],[josborn at physics.bu.edu])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE
 
@@ -99,7 +99,7 @@ fi
 if test "X$GCC" = "Xyes"; then GNUCC="$CC"; else
 AC_PATH_PROG([GNUCC], [gcc], [gcc])
 fi
-CFLAGS="$CFLAGS $QMP_CFLAGS"
+#CFLAGS="$CFLAGS $QMP_CFLAGS"
 
 # Checks for libraries.
 
@@ -141,7 +141,10 @@ fi
 
 # configuration files
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(bin/Makefile)
+AC_CONFIG_FILES(bin/qdp-config)
 AC_CONFIG_FILES(doc/Makefile)
+AC_CONFIG_FILES(examples/Makefile)
 AC_CONFIG_FILES(include/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(lib/qdp_common/Makefile)
@@ -160,7 +163,6 @@ AC_CONFIG_FILES(lib/qdp_df3/Makefile)
 AC_CONFIG_FILES(lib/qdp_dfn/Makefile)
 AC_CONFIG_FILES(lib/optimized/Makefile)
 AC_CONFIG_FILES(lib/optimized/qdp_f3/Makefile)
-AC_CONFIG_FILES(examples/Makefile)
 AC_CONFIG_FILES(other_libs/Makefile)
 
 AC_OUTPUT

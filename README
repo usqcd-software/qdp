@@ -4,11 +4,12 @@ This package uses the standard GNU configuration script.  See the file
 INSTALL for datails on compiling and installing.
 
 Documentation is included in the doc directory.  Gnu info files are
-automatically build with the rest of the library.  Postscript, pdf and
+automatically built with the rest of the library.  Postscript, pdf and
 html versions can be made with "make ps", "make pdf" and "make html".
 
 Contents of directories:
 
+  bin			Contains qdp-config script
   doc			Documentation
   examples		Example programs using QDP
   include		Header files, some of these will be generated
