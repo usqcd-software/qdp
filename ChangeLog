@@ -1,3 +1,8 @@
+2006-08-24 17:40  osborn
+
+	* Makefile.am, NEWS, README, configure, configure.ac,
+	  bin/Makefile.am, bin/qdp-config.in: Added qdp-config script.
+
 2006-08-23 19:08  tag qdp1-5-7
 
 2006-08-23 19:08  osborn
