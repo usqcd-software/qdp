@@ -7,20 +7,20 @@ gen_qdp="${thisdir}generate_qdp.pl"
 generic="${thisdir}generic.pl"
 profile="${thisdir}profile.pl"
 
-perl $gen_types $1 ${thisdir}qdp_pc.h $incdir/qdp_$1.h
-perl $gen_qdp -h -l$1 -d $incdir
+perl -w $gen_types $1 ${thisdir}qdp_pc.h $incdir/qdp_$1.h
+perl -w $gen_qdp -h -l$1 -d $incdir
 
 if expr $1 : '[df][23n]*$'; then
-perl $gen_types $1 ${thisdir}qdp_generic.h $incdir/qdp_$1_generic.h
-perl $generic g $1 $incdir/qdp_$1.h $incdir/qdp_$1_generic.h
+perl -w $gen_types $1 ${thisdir}qdp_generic.h $incdir/qdp_$1_generic.h
+perl -w $generic g $1 $incdir/qdp_$1.h $incdir/qdp_$1_generic.h
 fi
 
 if expr $1 : '[df][df]*[23n]$'; then
-perl $gen_types $1 ${thisdir}qdp_color_generic.h $incdir/qdp_$1_color_generic.h
-perl $generic c $1 $incdir/qdp_$1.h $incdir/qdp_$1_color_generic.h
+perl -w $gen_types $1 ${thisdir}qdp_color_generic.h $incdir/qdp_$1_color_generic.h
+perl -w $generic c $1 $incdir/qdp_$1.h $incdir/qdp_$1_color_generic.h
 fi
 
-perl $gen_types $1 ${thisdir}qdp_profile.h $incdir/qdp_$1_profile.h
-perl $profile $incdir/qdp_$1.h $incdir/qdp_$1_profile.h
+perl -w $gen_types $1 ${thisdir}qdp_profile.h $incdir/qdp_$1_profile.h
+perl -w $profile $incdir/qdp_$1.h $incdir/qdp_$1_profile.h
 
-perl $gen_types $1 ${thisdir}qdp_internal.h qdp_$1_internal.h
+perl -w $gen_types $1 ${thisdir}qdp_internal.h qdp_$1_internal.h

@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 if($ARGV[0] eq "-c") {
   ($cflag, $lib, $dir, @srcs) = @ARGV;
   if ( $lib =~ /^[df][df]/ ) {

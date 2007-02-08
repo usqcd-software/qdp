@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 ($gc, $lib, $infile, $outfile) = @ARGV;
 
 if($gc eq 'g') {

@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 my(%datatypes);
 my(@all_types, @shift_types, @float_types, @complex_types, @color_types);
 scalar eval `cat ../lib/generate/datatypes.pl`;

@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 ($infile, $outfile) = @ARGV;
 
 open(INFILE, "<".$infile);

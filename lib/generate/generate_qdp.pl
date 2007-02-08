@@ -1,3 +1,4 @@
+#!/usr/bin/perl -w
 use strict;
 
 # First read arguments and choose library and output directory
