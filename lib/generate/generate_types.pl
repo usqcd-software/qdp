@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 if($ARGV[0] eq "-c") {
   ($cflag, $lib, $dir, @srcs) = @ARGV;

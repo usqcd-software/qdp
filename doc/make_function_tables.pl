@@ -229,7 +229,7 @@ sub make_functions(\%) {
       $vargs .= ", \@var{Type} *src2[]";
       $t = typelist(@z);
       $macro .= "t";
-      $macrs =~ s/ft/tf/;
+      $macro =~ s/ft/tf/;
     }
     if($arg->{SRC2_SCALAR}) {
       $vargs =~ s/\*src2/src2/;
@@ -272,12 +272,12 @@ sub make_functions(\%) {
   $vargs =~ s/,/\@comma{}/g;
   if($#vz>=0) {
     $macro =~ s/func/funcv/;
-    ($vprot = $prot) =~ s/_([^_]*eq[^_]*)_/_v\1_/;
+    ($vprot = $prot) =~ s/_([^_]*eq[^_]*)_/_v$1_/;
     $vargs .= "\@comma{} int n";
     $args .= ",\n$vprot,\n$vargs";
   }
   ($d = $desc) =~ s/,/\@comma{}/g;
-  $d =~ s/<([^>]*)>/\@var{\1}/g;
+  $d =~ s/<([^>]*)>/\@var{$1}/g;
 
   print OUTFILE $macro, "{\n";
   print OUTFILE "$cmt1,\n" if($cmt1);
