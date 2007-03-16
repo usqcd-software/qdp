@@ -205,8 +205,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
 #define QDPIO_word_P(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_P(NC, p, pc, buf, s, nc, ns) {			\
     int _is, _js, _ic, _jc;						\
-    for(_is=0; _is<(ns); ++_ic) {					\
-      for(_js=0; _js<(ns); ++_jc) {					\
+    for(_is=0; _is<(ns); ++_is) {					\
+      for(_js=0; _js<(ns); ++_js) {					\
 	for(_ic=0; _ic<(nc); ++_ic) {					\
 	  for(_jc=0; _jc<(nc); ++_jc) {					\
 	    QLA##pc##_C_eq_elem_P(NC ((QLA_##p##_Complex *)(buf))+((_is*(ns)+_js)*(nc)+_ic)*(nc)+_jc, s, _ic, _is, _jc, _js); \
@@ -217,8 +217,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
   }
 #define QDPIO_put_P(NC, p, pc, s, buf, nc, ns) {			\
     int _is, _js, _ic, _jc;						\
-    for(_is=0; _is<(ns); ++_ic) {					\
-      for(_js=0; _js<(ns); ++_jc) {					\
+    for(_is=0; _is<(ns); ++_is) {					\
+      for(_js=0; _js<(ns); ++_js) {					\
 	for(_ic=0; _ic<(nc); ++_ic) {					\
 	  for(_jc=0; _jc<(nc); ++_jc) {					\
 	    QLA##pc##_P_eq_elem_C(NC s, ((QLA_##p##_Complex *)(buf))+((_is*(ns)+_js)*(nc)+_ic)*(nc)+_jc, _ic, _is, _jc, _js); \
