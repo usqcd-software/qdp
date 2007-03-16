@@ -1,3 +1,9 @@
+2007-03-16 16:56  osborn
+
+	* NEWS, configure, configure.ac,
+	  lib/generate/qdp_common_internal.h: Fixed bad loop in
+	  DiracPropagator I/O.
+
 2007-02-08 15:53  tag qdp1-5-9
 
 2007-02-08 15:53  osborn
