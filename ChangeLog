@@ -1,3 +1,11 @@
+2007-05-04 14:57  osborn
+
+	* NEWS, lib/generate/QDP_T3_EQOP_T1_times_sT2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_T2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_sT2.c,
+	  lib/qdp_common/com_common.c, lib/qdp_common/qdp_internal.c: Fixed
+	  wrong code for shift and multiply routines with eqop not eq.
+
 2007-03-16 16:56  tag qdp1-5-10
 
 2007-03-16 16:56  osborn
