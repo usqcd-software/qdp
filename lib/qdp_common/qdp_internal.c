@@ -412,6 +412,7 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
 	restart = 1;
       } else {
 	*pss = ss->next;
+	QDP_clear_shift_src(dest_dc); // don't save old shifts
 	ss->next = dest_dc->shift_src;
 	dest_dc->shift_src = ss;
 	QDP_remove_shift_tag_reference(ss->st);

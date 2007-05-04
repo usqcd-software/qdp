@@ -3,10 +3,10 @@
 #include "com_common.h"
 #include "com_common_internal.h"
 
-#define fvpd QLA$PC_$ABBR3_veq_p$ABBR1$ADJ1_times_$ABBR2$ADJ2
-#define fxpd QLA$PC_$ABBR3_xeq_p$ABBR1$ADJ1_times_$ABBR2$ADJ2
-#define fvpp QLA$PC_$ABBR3_veq_p$ABBR1$ADJ1_times_p$ABBR2$ADJ2
-#define fxpp QLA$PC_$ABBR3_xeq_p$ABBR1$ADJ1_times_p$ABBR2$ADJ2
+#define fvpd QLA$PC_$ABBR3_v$EQOP_p$ABBR1$ADJ1_times_$ABBR2$ADJ2
+#define fxpd QLA$PC_$ABBR3_x$EQOP_p$ABBR1$ADJ1_times_$ABBR2$ADJ2
+#define fvpp QLA$PC_$ABBR3_v$EQOP_p$ABBR1$ADJ1_times_p$ABBR2$ADJ2
+#define fxpp QLA$PC_$ABBR3_x$EQOP_p$ABBR1$ADJ1_times_p$ABBR2$ADJ2
 
 void
 QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_$ABBR2$ADJ2(

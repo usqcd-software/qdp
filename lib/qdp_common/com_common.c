@@ -1694,7 +1694,8 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
   do {
     int sn;
 
-    sn = get_stride(gmem, base+k, size+k, num+k, stride+k);
+    //sn = get_stride(gmem, base+k, size+k, num+k, stride+k);
+    sn = 0;
 
     if(sn) {
       //fprintf(stderr, "strided gather: %i %i %i %i\n", gmem->sb, gmem->se,
@@ -1753,8 +1754,12 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
     sm->buf = NULL;
   }
 
-  if(k)
+  if(k==1) {
+    mh->mmv[i] =
+      QMP_declare_strided_msgmem(base[0], size[0], num[0], stride[0]);
+  } else if(k>1) {
     mh->mmv[i] = QMP_declare_strided_array_msgmem(base, size, num, stride, k);
+  }
 
   mh->mhv[i] = QMP_declare_send_to(mh->mmv[i], sm->node, 0);
 
