@@ -1,3 +1,7 @@
+2007-05-07 13:51  osborn
+
+	* NEWS, configure, configure.ac: prepare for QDP 1.5.11
+
 2007-05-04 14:57  osborn
 
 	* NEWS, lib/generate/QDP_T3_EQOP_T1_times_sT2.c,
