@@ -1,3 +1,12 @@
+2007-06-04 14:51  osborn
+
+	* NEWS, configure, configure.ac, examples/qdp_test.c,
+	  lib/generate/generate_types.pl, lib/generate/qdp_pc.h,
+	  lib/qdp_d2/Makefile.am, lib/qdp_d3/Makefile.am,
+	  lib/qdp_dn/Makefile.am, lib/qdp_f2/Makefile.am,
+	  lib/qdp_f3/Makefile.am, lib/qdp_fn/Makefile.am: Added rest of
+	  shift and multiply with adjoint functions.
+
 2007-05-07 13:51  osborn
 
 	* NEWS, configure, configure.ac: prepare for QDP 1.5.11
