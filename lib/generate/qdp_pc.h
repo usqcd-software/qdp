@@ -63,3 +63,12 @@ void QDP$PC_$ABBR_$EQOP_sMa_times_$ABBR($NC$QDPPCTYPE *dest, QDP$PC_ColorMatrix 
 void QDP$PC_$ABBR_$EQOP_sM_times_s$ABBR($NC$QDPPCTYPE *dest, QDP$PC_ColorMatrix *src1, $QDPPCTYPE *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
 void QDP$PC_$ABBR_$EQOP_sMa_times_s$ABBR($NC$QDPPCTYPE *dest, QDP$PC_ColorMatrix *src1, $QDPPCTYPE *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
 !END
+
+!EQOPS
+void QDP$PC_M_$EQOP_M_times_sMa($NC QDP$PC_ColorMatrix *dest, QDP$PC_ColorMatrix *src1, QDP$PC_ColorMatrix *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP$PC_M_$EQOP_Ma_times_sMa($NC QDP$PC_ColorMatrix *dest, QDP$PC_ColorMatrix *src1, QDP$PC_ColorMatrix *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP$PC_M_$EQOP_sM_times_Ma($NC QDP$PC_ColorMatrix *dest, QDP$PC_ColorMatrix *src1, QDP$PC_ColorMatrix *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP$PC_M_$EQOP_sMa_times_Ma($NC QDP$PC_ColorMatrix *dest, QDP$PC_ColorMatrix *src1, QDP$PC_ColorMatrix *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP$PC_M_$EQOP_sM_times_sMa($NC QDP$PC_ColorMatrix *dest, QDP$PC_ColorMatrix *src1, QDP$PC_ColorMatrix *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP$PC_M_$EQOP_sMa_times_sMa($NC QDP$PC_ColorMatrix *dest, QDP$PC_ColorMatrix *src1, QDP$PC_ColorMatrix *src2, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+!END

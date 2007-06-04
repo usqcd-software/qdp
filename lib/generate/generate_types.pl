@@ -91,53 +91,55 @@ if($cflag) {
 	if($gauge_mult) {
 	  $t1 = 'ColorMatrix';
 	  $t2 = $t3 = $dt;
-	  $s2adj = '';
+	  if($dt eq 'ColorMatrix') { @s2a = ('','a'); } else { @s2a = (''); }
 	  for $s1adj ('','a') {
+	    for $s2adj (@s2a) {
 
-	    $outfn = $dir."/".$fn;
-	    $outfn =~ s/QDP/QDP$pc/;
-	    $outfn =~ s/T1/$datatypes{$t1}{ABBR}$s1adj/g;
-	    $outfn =~ s/T2/$datatypes{$t2}{ABBR}$s2adj/g;
-	    $outfn =~ s/T3/$datatypes{$t3}{ABBR}/g;
+	      $outfn = $dir."/".$fn;
+	      $outfn =~ s/QDP/QDP$pc/;
+	      $outfn =~ s/T1/$datatypes{$t1}{ABBR}$s1adj/g;
+	      $outfn =~ s/T2/$datatypes{$t2}{ABBR}$s2adj/g;
+	      $outfn =~ s/T3/$datatypes{$t3}{ABBR}/g;
 
-	    if($color eq 'N') {
-	      $ncarg = "int nc, ";
-	      $ncvoid = "int nc";
-	      $ncvar = "nc, ";
-	    } else {
-	      $ncarg = "";
-	      $ncvoid = "void";
-	      $ncvar = "";
-	    }
-	    $temp = $text;
-	    $temp =~ s/\$ABBR1/$datatypes{$t1}{ABBR}/g;
-	    $temp =~ s/\$ABBR2/$datatypes{$t2}{ABBR}/g;
-	    $temp =~ s/\$ABBR3/$datatypes{$t3}{ABBR}/g;
-	    $temp =~ s/\$ADJ1/$s1adj/g;
-	    $temp =~ s/\$ADJ2/$s2adj/g;
-	    $temp =~ s/\$QDPPCTYPE1/QDP$pc$us$t1/g;
-	    $temp =~ s/\$QDPPCTYPE2/QDP$pc$us$t2/g;
-	    $temp =~ s/\$QDPPCTYPE3/QDP$pc$us$t3/g;
-	    $temp =~ s/\$QLAPCTYPE1/QLA$pc$us$t1/g;
-	    $temp =~ s/\$QLAPCTYPE2/QLA$pc$us$t2/g;
-	    $temp =~ s/\$QLAPCTYPE3/QLA$pc$us$t3/g;
-	    $temp =~ s/\$NCVOID/$ncvoid/g;
-	    $temp =~ s/\$NCVAR/$ncvar/g;
-	    $temp =~ s/\$NC/$ncarg/g;
-	    $temp =~ s/\$PC/$pc/g;
-	    $temp =~ s/\$PORPC/$porpc/g;
-	    $temp =~ s/\$LIB/$lib/g;
-	    $temp =~ s/\$lib/$llib/g;
-	    for $eqop ('eq','peq','meq','eqm') {
-	      $ttemp = $temp;
-	      $ttemp =~ s/\$EQOP/$eqop/g;
-	      $toutfn = $outfn;
-	      $toutfn =~ s/EQOP/$eqop/;
-              #if((stat($toutfn))[9]<$infile_mtime) {
+	      if($color eq 'N') {
+		$ncarg = "int nc, ";
+		$ncvoid = "int nc";
+		$ncvar = "nc, ";
+	      } else {
+		$ncarg = "";
+		$ncvoid = "void";
+		$ncvar = "";
+	      }
+	      $temp = $text;
+	      $temp =~ s/\$ABBR1/$datatypes{$t1}{ABBR}/g;
+	      $temp =~ s/\$ABBR2/$datatypes{$t2}{ABBR}/g;
+	      $temp =~ s/\$ABBR3/$datatypes{$t3}{ABBR}/g;
+	      $temp =~ s/\$ADJ1/$s1adj/g;
+	      $temp =~ s/\$ADJ2/$s2adj/g;
+	      $temp =~ s/\$QDPPCTYPE1/QDP$pc$us$t1/g;
+	      $temp =~ s/\$QDPPCTYPE2/QDP$pc$us$t2/g;
+	      $temp =~ s/\$QDPPCTYPE3/QDP$pc$us$t3/g;
+	      $temp =~ s/\$QLAPCTYPE1/QLA$pc$us$t1/g;
+	      $temp =~ s/\$QLAPCTYPE2/QLA$pc$us$t2/g;
+	      $temp =~ s/\$QLAPCTYPE3/QLA$pc$us$t3/g;
+	      $temp =~ s/\$NCVOID/$ncvoid/g;
+	      $temp =~ s/\$NCVAR/$ncvar/g;
+	      $temp =~ s/\$NC/$ncarg/g;
+	      $temp =~ s/\$PC/$pc/g;
+	      $temp =~ s/\$PORPC/$porpc/g;
+	      $temp =~ s/\$LIB/$lib/g;
+	      $temp =~ s/\$lib/$llib/g;
+	      for $eqop ('eq','peq','meq','eqm') {
+		$ttemp = $temp;
+		$ttemp =~ s/\$EQOP/$eqop/g;
+		$toutfn = $outfn;
+		$toutfn =~ s/EQOP/$eqop/;
+		#if((stat($toutfn))[9]<$infile_mtime) {
 	        open(OUTFILE, ">".$toutfn);
 	        print OUTFILE $ttemp;
                 close(OUTFILE);
-              #}
+		#}
+	      }
 	    }
 	  }
 	} else { # not $gauge_mult
@@ -190,7 +192,7 @@ if($cflag) {
     }
   }
 
-} else { # cflag
+} else { # not cflag
 
   open(INFILE, "<".$template);
   open(OUTFILE, ">".$dest);
@@ -218,7 +220,9 @@ if($cflag) {
 	}
 	$begin_qlaelibs = 0;
       } else {
-	for $dt (@all_types) {
+	if($begin_types) { @ta = (@all_types); }
+	else { @ta = ('ColorMatrix'); $begin_types = 8; }
+	for $dt (@ta) {
 	  for $tp ('','F','D') {
 	    for $tc ('','2','3','N') {
 	      next if(!compatible_pc($dt,$tp,$tc));
@@ -268,36 +272,42 @@ if($cflag) {
 	$begin_types = 0;
 	$begin_eqops = 0;
       }
-    } elsif($begin_types||$begin_qlaelibs) {
+    } elsif(/^!/) {
+      if(/^!ALLTYPES/) { # all types
+	$begin_types = 1;
+	$text = '';
+      } elsif(/^!SHIFTTYPES/) { # shiftable types
+	$begin_types = 2;
+	$text = '';
+      } elsif(/^!PCTYPES/) { # types with same PC as lib
+	$begin_types = 3;
+	$text = '';
+      } elsif(/^!PCSHIFTTYPES/) { # shiftable types with same PC as lib
+	$begin_types = 4;
+	$text = '';
+      } elsif(/^!PCSUBTYPES/) { # types that are compatible with PC of lib
+	$begin_types = 5;
+	$text = '';
+      } elsif(/^!PCNOSHIFTTYPES/) { # non-shiftable types with same PC as lib
+	$begin_types = 6;
+	$text = '';
+      } elsif(/^!NOSHIFTTYPES/) { # non-shiftable types
+	$begin_types = 7;
+	$text = '';
+      } elsif(/^!PCCOLORTYPES/) { # colored types
+	$begin_types = 8;
+	$text = '';
+      } elsif(/^!EQOPS/) {
+	$begin_eqops = 1;
+	$text = '';
+      } elsif(/^!QLAELIBS/) {
+	$begin_qlaelibs = 1;
+	$text = '';
+      } else {
+	die "error unknown tag in generate_types.pl:\n $_";
+      }
+    } elsif($begin_types||$begin_qlaelibs||$begin_eqops) {
       $text .= $_;
-    } elsif(/^!ALLTYPES/) { # all types
-      $begin_types = 1;
-      $text = '';
-    } elsif(/^!SHIFTTYPES/) { # shiftable types
-      $begin_types = 2;
-      $text = '';
-    } elsif(/^!PCTYPES/) { # types with same PC as lib
-      $begin_types = 3;
-      $text = '';
-    } elsif(/^!PCSHIFTTYPES/) { # shiftable types with same PC as lib
-      $begin_types = 4;
-      $text = '';
-    } elsif(/^!PCSUBTYPES/) { # types that are compatible with PC of lib
-      $begin_types = 5;
-      $text = '';
-    } elsif(/^!PCNOSHIFTTYPES/) { # non-shiftable types with same PC as lib
-      $begin_types = 6;
-      $text = '';
-    } elsif(/^!NOSHIFTTYPES/) { # non-shiftable types
-      $begin_types = 7;
-      $text = '';
-    } elsif(/^!PCCOLORTYPES/) { # colored types
-      $begin_types = 8;
-      $text = '';
-    } elsif(/^!EQOPS/) {
-      $begin_eqops = 1;
-    } elsif(/^!QLAELIBS/) {
-      $begin_qlaelibs = 1;
     } else {
       $line = $_;
       $line =~ s/\$PC/$pc/g;

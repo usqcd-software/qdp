@@ -69,7 +69,7 @@ timeslices(int x[], void *args)
 void
 run_tests(void)
 {
-  int i;
+  int i, j, k;
   QDP_RandomState *rs;
   QDP_Int *li;
   QDP_Real *r;
@@ -196,9 +196,15 @@ run_tests(void)
 
   printf0("Calling QDP_D_eq_sD on custom subset... ");
   fflush(stdout);
-  for(i=0; i<QDP_coord_size(3); i++) {
-    QDP_D_eq_sD(d2, d1, QDP_neighbor[0], QDP_forward, ts[i]);
-    QDP_D_eq_sD(d3, d1, QDP_neighbor[3], QDP_backward, ts[i]);
+  for(k=0; k<100; k++) {
+    for(i=0; i<QDP_coord_size(3); i++) {
+      for(j=0; j<4; j++) {
+	QDP_D_eq_sD(d2, d1, QDP_neighbor[j], QDP_forward, ts[i]);
+	QDP_D_eq_M_times_D(d1, m, d2, QDP_all);
+	QDP_D_eq_sD(d3, d1, QDP_neighbor[j], QDP_backward, ts[i]);
+	QDP_D_eq_M_times_D(d1, m, d3, QDP_all);
+      }
+    }
   }
   printf0("done\n");
 
