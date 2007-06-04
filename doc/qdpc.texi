@@ -7,7 +7,7 @@
 @c start titlepage, only used in TeX mode
 @titlepage
 @title QDP/C User Manual
-Version 1.5.7
+Version 1.6.0
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -20,7 +20,7 @@ with the SciDAC Software Committee
 @ifnottex
 @node Top, Introduction, (dir), (dir)
 @c @top QDP/C User Manual
-Version 1.5.7
+Version 1.6.0
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -1568,6 +1568,12 @@ Function fills,
 QDP_@var{T}_eq_func,
 @var{Type} *r@comma{} void (*func)(@var{QLA_Type} *dest@comma{} int coords[])@comma{} @var{subset},
 calls func(&r[x]@comma{} x) for all coordinates x in subset,
+I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
+@sfunct{
+Function fills,
+QDP_@var{T}_eq_funci,
+@var{Type} *r@comma{} void (*func)(@var{QLA_Type} *dest@comma{} int index)@comma{} @var{subset},
+calls func(&r[x]@comma{} index(x)) for all coordinates x in subset,
 I@comma{} R@comma{} C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
 @*
 @end macro

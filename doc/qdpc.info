@@ -4,7 +4,7 @@ from ../../qdp-cvs/doc/qdpc.texi.
 
 File: qdpc.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
 
-   Version 1.5.7
+   Version 1.6.0
 
    This document provides a detailed description of the C
 implementation of the
@@ -1589,6 +1589,14 @@ Syntax      `QDP_T_eq_func(TYPE *r, void (*func)(QLA_TYPE *dest, int
 Meaning     calls func(&r[x], x) for all coordinates x in subset
 TYPE        `I, R, C, V, H, D, M, P'
 
+Function fills
+--------------
+
+Syntax      `QDP_T_eq_funci(TYPE *r, void (*func)(QLA_TYPE *dest, int
+            index), SUBSET);'
+Meaning     calls func(&r[x], index(x)) for all coordinates x in subset
+TYPE        `I, R, C, V, H, D, M, P'
+
 
 File: qdpc.info,  Node: Unary Operations,  Up: Function Details
 
@@ -2312,12 +2320,12 @@ Node: Optimization Calls50634
 Node: Function Details54658
 Node: Functions involving shifts55942
 Node: Fills and random numbers57225
-Node: Unary Operations58723
-Node: Type conversion and component extraction and insertion60999
-Node: Binary operations with constants69480
-Node: Binary operations with fields71151
-Node: Ternary operations with fields75263
-Node: Boolean operations76545
-Node: Reductions77063
+Node: Unary Operations58964
+Node: Type conversion and component extraction and insertion61240
+Node: Binary operations with constants69721
+Node: Binary operations with fields71392
+Node: Ternary operations with fields75504
+Node: Boolean operations76786
+Node: Reductions77304
 
 End Tag Table

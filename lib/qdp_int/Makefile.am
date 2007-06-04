@@ -11,6 +11,7 @@ QDP_expose_S.c \
 QDP_extract_I.c \
 QDP_extract_S.c \
 QDP_I_eq_func.c \
+QDP_I_eq_funci.c \
 QDP_I_eq_i1.c \
 QDP_I_eq_i1_times_I.c \
 QDP_I_eq_I_and_I.c \
@@ -71,6 +72,7 @@ QDP_expose_S.o \
 QDP_extract_I.o \
 QDP_extract_S.o \
 QDP_I_eq_func.o \
+QDP_I_eq_funci.o \
 QDP_I_eq_i1.o \
 QDP_I_eq_i1_times_I.o \
 QDP_I_eq_I_and_I.o \

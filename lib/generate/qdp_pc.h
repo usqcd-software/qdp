@@ -43,6 +43,7 @@ void QDP$PC_discard_$ABBR($NC$QDPPCTYPE *field);
 
 !PCSHIFTTYPES
 void QDP$PC_$ABBR_eq_func($NC$QDPPCTYPE *dest, void (*func)($QLAPCTYPE *dest, int coords[]), QDP_Subset subset );
+void QDP$PC_$ABBR_eq_funci($NC$QDPPCTYPE *dest, void (*func)($QLAPCTYPE *dest, int index), QDP_Subset subset );
 !END
 
 /* shift */

@@ -54,6 +54,7 @@ QDP_DN_D_eq_D_minus_D.c \
 QDP_DN_D_eq_D_plus_D.c \
 QDP_DN_D_eq_elem_C.c \
 QDP_DN_D_eq_func.c \
+QDP_DN_D_eq_funci.c \
 QDP_DN_D_eq_gamma_times_D.c \
 QDP_DN_D_eq_gaussian_S.c \
 QDP_DN_D_eq_i_D.c \
@@ -208,6 +209,7 @@ QDP_DN_H_eq_c_times_H_minus_H.c \
 QDP_DN_H_eq_c_times_H_plus_H.c \
 QDP_DN_H_eq_elem_C.c \
 QDP_DN_H_eq_func.c \
+QDP_DN_H_eq_funci.c \
 QDP_DN_H_eq_gaussian_S.c \
 QDP_DN_H_eq_h1.c \
 QDP_DN_H_eq_H.c \
@@ -329,6 +331,7 @@ QDP_DN_M_eq_c_times_M_minus_M.c \
 QDP_DN_M_eq_c_times_M_plus_M.c \
 QDP_DN_M_eq_elem_C.c \
 QDP_DN_M_eq_func.c \
+QDP_DN_M_eq_funci.c \
 QDP_DN_M_eq_gaussian_S.c \
 QDP_DN_M_eq_i_M.c \
 QDP_DN_M_eq_m1.c \
@@ -473,6 +476,7 @@ QDP_DN_P_eq_c_times_P_plus_P.c \
 QDP_DN_P_eq_diracvec_D.c \
 QDP_DN_P_eq_elem_C.c \
 QDP_DN_P_eq_func.c \
+QDP_DN_P_eq_funci.c \
 QDP_DN_P_eq_gamma_times_P.c \
 QDP_DN_P_eq_gaussian_S.c \
 QDP_DN_P_eq_i_P.c \
@@ -498,11 +502,7 @@ QDP_DN_P_eqm_sM_times_sP.c \
 QDP_DN_P_eq_M_times_P.c \
 QDP_DN_P_eq_M_times_sP.c \
 QDP_DN_P_eqm_transpose_P.c \
-QDP_DN_P_eq_p1.c \
-QDP_DN_P_eq_Pa.c \
-QDP_DN_P_eq_P.c \
-QDP_DN_P_eq_P_mask_I.c \
-QDP_DN_P_eq_P_minus_P.c
+QDP_DN_P_eq_p1.c
 
 QDPOBJ1 = \
 QDP_DN_c1_eq_D_dot_D.o \
@@ -556,6 +556,7 @@ QDP_DN_D_eq_D_minus_D.o \
 QDP_DN_D_eq_D_plus_D.o \
 QDP_DN_D_eq_elem_C.o \
 QDP_DN_D_eq_func.o \
+QDP_DN_D_eq_funci.o \
 QDP_DN_D_eq_gamma_times_D.o \
 QDP_DN_D_eq_gaussian_S.o \
 QDP_DN_D_eq_i_D.o \
@@ -710,6 +711,7 @@ QDP_DN_H_eq_c_times_H_minus_H.o \
 QDP_DN_H_eq_c_times_H_plus_H.o \
 QDP_DN_H_eq_elem_C.o \
 QDP_DN_H_eq_func.o \
+QDP_DN_H_eq_funci.o \
 QDP_DN_H_eq_gaussian_S.o \
 QDP_DN_H_eq_h1.o \
 QDP_DN_H_eq_H.o \
@@ -831,6 +833,7 @@ QDP_DN_M_eq_c_times_M_minus_M.o \
 QDP_DN_M_eq_c_times_M_plus_M.o \
 QDP_DN_M_eq_elem_C.o \
 QDP_DN_M_eq_func.o \
+QDP_DN_M_eq_funci.o \
 QDP_DN_M_eq_gaussian_S.o \
 QDP_DN_M_eq_i_M.o \
 QDP_DN_M_eq_m1.o \
@@ -975,6 +978,7 @@ QDP_DN_P_eq_c_times_P_plus_P.o \
 QDP_DN_P_eq_diracvec_D.o \
 QDP_DN_P_eq_elem_C.o \
 QDP_DN_P_eq_func.o \
+QDP_DN_P_eq_funci.o \
 QDP_DN_P_eq_gamma_times_P.o \
 QDP_DN_P_eq_gaussian_S.o \
 QDP_DN_P_eq_i_P.o \
@@ -1000,13 +1004,13 @@ QDP_DN_P_eqm_sM_times_sP.o \
 QDP_DN_P_eq_M_times_P.o \
 QDP_DN_P_eq_M_times_sP.o \
 QDP_DN_P_eqm_transpose_P.o \
-QDP_DN_P_eq_p1.o \
-QDP_DN_P_eq_Pa.o \
-QDP_DN_P_eq_P.o \
-QDP_DN_P_eq_P_mask_I.o \
-QDP_DN_P_eq_P_minus_P.o
+QDP_DN_P_eq_p1.o
 
 QDPSRC2 = \
+QDP_DN_P_eq_Pa.c \
+QDP_DN_P_eq_P.c \
+QDP_DN_P_eq_P_mask_I.c \
+QDP_DN_P_eq_P_minus_P.c \
 QDP_DN_P_eq_P_plus_P.c \
 QDP_DN_P_eq_P_times_gamma.c \
 QDP_DN_P_eq_P_times_Ma.c \
@@ -1153,6 +1157,7 @@ QDP_DN_V_eq_c_times_V_minus_V.c \
 QDP_DN_V_eq_c_times_V_plus_V.c \
 QDP_DN_V_eq_elem_C.c \
 QDP_DN_V_eq_func.c \
+QDP_DN_V_eq_funci.c \
 QDP_DN_V_eq_gaussian_S.c \
 QDP_DN_V_eq_i_V.c \
 QDP_DN_V_eq_Ma_times_sV.c \
@@ -1246,6 +1251,10 @@ QDP_DN_write_P.c \
 QDP_DN_write_V.c
 
 QDPOBJ2 = \
+QDP_DN_P_eq_Pa.o \
+QDP_DN_P_eq_P.o \
+QDP_DN_P_eq_P_mask_I.o \
+QDP_DN_P_eq_P_minus_P.o \
 QDP_DN_P_eq_P_plus_P.o \
 QDP_DN_P_eq_P_times_gamma.o \
 QDP_DN_P_eq_P_times_Ma.o \
@@ -1392,6 +1401,7 @@ QDP_DN_V_eq_c_times_V_minus_V.o \
 QDP_DN_V_eq_c_times_V_plus_V.o \
 QDP_DN_V_eq_elem_C.o \
 QDP_DN_V_eq_func.o \
+QDP_DN_V_eq_funci.o \
 QDP_DN_V_eq_gaussian_S.o \
 QDP_DN_V_eq_i_V.o \
 QDP_DN_V_eq_Ma_times_sV.o \

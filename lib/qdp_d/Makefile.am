@@ -27,6 +27,7 @@ QDP_D_C_eq_C_times_C.c \
 QDP_D_C_eq_c_times_C_minus_C.c \
 QDP_D_C_eq_c_times_C_plus_C.c \
 QDP_D_C_eq_func.c \
+QDP_D_C_eq_funci.c \
 QDP_D_C_eq_gaussian_S.c \
 QDP_D_C_eq_i_C.c \
 QDP_D_C_eqm_c1_times_C.c \
@@ -133,6 +134,7 @@ QDP_D_R_eq_exp_R.c \
 QDP_D_R_eq_fabs_R.c \
 QDP_D_R_eq_floor_R.c \
 QDP_D_R_eq_func.c \
+QDP_D_R_eq_funci.c \
 QDP_D_R_eq_gaussian_S.c \
 QDP_D_R_eq_I.c \
 QDP_D_R_eq_im_C.c \
@@ -217,6 +219,7 @@ QDP_D_C_eq_C_times_C.o \
 QDP_D_C_eq_c_times_C_minus_C.o \
 QDP_D_C_eq_c_times_C_plus_C.o \
 QDP_D_C_eq_func.o \
+QDP_D_C_eq_funci.o \
 QDP_D_C_eq_gaussian_S.o \
 QDP_D_C_eq_i_C.o \
 QDP_D_C_eqm_c1_times_C.o \
@@ -323,6 +326,7 @@ QDP_D_R_eq_exp_R.o \
 QDP_D_R_eq_fabs_R.o \
 QDP_D_R_eq_floor_R.o \
 QDP_D_R_eq_func.o \
+QDP_D_R_eq_funci.o \
 QDP_D_R_eq_gaussian_S.o \
 QDP_D_R_eq_I.o \
 QDP_D_R_eq_im_C.o \

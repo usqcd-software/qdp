@@ -1,6 +1,9 @@
 ===========================================================================
 2007-06-04      version 1.6.0
 ===========================================================================
+2007-06-04: James Osborn
+	Added T_eq_funci functions which pass index instead of coordinates.
+
 2007-05-10: James Osborn
 	Added rest of shift and multiply with adjoint functions.
 
