@@ -1,3 +1,10 @@
+2007-08-13 15:24  osborn
+
+	* NEWS, include/qdp_common.h, lib/generate/generate_qdp.pl,
+	  lib/generate/generate_types.pl: Some fixes to allow including
+	  headers in C++ code.	No longer use extended precision for double
+	  precision reductions.
+
 2007-06-04 17:24  tag qdp1-6-0
 
 2007-06-04 17:24  osborn
