@@ -139,6 +139,11 @@ sub is_scalar($) {
   return $abbr =~ /^_[a-z]/;
 }
 
+sub is_double($) {
+  my($var) = @_;
+  return $var->{PC} =~ /^_D/;
+}
+
 sub do_subset($$$$$$$$$$) {
   my($indent, $qla1, $qla2, $y0, $dest, $y1, $src1, $y2, $src2, $y3) = @_;
   my($v) = 'v';
@@ -287,7 +292,11 @@ sub global_sum($$) {
 	$r .= "  QLA".$cpc.$uabbr."_eq".$uabbr."(".$nc."dest, &dtemp);\n";
       }
     } else {
-      $r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$tpc.$uabbr."_peq".$uabbr.", sizeof(QLA".$tpc."_".$dest->{TYPE}."), dest);\n";
+      if( ($dest->{TYPE} eq 'Real') && ($tpc eq '_D') ) {
+	$r = "  QMP_sum_double(dest);\n";
+      } else {
+	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$tpc.$uabbr."_peq".$uabbr.", sizeof(QLA".$tpc."_".$dest->{TYPE}."), dest);\n";
+      }
     }
   }
 
@@ -373,13 +382,13 @@ sub bod1($$$$$$$$$$) {
   my($sp, $qla1, $qla2, $y0, $dv, $y1, $src, $y2, $off, $arg) = @_;
   my($body) = "";
   $body .= $sp."if( ".$src->{VAR}."->ptr ) {\n";
-  $body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
+  #$body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."  ".$qla1."p".$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->ptr".$off.$y2.$arg." );\n";
-  $body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
+  #$body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."} else {\n";
-  $body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
+  #$body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."  ".$qla1.$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->data".$off.$y2.$arg." );\n";
-  $body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
+  #$body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."}\n";
   return $body;
 }
@@ -389,23 +398,23 @@ sub bod2($$$$$$$$$$$$$) {
   my($body) = "";
   $body .= $sp."if( ".$src1->{VAR}."->ptr ) {\n";
   $body .= $sp."  if( ".$src2->{VAR}."->ptr ) {\n";
-  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1."p".$qla2."p".$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->ptr".$off.$y2.", ".$src2->{VAR}."->ptr".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  } else {\n";
-  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1."p".$qla2.$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->ptr".$off.$y2.", ".$src2->{VAR}."->data".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."} else {\n";
   $body .= $sp."  if( ".$src2->{VAR}."->ptr ) {\n";
-  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1.$qla2."p".$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->data".$off.$y2.", ".$src2->{VAR}."->ptr".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  } else {\n";
-  $body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
   $body .= $sp."    ".$qla1.$qla2.$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->data".$off.$y2.", ".$src2->{VAR}."->data".$off.$y3.$arg." );\n";
-  $body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
+  #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."}\n";
   return $body;
@@ -440,7 +449,9 @@ sub func_body($$$$$$$$) {
   if( ($dest->{SCALAR}) &&
       ((!$s1t)||(!$datatypes{$s1t}{NO_PRECISION})) &&
       ((!$s2t)||(!$datatypes{$s2t}{NO_PRECISION})) ) {
-    $dest->{EXTENDED} = 1;
+    if(!is_double($dest)) {
+      $dest->{EXTENDED} = 1;
+    }
   }
 
   my($qla1, $qla2, $qla3, $qla4) = qla_name($dest, $op, $src1, $func, $src2);

@@ -210,6 +210,9 @@ if($cflag) {
 	  ($temp=$text) =~ s/\$elib/$clib/g;
 	  print OUTFILE $temp;
 	  if($llib=~/[23n]$/) {
+	    ($tlib=$llib) =~ s/[23n]$//g;
+	    ($temp=$text) =~ s/\$elib/$tlib/g;
+	    print OUTFILE $temp;
 	    ($tlib=$elib) =~ s/[23n]$//g;
 	    ($temp=$text) =~ s/\$elib/$tlib/g;
 	    print OUTFILE $temp;

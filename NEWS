@@ -1,3 +1,9 @@
+2007-08-03: James Osborn
+	Don't use extended precision for double precision reductions.
+
+2007-06-29: James Osborn
+	Some fixes to allow including headers in C++ code.
+
 ===========================================================================
 2007-06-04      version 1.6.0
 ===========================================================================
