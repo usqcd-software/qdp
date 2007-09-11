@@ -1,3 +1,9 @@
+===========================================================================
+2007-09-11      version 1.7.0
+===========================================================================
+2007-09-07: Carleton Detar
+	Update for QIO-2.2.0.  QIO version >= 2.2.0 is now required.
+
 2007-08-03: James Osborn
 	Don't use extended precision for double precision reductions.
 

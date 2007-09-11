@@ -229,7 +229,7 @@ QDP_open_read(QDP_String *md, char *filename)
   layout->this_node = QDP_this_node;
   layout->number_of_nodes = QDP_numnodes();
 
-  qdpr->qior = QIO_open_read(qio_md, filename, layout, 0);
+  qdpr->qior = QIO_open_read(qio_md, filename, layout, 0, 0);
 
   QDP_string_set(md, QIO_string_ptr(qio_md));
   QIO_string_destroy(qio_md);
@@ -275,7 +275,7 @@ QDP_open_write(QDP_String *md, char *filename, int volfmt)
 
   qio_md = QIO_string_create();
   QIO_string_set(qio_md, QDP_string_ptr(md));
-  qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, layout, 0);
+  qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, layout, 0, 0);
   QIO_string_destroy(qio_md);
 
   free(layout->latsize);
@@ -340,7 +340,7 @@ QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
   QIO_String *qio_md = QIO_string_create(0);
   int status;
 
-  rec_info = QIO_create_record_info(0, "", "", 0, 0, 0, 0);
+  rec_info = QIO_create_record_info(0, 0, 0, 0, "", "", 0, 0, 0, 0);
 
   status = QIO_read(qdpr->qior, rec_info, qio_md, put, qf->size*count,
 		    qf->word_size, (void *)qf);

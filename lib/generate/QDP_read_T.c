@@ -71,7 +71,8 @@ QDP$PC_vread_$ABBR($NC QDP_Reader *qdpr, QDP_String *md, $QDPPCTYPE *field[],
   qf.nc = $QDP_NC;
   qf.word_size = WS;
 
-  cmp_info = QIO_create_record_info(QIO_FIELD, "$QDPPCTYPE", "$P", $QDP_NC,
+  cmp_info = QIO_create_record_info(QIO_FIELD, 0, 0, 0,
+				    "$QDPPCTYPE", "$P", $QDP_NC,
 				    QLA_Ns, qf.size, nv);
 
   for(i=0; i<nv; i++) QDP_prepare_dest( &field[i]->dc );
@@ -107,7 +108,8 @@ QDP$PC_vread_$QLAABBR($NC QDP_Reader *qdpr, QDP_String *md, $QLAPCTYPE *array,
   qf.nc   = $QDP_NC;
   qf.word_size = WS;
 
-  cmp_info = QIO_create_record_info(QIO_GLOBAL, "$QDPPCTYPE", "$P", $QDP_NC,
+  cmp_info = QIO_create_record_info(QIO_GLOBAL, 0, 0, 0,
+				    "$QDPPCTYPE", "$P", $QDP_NC,
 				    QLA_Ns, qf.size, n);
 
   status = QDP_read_check(qdpr, md, QIO_GLOBAL, QDP$PC_vput_$QLAABBR, &qf,

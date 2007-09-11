@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([qdp],[1.6.0],[josborn at physics.bu.edu])
+AC_INIT([qdp],[1.7.0],[josborn at physics.bu.edu])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE
 
@@ -100,6 +100,7 @@ if test "X$GCC" = "Xyes"; then GNUCC="$CC"; else
 AC_PATH_PROG([GNUCC], [gcc], [gcc])
 fi
 #CFLAGS="$CFLAGS $QMP_CFLAGS"
+AM_PROG_CC_C_O
 
 # Checks for libraries.
 
