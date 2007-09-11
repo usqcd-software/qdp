@@ -1,3 +1,11 @@
+2007-09-11 14:59  osborn
+
+	* NEWS, aclocal.m4, configure, configure.ac,
+	  include/qdp_config.h.in, lib/generate/QDP_read_T.c,
+	  lib/generate/QDP_write_T.c, lib/qdp_common/qdp_common.c:
+	  CVS
+	  ----------------------------------------------------------------------
+
 2007-08-13 15:24  osborn
 
 	* NEWS, include/qdp_common.h, lib/generate/generate_qdp.pl,
