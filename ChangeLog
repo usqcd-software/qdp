@@ -1,3 +1,8 @@
+2007-09-14 11:25  osborn
+
+	* NEWS: Prepare for version 1.7.0.  from previous checkin: Update
+	  for QIO-2.2.0.  QIO version >= 2.2.0 is now required.
+
 2007-09-11 14:59  osborn
 
 	* NEWS, aclocal.m4, configure, configure.ac,
