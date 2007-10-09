@@ -1,3 +1,12 @@
+2007-10-09 17:25  osborn
+
+	* configure, configure.ac: prepare for version 1.7.1
+
+2007-10-09 17:20  osborn
+
+	* NEWS, aclocal.m4, configure, lib/generate/generate_qdp.pl:
+	  Important bug fix for double precision vector and multi routines.
+
 2007-09-14 11:25  tag qdp1-7-0
 
 2007-09-14 11:25  osborn
