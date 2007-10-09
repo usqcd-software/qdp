@@ -536,7 +536,7 @@ sub func_body($$$$$$$$) {
       my($ssv) = "subset[i]";
       my($nvv) = "ns";
       $def  = "  int i;\n";
-      if($dest->{SCALAR}) {
+      if($dest->{EXTENDED}) {
 	my($ext) = qla_ext_type($dest);
 	$def .= $sp.$ext." *dtemp;\n";
 	$def .= $sp."dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
@@ -554,7 +554,7 @@ sub func_body($$$$$$$$) {
       $xarg = ", ".$subset."->index+offset, blen";
       $varg = ", blen";
       $def  = "  int i, offset, blen;\n";
-      if($dest->{SCALAR}) {
+      if($dest->{EXTENDED}) {
 	my($ext) = qla_ext_type($dest);
 	$def .= $sp.$ext." *dtemp, *dtemp1;\n";
 	$def .= $sp."dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
@@ -617,7 +617,7 @@ sub func_body($$$$$$$$) {
       if($dest->{EXTENDED}) {
 	$vdv = $xdv = "&dtemp[i]";
       } else {
-	$vdv = $xdv = $dest->{VAR};
+	$vdv = $xdv = "&".$dest->{VAR}."[i]";
       }
       $def = "  int i;\n";
       $top .= "  for(i=0; i<ns; i++) {\n";
