@@ -1,3 +1,32 @@
+2008-03-25 14:17  osborn
+
+	* NEWS, aclocal.m4, configure, configure.ac, doc/functions.texi,
+	  doc/qdpc.info, doc/qdpc.texi, doc/qdpdefs.texi,
+	  include/qdp_common.h, lib/make_qdp_dirs,
+	  lib/generate/QDP_T3_EQOP_T1_times_sT2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_T2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_sT2.c,
+	  lib/generate/QDP_T_eq_sT.c, lib/generate/QDP_T_veq_sT.c,
+	  lib/generate/QDP_create_T.c, lib/generate/QDP_expose_T.c,
+	  lib/generate/QDP_extract_packed_T.c, lib/generate/functions.pl,
+	  lib/generate/qdp_common_internal.h, lib/generate/qdp_pc.h,
+	  lib/qdp_common/com_common.c, lib/qdp_common/layout_hyper.c,
+	  lib/qdp_common/qdp_common.c, lib/qdp_common/qdp_internal.c,
+	  lib/qdp_d/Makefile.am, lib/qdp_d2/Makefile.am,
+	  lib/qdp_d3/Makefile.am, lib/qdp_df/Makefile.am,
+	  lib/qdp_df2/Makefile.am, lib/qdp_df3/Makefile.am,
+	  lib/qdp_dfn/Makefile.am, lib/qdp_dn/Makefile.am,
+	  lib/qdp_f/Makefile.am, lib/qdp_f2/Makefile.am,
+	  lib/qdp_f3/Makefile.am, lib/qdp_fn/Makefile.am,
+	  lib/qdp_int/Makefile.am: Changed QDP_abort(void) to
+	  QDP_abort(int) as was in the docs.  Added all eqop types for
+	  local dot product functions.	Added packed insert/extract
+	  functions.  Fixed makefiles to allow parallel make.  Some fixes
+	  to the docs.	Allow shifts to use strided arrays again.  Added
+	  Morton order option to layout.  Changed QDP_data_common_t size
+	  member to be type size_t.  Fixed "expr" expression in
+	  configure.ac to work with Macs.
+
 2007-10-09 17:25  tag qdp1-7-1
 
 2007-10-09 17:25  osborn
