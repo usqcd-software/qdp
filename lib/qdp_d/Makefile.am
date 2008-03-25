@@ -33,6 +33,7 @@ QDP_D_C_eq_i_C.c \
 QDP_D_C_eqm_c1_times_C.c \
 QDP_D_C_eqm_Ca.c \
 QDP_D_C_eqm_C.c \
+QDP_D_C_eqm_C_dot_C.c \
 QDP_D_C_eqm_conj_C.c \
 QDP_D_C_eqm_C_times_C.c \
 QDP_D_C_eqm_i_C.c \
@@ -47,6 +48,7 @@ QDP_D_C_eq_zero.c \
 QDP_D_C_meq_c1_times_C.c \
 QDP_D_C_meq_Ca.c \
 QDP_D_C_meq_C.c \
+QDP_D_C_meq_C_dot_C.c \
 QDP_D_C_meq_conj_C.c \
 QDP_D_C_meq_C_times_C.c \
 QDP_D_C_meq_i_C.c \
@@ -54,6 +56,7 @@ QDP_D_C_meq_r1_times_C.c \
 QDP_D_C_peq_c1_times_C.c \
 QDP_D_C_peq_Ca.c \
 QDP_D_C_peq_C.c \
+QDP_D_C_peq_C_dot_C.c \
 QDP_D_C_peq_conj_C.c \
 QDP_D_C_peq_C_times_C.c \
 QDP_D_C_peq_i_C.c \
@@ -84,6 +87,8 @@ QDP_D_discard_R.c \
 QDP_D_expose_C.c \
 QDP_D_expose_R.c \
 QDP_D_extract_C.c \
+QDP_D_extract_packed_C.c \
+QDP_D_extract_packed_R.c \
 QDP_D_extract_R.c \
 QDP_D_I_eq_R_eq_R.c \
 QDP_D_I_eq_R_ge_R.c \
@@ -142,6 +147,7 @@ QDP_D_R_eq_log10_R.c \
 QDP_D_R_eq_log_R.c \
 QDP_D_R_eqm_r1_times_R.c \
 QDP_D_R_eqm_R.c \
+QDP_D_R_eqm_re_C_dot_C.c \
 QDP_D_R_eqm_R_times_R.c \
 QDP_D_R_eq_norm2_C.c \
 QDP_D_R_eq_norm_C.c \
@@ -174,9 +180,11 @@ QDP_D_R_eq_tan_R.c \
 QDP_D_R_eq_zero.c \
 QDP_D_R_meq_r1_times_R.c \
 QDP_D_R_meq_R.c \
+QDP_D_R_meq_re_C_dot_C.c \
 QDP_D_R_meq_R_times_R.c \
 QDP_D_R_peq_r1_times_R.c \
 QDP_D_R_peq_R.c \
+QDP_D_R_peq_re_C_dot_C.c \
 QDP_D_R_peq_R_times_R.c \
 QDP_D_R_veqm_r1_times_R.c \
 QDP_D_R_veqm_R.c \
@@ -225,6 +233,7 @@ QDP_D_C_eq_i_C.o \
 QDP_D_C_eqm_c1_times_C.o \
 QDP_D_C_eqm_Ca.o \
 QDP_D_C_eqm_C.o \
+QDP_D_C_eqm_C_dot_C.o \
 QDP_D_C_eqm_conj_C.o \
 QDP_D_C_eqm_C_times_C.o \
 QDP_D_C_eqm_i_C.o \
@@ -239,6 +248,7 @@ QDP_D_C_eq_zero.o \
 QDP_D_C_meq_c1_times_C.o \
 QDP_D_C_meq_Ca.o \
 QDP_D_C_meq_C.o \
+QDP_D_C_meq_C_dot_C.o \
 QDP_D_C_meq_conj_C.o \
 QDP_D_C_meq_C_times_C.o \
 QDP_D_C_meq_i_C.o \
@@ -246,6 +256,7 @@ QDP_D_C_meq_r1_times_C.o \
 QDP_D_C_peq_c1_times_C.o \
 QDP_D_C_peq_Ca.o \
 QDP_D_C_peq_C.o \
+QDP_D_C_peq_C_dot_C.o \
 QDP_D_C_peq_conj_C.o \
 QDP_D_C_peq_C_times_C.o \
 QDP_D_C_peq_i_C.o \
@@ -276,6 +287,8 @@ QDP_D_discard_R.o \
 QDP_D_expose_C.o \
 QDP_D_expose_R.o \
 QDP_D_extract_C.o \
+QDP_D_extract_packed_C.o \
+QDP_D_extract_packed_R.o \
 QDP_D_extract_R.o \
 QDP_D_I_eq_R_eq_R.o \
 QDP_D_I_eq_R_ge_R.o \
@@ -334,6 +347,7 @@ QDP_D_R_eq_log10_R.o \
 QDP_D_R_eq_log_R.o \
 QDP_D_R_eqm_r1_times_R.o \
 QDP_D_R_eqm_R.o \
+QDP_D_R_eqm_re_C_dot_C.o \
 QDP_D_R_eqm_R_times_R.o \
 QDP_D_R_eq_norm2_C.o \
 QDP_D_R_eq_norm_C.o \
@@ -366,9 +380,11 @@ QDP_D_R_eq_tan_R.o \
 QDP_D_R_eq_zero.o \
 QDP_D_R_meq_r1_times_R.o \
 QDP_D_R_meq_R.o \
+QDP_D_R_meq_re_C_dot_C.o \
 QDP_D_R_meq_R_times_R.o \
 QDP_D_R_peq_r1_times_R.o \
 QDP_D_R_peq_R.o \
+QDP_D_R_peq_re_C_dot_C.o \
 QDP_D_R_peq_R_times_R.o \
 QDP_D_R_veqm_r1_times_R.o \
 QDP_D_R_veqm_R.o \
@@ -412,11 +428,46 @@ nodist____libqdp_d_a_SOURCES = QDP_D_c1_eq_C_dot_C.c
 
 nodist_include_HEADERS = $(QDPHDR)
 
-$(QDPSRC): $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+source-stamp-c: $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+	@rm -f source-temp-c
+	@touch source-temp-c
 	$(BUILD_SCRIPT_C) d
+	@mv -f source-temp-c $@
 
-$(QDPHDR): $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+	@rm -f source-temp-h
+	@touch source-temp-h
 	$(BUILD_SCRIPT_H) d $(top_builddir)/include
+	@mv -f source-temp-h $@
+
+$(QDPSRC): source-stamp-c
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
+	  if mkdir source-lock-c 2>/dev/null; then \
+	    rm -f source-stamp-c; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-c; \
+	    rmdir source-lock-c; \
+	  else \
+	    while test -d source-lock-c; do sleep 1; done; \
+	    test -f source-stamp-c; exit $$?; \
+	  fi; \
+	fi
+
+$(QDPHDR): source-stamp-h
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-h source-stamp-h' 1 2 13 15; \
+	  if mkdir source-lock-h 2>/dev/null; then \
+	    rm -f source-stamp-h; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-h; \
+	    rmdir source-lock-h; \
+	  else \
+	    while test -d source-lock-h; do sleep 1; done; \
+	    test -f source-stamp-h; exit $$?; \
+	  fi; \
+	fi
+
 
 ../libqdp_d.a: $(QDPHDR) $(QDPOBJ) ../optimized/Makefile
 	-rm -f ../libqdp_d.a

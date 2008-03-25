@@ -9,6 +9,8 @@ QDP_discard_I.c \
 QDP_expose_I.c \
 QDP_expose_S.c \
 QDP_extract_I.c \
+QDP_extract_packed_I.c \
+QDP_extract_packed_S.c \
 QDP_extract_S.c \
 QDP_I_eq_func.c \
 QDP_I_eq_funci.c \
@@ -70,6 +72,8 @@ QDP_discard_I.o \
 QDP_expose_I.o \
 QDP_expose_S.o \
 QDP_extract_I.o \
+QDP_extract_packed_I.o \
+QDP_extract_packed_S.o \
 QDP_extract_S.o \
 QDP_I_eq_func.o \
 QDP_I_eq_funci.o \
@@ -150,11 +154,46 @@ nodist____libqdp_int_a_SOURCES = QDP_create_I.c
 
 nodist_include_HEADERS = $(QDPHDR)
 
-$(QDPSRC): $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+source-stamp-c: $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+	@rm -f source-temp-c
+	@touch source-temp-c
 	$(BUILD_SCRIPT_C) int
+	@mv -f source-temp-c $@
 
-$(QDPHDR): $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+	@rm -f source-temp-h
+	@touch source-temp-h
 	$(BUILD_SCRIPT_H) int $(top_builddir)/include
+	@mv -f source-temp-h $@
+
+$(QDPSRC): source-stamp-c
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
+	  if mkdir source-lock-c 2>/dev/null; then \
+	    rm -f source-stamp-c; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-c; \
+	    rmdir source-lock-c; \
+	  else \
+	    while test -d source-lock-c; do sleep 1; done; \
+	    test -f source-stamp-c; exit $$?; \
+	  fi; \
+	fi
+
+$(QDPHDR): source-stamp-h
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-h source-stamp-h' 1 2 13 15; \
+	  if mkdir source-lock-h 2>/dev/null; then \
+	    rm -f source-stamp-h; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-h; \
+	    rmdir source-lock-h; \
+	  else \
+	    while test -d source-lock-h; do sleep 1; done; \
+	    test -f source-stamp-h; exit $$?; \
+	  fi; \
+	fi
+
 
 ../libqdp_int.a: $(QDPHDR) $(QDPOBJ) ../optimized/Makefile
 	-rm -f ../libqdp_int.a

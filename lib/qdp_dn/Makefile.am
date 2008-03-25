@@ -30,10 +30,25 @@ QDP_DN_C_eq_elem_M.c \
 QDP_DN_C_eq_elem_P.c \
 QDP_DN_C_eq_elem_V.c \
 QDP_DN_C_eq_H_dot_H.c \
+QDP_DN_C_eqm_D_dot_D.c \
 QDP_DN_C_eq_M_dot_M.c \
+QDP_DN_C_eqm_H_dot_H.c \
+QDP_DN_C_eqm_M_dot_M.c \
+QDP_DN_C_eqm_P_dot_P.c \
+QDP_DN_C_eqm_V_dot_V.c \
 QDP_DN_C_eq_P_dot_P.c \
 QDP_DN_C_eq_trace_M.c \
 QDP_DN_C_eq_V_dot_V.c \
+QDP_DN_C_meq_D_dot_D.c \
+QDP_DN_C_meq_H_dot_H.c \
+QDP_DN_C_meq_M_dot_M.c \
+QDP_DN_C_meq_P_dot_P.c \
+QDP_DN_C_meq_V_dot_V.c \
+QDP_DN_C_peq_D_dot_D.c \
+QDP_DN_C_peq_H_dot_H.c \
+QDP_DN_C_peq_M_dot_M.c \
+QDP_DN_C_peq_P_dot_P.c \
+QDP_DN_C_peq_V_dot_V.c \
 QDP_DN_create_D.c \
 QDP_DN_create_H.c \
 QDP_DN_create_M.c \
@@ -198,6 +213,11 @@ QDP_DN_expose_V.c \
 QDP_DN_extract_D.c \
 QDP_DN_extract_H.c \
 QDP_DN_extract_M.c \
+QDP_DN_extract_packed_D.c \
+QDP_DN_extract_packed_H.c \
+QDP_DN_extract_packed_M.c \
+QDP_DN_extract_packed_P.c \
+QDP_DN_extract_packed_V.c \
 QDP_DN_extract_P.c \
 QDP_DN_extract_V.c \
 QDP_DN_h1_eq_sum_H.c \
@@ -482,27 +502,7 @@ QDP_DN_P_eq_gaussian_S.c \
 QDP_DN_P_eq_i_P.c \
 QDP_DN_P_eq_Ma_times_P.c \
 QDP_DN_P_eq_Ma_times_sP.c \
-QDP_DN_P_eqm_c1_times_P.c \
-QDP_DN_P_eqm_conj_P.c \
-QDP_DN_P_eqm_i_P.c \
-QDP_DN_P_eqm_Ma_times_P.c \
-QDP_DN_P_eqm_Ma_times_sP.c \
-QDP_DN_P_eqm_M_times_P.c \
-QDP_DN_P_eqm_M_times_sP.c \
-QDP_DN_P_eqm_Pa.c \
-QDP_DN_P_eqm_P.c \
-QDP_DN_P_eqm_P_times_Ma.c \
-QDP_DN_P_eqm_P_times_M.c \
-QDP_DN_P_eqm_P_times_P.c \
-QDP_DN_P_eqm_r1_times_P.c \
-QDP_DN_P_eqm_sMa_times_P.c \
-QDP_DN_P_eqm_sMa_times_sP.c \
-QDP_DN_P_eqm_sM_times_P.c \
-QDP_DN_P_eqm_sM_times_sP.c \
-QDP_DN_P_eq_M_times_P.c \
-QDP_DN_P_eq_M_times_sP.c \
-QDP_DN_P_eqm_transpose_P.c \
-QDP_DN_P_eq_p1.c
+QDP_DN_P_eqm_c1_times_P.c
 
 QDPOBJ1 = \
 QDP_DN_c1_eq_D_dot_D.o \
@@ -532,10 +532,25 @@ QDP_DN_C_eq_elem_M.o \
 QDP_DN_C_eq_elem_P.o \
 QDP_DN_C_eq_elem_V.o \
 QDP_DN_C_eq_H_dot_H.o \
+QDP_DN_C_eqm_D_dot_D.o \
 QDP_DN_C_eq_M_dot_M.o \
+QDP_DN_C_eqm_H_dot_H.o \
+QDP_DN_C_eqm_M_dot_M.o \
+QDP_DN_C_eqm_P_dot_P.o \
+QDP_DN_C_eqm_V_dot_V.o \
 QDP_DN_C_eq_P_dot_P.o \
 QDP_DN_C_eq_trace_M.o \
 QDP_DN_C_eq_V_dot_V.o \
+QDP_DN_C_meq_D_dot_D.o \
+QDP_DN_C_meq_H_dot_H.o \
+QDP_DN_C_meq_M_dot_M.o \
+QDP_DN_C_meq_P_dot_P.o \
+QDP_DN_C_meq_V_dot_V.o \
+QDP_DN_C_peq_D_dot_D.o \
+QDP_DN_C_peq_H_dot_H.o \
+QDP_DN_C_peq_M_dot_M.o \
+QDP_DN_C_peq_P_dot_P.o \
+QDP_DN_C_peq_V_dot_V.o \
 QDP_DN_create_D.o \
 QDP_DN_create_H.o \
 QDP_DN_create_M.o \
@@ -700,6 +715,11 @@ QDP_DN_expose_V.o \
 QDP_DN_extract_D.o \
 QDP_DN_extract_H.o \
 QDP_DN_extract_M.o \
+QDP_DN_extract_packed_D.o \
+QDP_DN_extract_packed_H.o \
+QDP_DN_extract_packed_M.o \
+QDP_DN_extract_packed_P.o \
+QDP_DN_extract_packed_V.o \
 QDP_DN_extract_P.o \
 QDP_DN_extract_V.o \
 QDP_DN_h1_eq_sum_H.o \
@@ -984,29 +1004,29 @@ QDP_DN_P_eq_gaussian_S.o \
 QDP_DN_P_eq_i_P.o \
 QDP_DN_P_eq_Ma_times_P.o \
 QDP_DN_P_eq_Ma_times_sP.o \
-QDP_DN_P_eqm_c1_times_P.o \
-QDP_DN_P_eqm_conj_P.o \
-QDP_DN_P_eqm_i_P.o \
-QDP_DN_P_eqm_Ma_times_P.o \
-QDP_DN_P_eqm_Ma_times_sP.o \
-QDP_DN_P_eqm_M_times_P.o \
-QDP_DN_P_eqm_M_times_sP.o \
-QDP_DN_P_eqm_Pa.o \
-QDP_DN_P_eqm_P.o \
-QDP_DN_P_eqm_P_times_Ma.o \
-QDP_DN_P_eqm_P_times_M.o \
-QDP_DN_P_eqm_P_times_P.o \
-QDP_DN_P_eqm_r1_times_P.o \
-QDP_DN_P_eqm_sMa_times_P.o \
-QDP_DN_P_eqm_sMa_times_sP.o \
-QDP_DN_P_eqm_sM_times_P.o \
-QDP_DN_P_eqm_sM_times_sP.o \
-QDP_DN_P_eq_M_times_P.o \
-QDP_DN_P_eq_M_times_sP.o \
-QDP_DN_P_eqm_transpose_P.o \
-QDP_DN_P_eq_p1.o
+QDP_DN_P_eqm_c1_times_P.o
 
 QDPSRC2 = \
+QDP_DN_P_eqm_conj_P.c \
+QDP_DN_P_eqm_i_P.c \
+QDP_DN_P_eqm_Ma_times_P.c \
+QDP_DN_P_eqm_Ma_times_sP.c \
+QDP_DN_P_eqm_M_times_P.c \
+QDP_DN_P_eqm_M_times_sP.c \
+QDP_DN_P_eqm_Pa.c \
+QDP_DN_P_eqm_P.c \
+QDP_DN_P_eqm_P_times_Ma.c \
+QDP_DN_P_eqm_P_times_M.c \
+QDP_DN_P_eqm_P_times_P.c \
+QDP_DN_P_eqm_r1_times_P.c \
+QDP_DN_P_eqm_sMa_times_P.c \
+QDP_DN_P_eqm_sMa_times_sP.c \
+QDP_DN_P_eqm_sM_times_P.c \
+QDP_DN_P_eqm_sM_times_sP.c \
+QDP_DN_P_eq_M_times_P.c \
+QDP_DN_P_eq_M_times_sP.c \
+QDP_DN_P_eqm_transpose_P.c \
+QDP_DN_P_eq_p1.c \
 QDP_DN_P_eq_Pa.c \
 QDP_DN_P_eq_P.c \
 QDP_DN_P_eq_P_mask_I.c \
@@ -1135,6 +1155,11 @@ QDP_DN_read_M.c \
 QDP_DN_read_P.c \
 QDP_DN_read_V.c \
 QDP_DN_R_eq_im_trace_M.c \
+QDP_DN_R_eqm_re_D_dot_D.c \
+QDP_DN_R_eqm_re_H_dot_H.c \
+QDP_DN_R_eqm_re_M_dot_M.c \
+QDP_DN_R_eqm_re_P_dot_P.c \
+QDP_DN_R_eqm_re_V_dot_V.c \
 QDP_DN_R_eq_norm2_D.c \
 QDP_DN_R_eq_norm2_H.c \
 QDP_DN_R_eq_norm2_M.c \
@@ -1146,6 +1171,16 @@ QDP_DN_R_eq_re_M_dot_M.c \
 QDP_DN_R_eq_re_P_dot_P.c \
 QDP_DN_R_eq_re_trace_M.c \
 QDP_DN_R_eq_re_V_dot_V.c \
+QDP_DN_R_meq_re_D_dot_D.c \
+QDP_DN_R_meq_re_H_dot_H.c \
+QDP_DN_R_meq_re_M_dot_M.c \
+QDP_DN_R_meq_re_P_dot_P.c \
+QDP_DN_R_meq_re_V_dot_V.c \
+QDP_DN_R_peq_re_D_dot_D.c \
+QDP_DN_R_peq_re_H_dot_H.c \
+QDP_DN_R_peq_re_M_dot_M.c \
+QDP_DN_R_peq_re_P_dot_P.c \
+QDP_DN_R_peq_re_V_dot_V.c \
 QDP_DN_v1_eq_sum_V.c \
 QDP_DN_v1_eq_sum_V_multi.c \
 QDP_DN_V_eq_c1_times_V.c \
@@ -1251,6 +1286,26 @@ QDP_DN_write_P.c \
 QDP_DN_write_V.c
 
 QDPOBJ2 = \
+QDP_DN_P_eqm_conj_P.o \
+QDP_DN_P_eqm_i_P.o \
+QDP_DN_P_eqm_Ma_times_P.o \
+QDP_DN_P_eqm_Ma_times_sP.o \
+QDP_DN_P_eqm_M_times_P.o \
+QDP_DN_P_eqm_M_times_sP.o \
+QDP_DN_P_eqm_Pa.o \
+QDP_DN_P_eqm_P.o \
+QDP_DN_P_eqm_P_times_Ma.o \
+QDP_DN_P_eqm_P_times_M.o \
+QDP_DN_P_eqm_P_times_P.o \
+QDP_DN_P_eqm_r1_times_P.o \
+QDP_DN_P_eqm_sMa_times_P.o \
+QDP_DN_P_eqm_sMa_times_sP.o \
+QDP_DN_P_eqm_sM_times_P.o \
+QDP_DN_P_eqm_sM_times_sP.o \
+QDP_DN_P_eq_M_times_P.o \
+QDP_DN_P_eq_M_times_sP.o \
+QDP_DN_P_eqm_transpose_P.o \
+QDP_DN_P_eq_p1.o \
 QDP_DN_P_eq_Pa.o \
 QDP_DN_P_eq_P.o \
 QDP_DN_P_eq_P_mask_I.o \
@@ -1379,6 +1434,11 @@ QDP_DN_read_M.o \
 QDP_DN_read_P.o \
 QDP_DN_read_V.o \
 QDP_DN_R_eq_im_trace_M.o \
+QDP_DN_R_eqm_re_D_dot_D.o \
+QDP_DN_R_eqm_re_H_dot_H.o \
+QDP_DN_R_eqm_re_M_dot_M.o \
+QDP_DN_R_eqm_re_P_dot_P.o \
+QDP_DN_R_eqm_re_V_dot_V.o \
 QDP_DN_R_eq_norm2_D.o \
 QDP_DN_R_eq_norm2_H.o \
 QDP_DN_R_eq_norm2_M.o \
@@ -1390,6 +1450,16 @@ QDP_DN_R_eq_re_M_dot_M.o \
 QDP_DN_R_eq_re_P_dot_P.o \
 QDP_DN_R_eq_re_trace_M.o \
 QDP_DN_R_eq_re_V_dot_V.o \
+QDP_DN_R_meq_re_D_dot_D.o \
+QDP_DN_R_meq_re_H_dot_H.o \
+QDP_DN_R_meq_re_M_dot_M.o \
+QDP_DN_R_meq_re_P_dot_P.o \
+QDP_DN_R_meq_re_V_dot_V.o \
+QDP_DN_R_peq_re_D_dot_D.o \
+QDP_DN_R_peq_re_H_dot_H.o \
+QDP_DN_R_peq_re_M_dot_M.o \
+QDP_DN_R_peq_re_P_dot_P.o \
+QDP_DN_R_peq_re_V_dot_V.o \
 QDP_DN_v1_eq_sum_V.o \
 QDP_DN_v1_eq_sum_V_multi.o \
 QDP_DN_V_eq_c1_times_V.o \
@@ -1520,11 +1590,46 @@ nodist____libqdp_dn_a_SOURCES = QDP_DN_c1_eq_D_dot_D.c
 
 nodist_include_HEADERS = $(QDPHDR)
 
-$(QDPSRC): $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+source-stamp-c: $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+	@rm -f source-temp-c
+	@touch source-temp-c
 	$(BUILD_SCRIPT_C) dn
+	@mv -f source-temp-c $@
 
-$(QDPHDR): $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+	@rm -f source-temp-h
+	@touch source-temp-h
 	$(BUILD_SCRIPT_H) dn $(top_builddir)/include
+	@mv -f source-temp-h $@
+
+$(QDPSRC): source-stamp-c
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
+	  if mkdir source-lock-c 2>/dev/null; then \
+	    rm -f source-stamp-c; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-c; \
+	    rmdir source-lock-c; \
+	  else \
+	    while test -d source-lock-c; do sleep 1; done; \
+	    test -f source-stamp-c; exit $$?; \
+	  fi; \
+	fi
+
+$(QDPHDR): source-stamp-h
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-h source-stamp-h' 1 2 13 15; \
+	  if mkdir source-lock-h 2>/dev/null; then \
+	    rm -f source-stamp-h; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-h; \
+	    rmdir source-lock-h; \
+	  else \
+	    while test -d source-lock-h; do sleep 1; done; \
+	    test -f source-stamp-h; exit $$?; \
+	  fi; \
+	fi
+
 
 ../libqdp_dn.a: $(QDPHDR) $(QDPOBJ) ../optimized/Makefile
 	-rm -f ../libqdp_dn.a

@@ -33,6 +33,8 @@
    QDP_get_coords()    gives lattice coords from node & index
 */
 
+//#define MORTON
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "qdp_layout.h"
@@ -41,9 +43,146 @@
 static int *squaresize;   /* dimensions of hypercubes */
 static int *nsquares;     /* number of hypercubes in each direction */
 static int ndim;
-static int *size1[2], *size2;
+static int *l2ie, *l2io, *i2le, *i2lo;
 static int prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53};
 #define MAXPRIMES (sizeof(prime)/sizeof(int))
+
+void
+get_lex_x(int *x, int l, int *s)
+{
+  int i;
+  for(i=0; i<ndim; i++) {
+    x[i] = l % s[i];
+    l = l / s[i];
+  }
+}
+
+int
+get_lex_i(int *x, int *s)
+{
+  int i, l;
+  l = 0;
+  for(i=ndim-1; i>=0; --i) {
+    if(x[i]>=s[i]) { l = -1; break; }
+    l = l*s[i] + (x[i]%s[i]);
+  }
+  return l;
+}
+
+int
+get_sum(int *x)
+{
+  int i, p=0;
+  for(i=0; i<ndim; i++) p += x[i];
+  return p;
+}
+
+#ifdef MORTON
+int
+round_up_pow2(int k)
+{
+  int i;
+  i = 2;
+  while(i<k) i *= 2;
+  return i;
+}
+
+void
+get_morton_x(int *x, int l, int *s)
+{
+  int i, t[ndim], dir=0;
+  for(i=0; i<ndim; i++) {
+    t[i] = 1;
+    x[i] = 0;
+  }
+  while(l!=0) {
+    while(t[dir]>=s[dir]) dir = (dir+1)%ndim;
+    x[dir] += (l&1)*t[dir];
+    t[dir] *= 2;
+    l /= 2;
+    dir = (dir+1)%ndim;
+  }
+}
+
+void
+setup_index_maps(void)
+{
+  int i, x[ndim], mx[ndim], nm, ie, io;
+
+  l2ie = (int *) malloc(QDP_sites_on_node*sizeof(int));
+  l2io = (int *) malloc(QDP_sites_on_node*sizeof(int));
+  i2le = (int *) malloc(QDP_sites_on_node*sizeof(int));
+  i2lo = (int *) malloc(QDP_sites_on_node*sizeof(int));
+
+  nm = 1;
+  for(i=0; i<ndim; i++) {
+    mx[i] = round_up_pow2(squaresize[i]);
+    nm *= mx[i];
+  }
+  //printf("%i: %i %i %i %i\n", nm, mx[0], mx[1], mx[2], mx[3]);
+  ie = io = 0;
+  for(i=0; i<nm; i++) {
+    int l;
+    get_morton_x(x, i, mx);
+    l = get_lex_i(x, squaresize);
+    if(l>=0) {
+      //printf("%i: %i: %i %i %i %i\n", i, l, x[0], x[1], x[2], x[3]);
+      int p = get_sum(x);
+      if((p&1)==0) {
+	l2ie[l] = ie;
+	i2le[ie] = l;
+	ie++;
+      } else {
+	l2io[l] = io;
+	i2lo[io] = l;
+	io++;
+      }
+    }
+  }
+  for(i=0; i<ie; i++) {
+    i2lo[i+io] = i2le[i];
+    l2io[i2le[i]] = i+io;
+  }
+  for(i=0; i<io; i++) {
+    i2le[i+ie] = i2lo[i];
+    l2ie[i2lo[i]] = i+ie;
+  }
+}
+#else
+void
+setup_index_maps(void)
+{
+  int i, x[ndim], ie, io;
+
+  l2ie = (int *) malloc(QDP_sites_on_node*sizeof(int));
+  l2io = (int *) malloc(QDP_sites_on_node*sizeof(int));
+  i2le = (int *) malloc(QDP_sites_on_node*sizeof(int));
+  i2lo = (int *) malloc(QDP_sites_on_node*sizeof(int));
+
+  ie = io = 0;
+  for(i=0; i<QDP_sites_on_node; i++) {
+    get_lex_x(x, i, squaresize);
+    int p = get_sum(x);
+    if((p&1)==0) {
+      l2ie[i] = ie;
+      i2le[ie] = i;
+      ie++;
+    } else {
+      l2io[i] = io;
+      i2lo[io] = i;
+      io++;
+    }
+  }
+  for(i=0; i<ie; i++) {
+    i2lo[i+io] = i2le[i];
+    l2io[i2le[i]] = i+io;
+  }
+  for(i=0; i<io; i++) {
+    i2le[i+ie] = i2lo[i];
+    l2ie[i2lo[i]] = i+ie;
+  }
+}
+#endif
 
 void
 QDP_setup_layout(int len[], int nd)
@@ -126,21 +265,7 @@ QDP_setup_layout(int len[], int nd)
     QDP_sites_on_node *= squaresize[i];
   }
 
-  size1[0] = malloc(2*(ndim+1)*sizeof(int));
-  size1[1] = size1[0] + ndim + 1;
-  size2 = malloc((ndim+1)*sizeof(int));
-
-  size1[0][0] = 1;
-  size1[1][0] = 0;
-  size2[0] = 1;
-  for(i=1; i<=ndim; i++) {
-    size1[0][i] = size2[i-1]*(squaresize[i-1]/2)
-                + size1[0][i-1]*(squaresize[i-1]%2);
-    size1[1][i] = size2[i-1]*(squaresize[i-1]/2)
-                + size1[1][i-1]*(squaresize[i-1]%2);
-    size2[i] = size1[0][i] + size1[1][i];
-    //printf("%i\t%i\t%i\n", size1[0][i], size1[1][i], size2[i]);
-  }
+  setup_index_maps();
 }
 
 int
@@ -171,17 +296,17 @@ QDP_node_number(const int x[])
 int
 QDP_index(const int x[])
 {
-  int i, r=0, p=0;
+  int i, p=0, l=0, r;
 
   for(i=ndim-1; i>=0; --i) {
-    r = r*squaresize[i] + (x[i]%squaresize[i]);
-    p += x[i];
+    l = l*squaresize[i] + (x[i]%squaresize[i]);
+    p += (x[i]/squaresize[i])*squaresize[i];
   }
 
-  if( p%2==0 ) { /* even site */
-    r /= 2;
+  if( p%2==0 ) { /* even node offset */
+    r = l2ie[l];
   } else {
-    r = (r+QDP_sites_on_node)/2;
+    r = l2io[l];
   }
   return r;
 }
@@ -189,49 +314,35 @@ QDP_index(const int x[])
 void
 QDP_get_coords(int x[], int node, int index)
 {
-  int i, s, si;
-  int *m;
-  si = index;
+  int i, p, l;
+  int *m, sx[ndim];
 
   m = QMP_get_logical_coordinates_from(node);
 
-  s = 0;
-  //p = node;
+  p = 0;
   for(i=0; i<ndim; ++i) {
-    //x[i] = (p%nsquares[i])*squaresize[i];
     x[i] = m[i] * squaresize[i];
-    s += x[i];
-    //p /= nsquares[i];
+    p += x[i];
   }
-  s &= 1;
-
-  if(index>=size1[s][ndim]) {
-    index -= size1[s][ndim];
-    s ^= 1;
-  }
-
-  for(i=ndim-1; i>0; i--) {
-    x[i] += 2*(index/size2[i]);
-    index %= size2[i];
-    if(index>=size1[s][i]) {
-      index -= size1[s][i];
-      s ^= 1;
-      x[i]++;
-    }
-  }
-  x[0] += 2*index + s;
-
   free(m);
 
-  if(QDP_index(x)!=si) {
+  if(p%2==0) {
+    l = i2le[index];
+  } else {
+    l = i2lo[index];
+  }
+  get_lex_x(sx, l, squaresize);
+  for(i=0; i<ndim; ++i) x[i] += sx[i];
+
+  if(QDP_index(x)!=index) {
+    int k;
+    if(p%2==0) k = l2ie[l];
+    else k = l2io[l];
     if(QDP_this_node==0) {
-    fprintf(stderr,"QDP: error in layout!\n");
-    for(i=0; i<ndim; i++) {
-      fprintf(stderr,"%i\t%i\t%i\n", size1[0][i], size1[1][i], size2[i]);
-    }
-    fprintf(stderr,"%i\t%i", node, si);
-    for(i=0; i<ndim; i++) fprintf(stderr,"\t%i", x[i]);
-    fprintf(stderr,"\n");
+      fprintf(stderr,"QDP: error in layout!\n");
+      fprintf(stderr,"%i %i -> ", node, index);
+      for(i=0; i<ndim; i++) fprintf(stderr," %i", x[i]);
+      fprintf(stderr," : %i %i %i\n",p,l,k);
     }
     QDP_abort_comm();
     exit(1);

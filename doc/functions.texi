@@ -514,19 +514,21 @@ QDP_ColorMatrix *r@comma{} QDP_ColorMatrix *a@comma{} QDP_ColorMatrix *b@comma{}
 r @var{eqop} adjoint(a) * adjoint(b),
 eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@sfunct{
+@sfuncot{
 Local inner product,
-QDP_C_eq_@var{T}_dot_@var{T},
+QDP_C_@var{eqop}_@var{T}_dot_@var{T},
 QDP_Complex *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
-r = Tr adjoint(a) * b,
-C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
+r @var{eqop} Tr adjoint(a) * b,
+C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
+eq@comma{} peq@comma{} meq@comma{} eqm}
 
-@sfunct{
+@sfuncot{
 Real part of local inner product,
-QDP_R_eq_re_@var{T}_dot_@var{T},
+QDP_R_@var{eqop}_@var{T}_dot_@var{T},
 QDP_Real *r@comma{} @var{Type} *a@comma{} @var{Type} *b@comma{} @var{subset},
-r = Re Tr adjoint(a) * b,
-C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P}
+r @var{eqop} Re Tr adjoint(a) * b,
+C@comma{} V@comma{} H@comma{} D@comma{} M@comma{} P,
+eq_re@comma{} peq_re@comma{} meq_re@comma{} eqm_re}
 
 @sfuncvo{
 Color matrix from outer product,

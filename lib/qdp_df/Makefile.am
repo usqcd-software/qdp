@@ -40,11 +40,46 @@ nodist____libqdp_df_a_SOURCES = QDP_DF_C_eq_C.c
 
 nodist_include_HEADERS = $(QDPHDR)
 
-$(QDPSRC): $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+source-stamp-c: $(BUILD_SCRIPT_C) $(BUILD_DEPS)
+	@rm -f source-temp-c
+	@touch source-temp-c
 	$(BUILD_SCRIPT_C) df
+	@mv -f source-temp-c $@
 
-$(QDPHDR): $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
+	@rm -f source-temp-h
+	@touch source-temp-h
 	$(BUILD_SCRIPT_H) df $(top_builddir)/include
+	@mv -f source-temp-h $@
+
+$(QDPSRC): source-stamp-c
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
+	  if mkdir source-lock-c 2>/dev/null; then \
+	    rm -f source-stamp-c; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-c; \
+	    rmdir source-lock-c; \
+	  else \
+	    while test -d source-lock-c; do sleep 1; done; \
+	    test -f source-stamp-c; exit $$?; \
+	  fi; \
+	fi
+
+$(QDPHDR): source-stamp-h
+	## Recover from the removal of $@
+	@if test -f $@; then :; else \
+	  trap 'rm -rf source-lock-h source-stamp-h' 1 2 13 15; \
+	  if mkdir source-lock-h 2>/dev/null; then \
+	    rm -f source-stamp-h; \
+	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-h; \
+	    rmdir source-lock-h; \
+	  else \
+	    while test -d source-lock-h; do sleep 1; done; \
+	    test -f source-stamp-h; exit $$?; \
+	  fi; \
+	fi
+
 
 ../libqdp_df.a: $(QDPHDR) $(QDPOBJ) ../optimized/Makefile
 	-rm -f ../libqdp_df.a

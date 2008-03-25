@@ -1694,8 +1694,8 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
   do {
     int sn;
 
-    //sn = get_stride(gmem, base+k, size+k, num+k, stride+k);
-    sn = 0;
+    sn = get_stride(gmem, base+k, size+k, num+k, stride+k);
+    //sn = 0;
 
     if(sn) {
       //fprintf(stderr, "strided gather: %i %i %i %i\n", gmem->sb, gmem->se,

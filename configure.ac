@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([qdp],[1.7.1],[josborn at physics.bu.edu])
+AC_INIT([qdp],[1.8.0],[josborn at physics.bu.edu])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE
 
@@ -26,7 +26,7 @@ AC_ARG_ENABLE(
   AC_SUBST(NC, [all])
 )
 if test "X$NC" = Xn -o "X$NC" = X1; then NC="N"; fi
-if test `expr match $NC '[0-9]*$' \& $NC \> 3` -ne 0; then NC="N"; fi
+if test `expr $NC : '[0-9]*$' \& $NC \> 3` -ne 0; then NC="N"; fi
 if test "X$NC" != X2 -a "X$NC" != X3 -a "X$NC" != XN; then NC="all"; fi 
 
 QMPDIR="other_libs/qmp"
@@ -88,7 +88,7 @@ AC_PATH_PROG([TEXI2DVI], [texi2dvi], [texi2dvi])
 AC_PATH_PROG([DVIPS], [dvips], [dvips])
 AC_PATH_PROG([MAKEINFO], [makeinfo], [makeinfo])
 if ! set | grep '^CFLAGS='; then ac_CFLAGS_not_set=1; fi
-AC_PROG_CC([c99 gcc])
+AC_PROG_CC([c99 cc gcc])
 if test "X$ac_CFLAGS_not_set" = "X1"; then
   if test "X$GCC" = "Xyes"; then
     CFLAGS="-std=c99 -O2"
@@ -108,6 +108,7 @@ AM_PROG_CC_C_O
 
 # Checks for typedefs, structures, and compiler characteristics.
 
+AC_PROG_CC_C99
 AC_C_RESTRICT
 
 # Checks for library functions.

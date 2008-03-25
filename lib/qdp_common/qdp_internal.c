@@ -248,6 +248,10 @@ QDP_switch_ptr_to_data(QDP_data_common_t *dc)
     //*(dc->data) = (char *) malloc(QDP_sites_on_node*dc->size);
     dc->qmpmem = QMP_allocate_aligned_memory( QDP_sites_on_node*dc->size,
 					      QDP_mem_align, QDP_mem_flags );
+    if(!dc->qmpmem) {
+      QMP_error("QDP error: can't allocate memory\n");
+      QDP_abort(1);
+    }
     *(dc->data) = QMP_get_memory_pointer(dc->qmpmem);
   } else {
     QDP_clear_valid_shift_dest(dc);
@@ -333,7 +337,7 @@ QDP_prepare_dest(QDP_data_common_t *dc)
   ENTER;
   if(dc->exposed) {
     fprintf(stderr,"error: attempt to use exposed field\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   dc->discarded = 0;
   QDP_switch_ptr_to_data(dc);
@@ -347,11 +351,11 @@ QDP_prepare_src(QDP_data_common_t *dc)
   ENTER;
   if(dc->discarded) {
     fprintf(stderr,"error: attempt to use discarded data\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   if(dc->exposed) {
     fprintf(stderr,"error: attempt to use exposed field\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   QDP_finish_shifts(dc);
   LEAVE;
@@ -370,22 +374,22 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
 
   if(src_dc->discarded) {
     fprintf(stderr,"error: attempt to use discarded data\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   if(src_dc->exposed) {
     fprintf(stderr,"error: attempt to use exposed field\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   if(dest_dc->exposed) {
     fprintf(stderr,"error: attempt to use exposed field\n");
-    QDP_abort();
+    QDP_abort(1);
   }
 
   /* prepare shift source */
   if(*(src_dc->ptr)==NULL) {
     if(*(src_dc->data)==NULL) {
       fprintf(stderr,"error: shifting from uninitialized source\n");
-      QDP_abort();
+      QDP_abort(1);
     }
   } else {
     QDP_switch_ptr_to_data(src_dc);

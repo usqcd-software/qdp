@@ -7,7 +7,7 @@
 @c start titlepage, only used in TeX mode
 @titlepage
 @title QDP/C User Manual
-Version 1.6.0
+Version 1.8.0
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -20,7 +20,7 @@ with the SciDAC Software Committee
 @ifnottex
 @node Top, Introduction, (dir), (dir)
 @c @top QDP/C User Manual
-Version 1.6.0
+Version 1.8.0
 
 This document provides a detailed description of the C implementation of the@*
 SciDAC Level 2 QDP Data Parallel interface.
@@ -497,10 +497,10 @@ signals to all nodes and exits with exit status @code{status}.
 @c @subheading Check for initialization
 @sfunce{
 Check for initialization,
-int QDP_initialized,
+int QDP_is_initialized,
 void,
 Checks if QDP is initialized.,
-if(!QDP_initialized()) QDP_initialize(&argc@comma{} &argv);}
+if(!QDP_is_initialized()) QDP_initialize(&argc@comma{} &argv);}
 
 @c @subheading Control profiling
 @sfunce{
@@ -901,8 +901,8 @@ int (*func)(int x[]@comma{} void *args)@comma{} void *args@comma{}
 int argsize@comma{} int n,
 Creates an array of @code{n} subsets based on @code{func}.,
 QDP_Subset ts[nt];@*
-ts = QDP_create_subset(timeslice@comma{} NULL@comma{} 0@comma{} nt);}
-@c  where timeslice(x@comma{} NULL) = x[3].
+ts = QDP_create_subset(timeslice@comma{} NULL@comma{} 0@comma{} nt);@*
+where timeslice(x@comma{} NULL) returns x[3]}
 
 The extra arguments @code{args} are passed directly to the function and saved
 in case the subset function is needed again when doing shifts involving the
@@ -925,6 +925,13 @@ This procedure frees all memory associated with the subset object @emph{s}.
 The @code{QDP_subset *} value @emph{s} should be the object
 returned by @code{QDP_create_subset}.  All subsets in the array
 @emph{s} are destroyed.
+
+@sfunc{
+Getting the size of a subset,
+int QDP_subset_len,
+QDP_subset s,
+Returns the number of sites in a subset.}
+
 
 @node Reductions on subsets,  , Defining a subset, Subsets
 @subheading Reductions on subsets
@@ -1008,6 +1015,8 @@ int d[4] = @{0@comma{}1@comma{}2@comma{}0@};@*
 QDP_Shift knight[4][4];@*
 knight[2][3] = QDP_create_shift(d);}
 
+The displacement vector points from the recieving site towards the sender
+(or the opposite if later used with the @code{QDP_backward} direction).
 Calling with a displacement vector @{1,0,0,0@} would reproduce
 the shift @code{QDP_neighbor[0]}.
 
@@ -1016,13 +1025,13 @@ the shift @code{QDP_neighbor[0]}.
 
 @funce{
 QDP_Shift QDP_create_map,
-int *(func*)(int coord[Nd]@comma{} void *args)@comma{}
+void *(func*)(int rx[Nd]@comma{} int sx[Nd]@comma{} QDP_ShiftDir fb@comma{} void *args)@comma{}
 void *args@comma{} int argsize,
 Creates a shift specified by the permutation map @code{func}.,
 int mu = 1;@*
 QDP_Shift mirror[4];@*
-mirror[mu] = QDP_create_map(reflect@comma{} &mu@comma{} sizeof(mu));}
-@c where @{\tt reflect(x@comma{}mu)@} maps $x_\mu$ to $L_\mu - 1 - x_\mu$.
+mirror[mu] = QDP_create_map(reflect@comma{} &mu@comma{} sizeof(mu));@*
+where reflect(rx@comma{}sx@comma{}QDP_forward@comma{}mu) sets sx[i] = rx[i] except for sx[mu] = L[mu] - 1 - rx[mu].}
 
 The return value is used in the various linear
 algebra calls involving shifts.  The arguments @emph{args} are passed
@@ -1044,9 +1053,9 @@ The corresponding destruction function is @code{QDP_destroy_shift}.
 
 @funce{
 void QDP_destroy_shift,
-QDP_Shift dir,
-Frees memory associated with the map @emph{dir}.,
-QDP_destroy_shift(dir);}
+QDP_Shift shift,
+Frees memory associated with the map @emph{shift}.,
+QDP_destroy_shift(shift);}
 
 @node I/O utilities, Temporary entry and exit from QDP, Shifts, QDP Functions
 @section I/O utilities
@@ -1144,6 +1153,8 @@ In both cases the integer return value is 0 for success and 1 for failure.
 @node Reading and writing QDP fields, Reading and writing QLA arrays, Opening and closing binary files, I/O utilities
 @subsection Reading and writing QDP fields
 
+@*
+
 @c @subsubsection{Reading a field}
 @ssfuncte{
 Reading a field,
@@ -1163,13 +1174,13 @@ The datatype of the record must match the field type.
 @c @subsubsection{Reading an array of fields}
 @ssfuncte{
 Reading an array of fields,
-int QDP_read_v@var{T},
+int QDP_vread_@var{T},
 QDP_Reader *in@comma{} QDP_String *record_xml@comma{} QDP_@var{Type} *field[]@comma{} int n,
 Reads the array of fields and its metadata from the next record in the specified file.,
 @allTypes,
 QDP_ColorMatrix *field[4];@*
 for(i=0; i<4; i++) field[i] = QDP_create_M();@*
-QDP_read_vM(reader@comma{} record_xml@comma{} field@comma{} 4);
+QDP_vread_M(reader@comma{} record_xml@comma{} field@comma{} 4);
 }
 
 The integer return value is 0 for success and 1 for failure.  It is
@@ -1256,12 +1267,12 @@ pointer to a QLA type.
 @c subsubheading{Reading a QLA array}
 @ssfuncte{
 Reading a QLA array,
-int QDP_read_v@var{t},
+int QDP_vread_@var{t},
 QDP_Reader *in@comma{} QDP_String *record_xml@comma{} QLA_@var{Type} *array@comma{} int n,
 Reads the QLA array and its metadata from the next record in the specified file.,
 @allTypes,
 QLA_Complex array[nt];@*
-QDP_read_vc(reader@comma{} record_xml@comma{} array@comma{} nt);
+QDP_vread_c(reader@comma{} record_xml@comma{} array@comma{} nt);
 }
 
 The integer return value is 0 for success and 1 for failure.  It is
@@ -1411,6 +1422,39 @@ involving the source field may proceed without disruption.
 @sfuncte{
 Inserting QDP data,
 void QDP_insert_@var{T},
+@var{Type} *dest@comma{} @var{QLA_Type} *src,
+Inserts data values from QLA array @code{src}.,
+@allNumericTypes,
+QDP_insert_M(a@comma{} r);}
+
+Only data associated with the specified subset are inserted.
+Other values are unmodified.  The data order must conform to
+@code{QDP_index}.  This call, analogous to a fill operation, is
+permitted at any time and does not interfere with QDP operations.
+
+@c @subheading Extracting QDP data to a packed array
+@sfuncte{
+Extracting QDP data to a packed array,
+void QDP_extract_packed_@var{T},
+@var{QLA_Type} *dest@comma{} @var{Type} *src,
+Copy data values from field @code{src} to array @code{dest}.,
+@allNumericTypes,
+QDP_extract_M(r@comma{} a@comma{} QDP_even);}
+
+The user must allocate space of size
+@code{QDP_subset_len(subset)*sizeof(QLA_Type)} for the destination array
+before calling this function.
+This function copies the data values contained in the QDP field @emph{src}
+to the destination field.  Only values belonging to the specified
+subset are copied and they are stored contiguously in the destination array.
+The order of the data is given
+by @code{QDP_index}.  Since a copy is made, QDP operations
+involving the source field may proceed without disruption.
+
+@c @subheading Inserting QDP data from a packed array
+@sfuncte{
+Inserting QDP data from a packed array,
+void QDP_insert_packed_@var{T},
 @var{Type} *dest@comma{} @var{QLA_Type} *src,
 Inserts data values from QLA array @code{src}.,
 @allNumericTypes,

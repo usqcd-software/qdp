@@ -24,14 +24,14 @@ QDP$PC_$ABBR3_$EQOP_$ABBR1$ADJ1_times_s$ABBR2$ADJ2(
 
   if((fb!=QDP_forward)&&(fb!=QDP_backward)) {
     fprintf(stderr,"QDP: error: bad fb in QDP$PC_$ABBR_eq_s$ABBR\n");
-    QDP_abort();
+    QDP_abort(1);
   }
 
   /* prepare shift source */
   if(src2->ptr==NULL) {
     if(src2->data==NULL) {
       fprintf(stderr,"error: shifting from uninitialized source\n");
-      QDP_abort();
+      QDP_abort(1);
     }
   } else {
     QDP_switch_ptr_to_data(&src2->dc);

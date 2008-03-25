@@ -64,7 +64,7 @@ typedef struct QDP_data_common_t {
   char **data;
   char ***ptr;
   QMP_mem_t *qmpmem;
-  int size;
+  size_t size;
   int discarded;
   int exposed;
   QDP_shift_src_t *shift_src;

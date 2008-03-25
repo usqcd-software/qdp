@@ -1,4 +1,22 @@
 ===========================================================================
+2008-03-25      version 1.8.0
+===========================================================================
+2008-03-24: James Osborn
+	Changed QDP_abort(void) to QDP_abort(int) as was in the docs.
+	Added all eqop types for local dot product functions.
+	Added packed insert/extract functions.
+	Fixed makefiles to allow parallel make.
+	Some fixes to the docs.
+
+2008-02-13: James Osborn
+	Allow shifts to use strided arrays again.
+	Added Morton order option to layout.
+
+2007-11-28: James Osborn
+	Changed QDP_data_common_t size member to be type size_t.
+	Fixed "expr" expression in configure.ac to work with Macs.
+
+===========================================================================
 2007-10-09      version 1.7.1
 ===========================================================================
 2007-10-09: James Osborn

@@ -10,8 +10,8 @@ QDP$PC_create_$ABBR($NCVOID)
   if(m!=NULL) {
     m->data = NULL;
     m->ptr = NULL;
-    m->dc.data = (char **) &(m->data);
-    m->dc.ptr = (char ***) &(m->ptr);
+    m->dc.data = (char **) (void *) &(m->data); /* extra void * is just to */
+    m->dc.ptr = (char ***) (void *) &(m->ptr);  /* avoid a compiler warning */
     m->dc.qmpmem = NULL;
     m->dc.size = sizeof($QLAPCTYPE);
     m->dc.discarded = 1;

@@ -794,24 +794,24 @@ make_functions(%{{
   )}});
 
 comment1("Local inner product");
-comment2("r = Tr adjoint(a) * b");
+comment2("r <eqop> Tr adjoint(a) * b");
 
 make_functions(%{{
   (
    DEST_TYPES  => [ 'Complex' ],
-   EQ_OPS      => [ 'eq' ],
+   EQ_OPS      => [ @eqops ],
    SRC1_TYPES  => [ @complex_types ],
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],
   )}});
 
 comment1("Real part of local inner product");
-comment2("r = Re Tr adjoint(a) * b");
+comment2("r <eqop> Re Tr adjoint(a) * b");
 
 make_functions(%{{
   (
    DEST_TYPES  => [ 'Real' ],
-   EQ_OPS      => [ 'eq_re' ],
+   EQ_OPS      => [ map($_."_re",( @eqops )) ],
    SRC1_TYPES  => [ @complex_types ],
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],

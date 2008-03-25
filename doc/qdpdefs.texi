@@ -306,6 +306,23 @@ I, R, C, V, H, D, M, P
 @end float
 @end macro
 
+@macro sfuncot {subheading, func, args, def, eqops, types}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{eqop} @tab @code{\eqops\}
+@hline
+@item @var{Type} @tab @code{\types\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
 @macro sfunctf {subheading, func, args, def, types, funcs}
 @float
 @subheading \subheading\

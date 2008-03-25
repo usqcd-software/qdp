@@ -9,12 +9,12 @@ QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QD
 
   if(QDP_suspended) {
     fprintf(stderr,"QDP error: attempting shift while communications suspended\n");
-    QDP_abort();
+    QDP_abort(1);
   }
 
   if((fb!=QDP_forward)&&(fb!=QDP_backward)) {
     fprintf(stderr,"QDP: error: bad fb in QDP$PC_$ABBR_eq_s$ABBR\n");
-    QDP_abort();
+    QDP_abort(1);
   }
 
   restart = QDP_prepare_shift(&dest->dc, &src->dc, shift, fb, subset);

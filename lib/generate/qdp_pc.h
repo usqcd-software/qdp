@@ -31,6 +31,8 @@ $QLAPCTYPE * QDP$PC_expose_$ABBR($NC$QDPPCTYPE *field);
 void QDP$PC_reset_$ABBR($NC$QDPPCTYPE *field);
 void QDP$PC_extract_$ABBR($NC$QLAPCTYPE *dest, $QDPPCTYPE *src, QDP_Subset subset);
 void QDP$PC_insert_$ABBR($NC$QDPPCTYPE *dest, $QLAPCTYPE *src, QDP_Subset subset);
+void QDP$PC_extract_packed_$ABBR($NC$QLAPCTYPE *dest, $QDPPCTYPE *src, QDP_Subset subset);
+void QDP$PC_insert_packed_$ABBR($NC$QDPPCTYPE *dest, $QLAPCTYPE *src, QDP_Subset subset);
 !END
 
 /* optimization */

@@ -1,10 +1,10 @@
-This is ../../qdp-cvs/doc/qdpc.info, produced by makeinfo version 4.8
-from ../../qdp-cvs/doc/qdpc.texi.
+This is /home/josborn/lqcd/src/qdp-cvs/doc/qdpc.info, produced by
+makeinfo version 4.8 from /home/josborn/lqcd/src/qdp-cvs/doc/qdpc.texi.
 
 
 File: qdpc.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
 
-   Version 1.6.0
+   Version 1.8.0
 
    This document provides a detailed description of the C
 implementation of the
@@ -450,9 +450,9 @@ to all nodes and exits with exit status `status'.
 Check for initialization
 ------------------------
 
-Syntax      `int QDP_initialized(void);'
+Syntax      `int QDP_is_initialized(void);'
 Meaning     Checks if QDP is initialized.
-Example     `if(!QDP_initialized()) QDP_initialize(&argc, &argv);'
+Example     `if(!QDP_is_initialized()) QDP_initialize(&argc, &argv);'
 
 Control profiling
 -----------------
@@ -839,7 +839,8 @@ Syntax      `QDP_Subset * QDP_create_subset(int (*func)(int x[], void
             *args), void *args, int argsize, int n);'
 Meaning     Creates an array of `n' subsets based on `func'.
 Example     `QDP_Subset ts[nt];
-            ts = QDP_create_subset(timeslice, NULL, 0, nt);'
+            ts = QDP_create_subset(timeslice, NULL, 0, nt);
+            where timeslice(x, NULL) returns x[3]'
 
    The extra arguments `args' are passed directly to the function and
 saved in case the subset function is needed again when doing shifts
@@ -859,6 +860,12 @@ Example     `QDP_destroy_subset(ts);'
 This procedure frees all memory associated with the subset object _s_.
 The `QDP_subset *' value _s_ should be the object returned by
 `QDP_create_subset'.  All subsets in the array _s_ are destroyed.
+
+Getting the size of a subset
+----------------------------
+
+Syntax      `int QDP_subset_len(QDP_subset s);'
+Meaning     Returns the number of sites in a subset.
 
 
 File: qdpc.info,  Node: Reductions on subsets,  Prev: Defining a subset,  Up: Subsets
@@ -943,8 +950,10 @@ Example     `int d[4] = {0,1,2,0};
             QDP_Shift knight[4][4];
             knight[2][3] = QDP_create_shift(d);'
 
-Calling with a displacement vector {1,0,0,0} would reproduce the shift
-`QDP_neighbor[0]'.
+The displacement vector points from the recieving site towards the
+sender (or the opposite if later used with the `QDP_backward'
+direction).  Calling with a displacement vector {1,0,0,0} would
+reproduce the shift `QDP_neighbor[0]'.
 
 
 File: qdpc.info,  Node: Creating arbitrary permutations,  Next: Destroying a shift,  Prev: Creating displacement shifts,  Up: Shifts
@@ -952,12 +961,15 @@ File: qdpc.info,  Node: Creating arbitrary permutations,  Next: Destroying a shi
 Creating arbitrary permutations
 -------------------------------
 
-Syntax      `QDP_Shift QDP_create_map(int *(func*)(int coord[Nd], void
-            *args), void *args, int argsize);'
+Syntax      `QDP_Shift QDP_create_map(void *(func*)(int rx[Nd], int
+            sx[Nd], QDP_ShiftDir fb, void *args), void *args, int
+            argsize);'
 Meaning     Creates a shift specified by the permutation map `func'.
 Example     `int mu = 1;
             QDP_Shift mirror[4];
-            mirror[mu] = QDP_create_map(reflect, &mu, sizeof(mu));'
+            mirror[mu] = QDP_create_map(reflect, &mu, sizeof(mu));
+            where reflect(rx,sx,QDP_forward,mu) sets sx[i] = rx[i]
+            except for sx[mu] = L[mu] - 1 - rx[mu].'
 
 The return value is used in the various linear algebra calls involving
 shifts.  The arguments _args_ are passed through to the calling
@@ -979,9 +991,9 @@ Destroying a shift
 
 The corresponding destruction function is `QDP_destroy_shift'.
 
-Syntax      `void QDP_destroy_shift(QDP_Shift dir);'
-Meaning     Frees memory associated with the map _dir_.
-Example     `QDP_destroy_shift(dir);'
+Syntax      `void QDP_destroy_shift(QDP_Shift shift);'
+Meaning     Frees memory associated with the map _shift_.
+Example     `QDP_destroy_shift(shift);'
 
 
 File: qdpc.info,  Node: I/O utilities,  Next: Temporary entry and exit from QDP,  Prev: Shifts,  Up: QDP Functions
@@ -1090,14 +1102,14 @@ match the field type.
 Reading an array of fields
 ..........................
 
-Syntax      `int QDP_read_vT(QDP_Reader *in, QDP_String *record_xml,
+Syntax      `int QDP_vread_T(QDP_Reader *in, QDP_String *record_xml,
             QDP_TYPE *field[], int n);'
 Meaning     Reads the array of fields and its metadata from the next
             record in the specified file.
 TYPE        `S, I, R, C, V, H, D, M, P'
 Example     `QDP_ColorMatrix *field[4];
             for(i=0; i<4; i++) field[i] = QDP_create_M();
-            QDP_read_vM(reader, record_xml, field, 4); '
+            QDP_vread_M(reader, record_xml, field, 4); '
 
 The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has created the `QDP_String' for the record metadata
@@ -1184,13 +1196,13 @@ pointer to a QLA type.
 Reading a QLA array
 ...................
 
-Syntax      `int QDP_read_vT(QDP_Reader *in, QDP_String *record_xml,
+Syntax      `int QDP_vread_T(QDP_Reader *in, QDP_String *record_xml,
             QLA_TYPE *array, int n);'
 Meaning     Reads the QLA array and its metadata from the next record in
             the specified file.
 TYPE        `S, I, R, C, V, H, D, M, P'
 Example     `QLA_Complex array[nt];
-            QDP_read_vc(reader, record_xml, array, nt); '
+            QDP_vread_c(reader, record_xml, array, nt); '
 
 The integer return value is 0 for success and 1 for failure.  It is
 assumed the user has created the record metadata and the field data in
@@ -1330,6 +1342,36 @@ Inserting QDP data
 ------------------
 
 Syntax      `void QDP_insert_T(TYPE *dest, QLA_TYPE *src);'
+Meaning     Inserts data values from QLA array `src'.
+TYPE        `I, R, C, V, H, D, M, P'
+Example     `QDP_insert_M(a, r);'
+
+Only data associated with the specified subset are inserted.  Other
+values are unmodified.  The data order must conform to `QDP_index'.
+This call, analogous to a fill operation, is permitted at any time and
+does not interfere with QDP operations.
+
+Extracting QDP data to a packed array
+-------------------------------------
+
+Syntax      `void QDP_extract_packed_T(QLA_TYPE *dest, TYPE *src);'
+Meaning     Copy data values from field `src' to array `dest'.
+TYPE        `I, R, C, V, H, D, M, P'
+Example     `QDP_extract_M(r, a, QDP_even);'
+
+The user must allocate space of size
+`QDP_subset_len(subset)*sizeof(QLA_Type)' for the destination array
+before calling this function.  This function copies the data values
+contained in the QDP field _src_ to the destination field.  Only values
+belonging to the specified subset are copied and they are stored
+contiguously in the destination array.  The order of the data is given
+by `QDP_index'.  Since a copy is made, QDP operations involving the
+source field may proceed without disruption.
+
+Inserting QDP data from a packed array
+--------------------------------------
+
+Syntax      `void QDP_insert_packed_T(TYPE *dest, QLA_TYPE *src);'
 Meaning     Inserts data values from QLA array `src'.
 TYPE        `I, R, C, V, H, D, M, P'
 Example     `QDP_insert_M(a, r);'
@@ -2104,16 +2146,19 @@ EQOP        `eq, peq, meq, eqm'
 Local inner product
 -------------------
 
-Syntax      `QDP_C_eq_T_dot_T(QDP_Complex *r, TYPE *a, TYPE *b, SUBSET);'
-Meaning     r = Tr adjoint(a) * b
-TYPE        `C, V, H, D, M, P'
+Syntax      `QDP_C_EQOP_T_dot_T(QDP_Complex *r, TYPE *a, TYPE *b,
+            SUBSET);'
+Meaning     r EQOP Tr adjoint(a) * b
+EQOP        `C, V, H, D, M, P'
+TYPE        `eq, peq, meq, eqm'
 
 Real part of local inner product
 --------------------------------
 
-Syntax      `QDP_R_eq_re_T_dot_T(QDP_Real *r, TYPE *a, TYPE *b, SUBSET);'
-Meaning     r = Re Tr adjoint(a) * b
-TYPE        `C, V, H, D, M, P'
+Syntax      `QDP_R_EQOP_T_dot_T(QDP_Real *r, TYPE *a, TYPE *b, SUBSET);'
+Meaning     r EQOP Re Tr adjoint(a) * b
+EQOP        `C, V, H, D, M, P'
+TYPE        `eq_re, peq_re, meq_re, eqm_re'
 
 Color matrix from outer product
 -------------------------------
@@ -2282,50 +2327,50 @@ TYPE        `R, C, V, H, D, M, P'
 
 
 Tag Table:
-Node: Top105
-Node: Introduction603
-Node: Compilation with QDP2493
-Node: Header and macros2718
-Node: Libraries5083
-Node: Nonuniform color and precision7052
-Node: Datatypes8859
-Node: Generic Names9493
-Node: Specific Types for Color and Precision11369
-Node: Color and Precision Uniformity12660
-Node: Breaking Color and Precision Uniformity14004
-Node: QDP Functions14516
-Node: Entry and exit from QDP15198
-Node: Layout utilities18075
-Node: Naming Conventions for Data Parallel Functions22497
-Node: Constant Arguments24452
-Node: Color argument25068
-Node: Adjoint25878
-Node: Shift26248
-Node: Operations on arrays of fields26706
-Node: Creating and destroying lattice fields27990
-Node: Subsets29086
-Node: Defining a subset30162
-Node: Reductions on subsets31510
-Node: Shifts32411
-Node: Creating displacement shifts34340
-Node: Creating arbitrary permutations34854
-Node: Destroying a shift36012
-Node: I/O utilities36362
-Node: Opening and closing binary files36888
-Node: Reading and writing QDP fields39429
-Node: Reading and writing QLA arrays42957
-Node: String Handling45293
-Node: Temporary entry and exit from QDP47027
-Node: Optimization Calls50634
-Node: Function Details54658
-Node: Functions involving shifts55942
-Node: Fills and random numbers57225
-Node: Unary Operations58964
-Node: Type conversion and component extraction and insertion61240
-Node: Binary operations with constants69721
-Node: Binary operations with fields71392
-Node: Ternary operations with fields75504
-Node: Boolean operations76786
-Node: Reductions77304
+Node: Top139
+Node: Introduction637
+Node: Compilation with QDP2527
+Node: Header and macros2752
+Node: Libraries5117
+Node: Nonuniform color and precision7086
+Node: Datatypes8893
+Node: Generic Names9527
+Node: Specific Types for Color and Precision11403
+Node: Color and Precision Uniformity12694
+Node: Breaking Color and Precision Uniformity14038
+Node: QDP Functions14550
+Node: Entry and exit from QDP15232
+Node: Layout utilities18115
+Node: Naming Conventions for Data Parallel Functions22537
+Node: Constant Arguments24492
+Node: Color argument25108
+Node: Adjoint25918
+Node: Shift26288
+Node: Operations on arrays of fields26746
+Node: Creating and destroying lattice fields28030
+Node: Subsets29126
+Node: Defining a subset30202
+Node: Reductions on subsets31761
+Node: Shifts32662
+Node: Creating displacement shifts34591
+Node: Creating arbitrary permutations35247
+Node: Destroying a shift36563
+Node: I/O utilities36919
+Node: Opening and closing binary files37445
+Node: Reading and writing QDP fields39986
+Node: Reading and writing QLA arrays43514
+Node: String Handling45850
+Node: Temporary entry and exit from QDP47584
+Node: Optimization Calls52497
+Node: Function Details56521
+Node: Functions involving shifts57805
+Node: Fills and random numbers59088
+Node: Unary Operations60827
+Node: Type conversion and component extraction and insertion63103
+Node: Binary operations with constants71584
+Node: Binary operations with fields73255
+Node: Ternary operations with fields77462
+Node: Boolean operations78744
+Node: Reductions79262
 
 End Tag Table

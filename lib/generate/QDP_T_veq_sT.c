@@ -9,7 +9,7 @@ QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shif
 
   if(QDP_suspended) {
     fprintf(stderr,"QDP error: attempting shift while communications suspended\n");
-    QDP_abort();
+    QDP_abort(1);
   }
 
   ra = (int *)malloc(nv*sizeof(int));
@@ -33,7 +33,7 @@ QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shif
   for(i=0; i<nv; ++i) {
     if((fb[i]!=QDP_forward)&&(fb[i]!=QDP_backward)) {
       fprintf(stderr,"QDP: error: bad fb in QDP$PC_$ABBR_eq_s$ABBR\n");
-      QDP_abort();
+      QDP_abort(1);
     }
   }
 

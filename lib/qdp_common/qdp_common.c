@@ -56,7 +56,7 @@ QDP_initialize(int *argc, char **argv[])
   if(qdp_initialized) {
     fprintf(stderr,
     	    "error: QDP_initialize() called but QDP already initialized!\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   qdp_initialized = 1;
   if(!QMP_is_initialized()) {
@@ -73,7 +73,7 @@ QDP_finalize(void)
 {
   if(!qdp_initialized) {
     fprintf(stderr,"error: QDP_finalize() called but QDP not initialized!\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   if((prof_list)&&(QDP_this_node==0)) {
     double s;
@@ -120,10 +120,10 @@ QDP_is_initialized(void)
 }
 
 void
-QDP_abort(void)
+QDP_abort(int status)
 {
   QDP_abort_comm();
-  exit(1);
+  exit(status);
 }
 
 void

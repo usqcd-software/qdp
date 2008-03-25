@@ -13,7 +13,7 @@ QDP$PC_reset_$ABBR($NC$QDPPCTYPE *dest)
 {
   if(!dest->dc.exposed) {
     fprintf(stderr,"error: trying to restore non-exposed data\n");
-    QDP_abort();
+    QDP_abort(1);
   }
   dest->dc.exposed = 0;
 }
