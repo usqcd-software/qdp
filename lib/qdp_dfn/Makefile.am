@@ -99,6 +99,6 @@ $(QDPHDR): source-stamp-h
 	$(RANLIB) ../libqdp_dfn.a
 
 clean-local:
-	-rm -f $(QDPHDR)
+	-rm -f $(QDPHDR) source-stamp-c source-stamp-h
 	-rm -f $(QDPSRC1)
 	-rm -f $(QDPOBJ1)

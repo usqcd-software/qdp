@@ -164,7 +164,7 @@ EOF
 	\$(RANLIB) ../${lib}.a
 
 clean-local:
-	-rm -f \$(QDPHDR)
+	-rm -f \$(QDPHDR) source-stamp-c source-stamp-h
 EOF
 ###  make clean commands
 
