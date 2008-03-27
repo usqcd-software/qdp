@@ -1,3 +1,14 @@
+2008-03-26 17:27  tag qdp1-8-0
+
+2008-03-26 17:27  osborn
+
+	* lib/: make_qdp_dirs, qdp_d/Makefile.am, qdp_d2/Makefile.am,
+	  qdp_d3/Makefile.am, qdp_df/Makefile.am, qdp_df2/Makefile.am,
+	  qdp_df3/Makefile.am, qdp_dfn/Makefile.am, qdp_dn/Makefile.am,
+	  qdp_f/Makefile.am, qdp_f2/Makefile.am, qdp_f3/Makefile.am,
+	  qdp_fn/Makefile.am, qdp_int/Makefile.am: added source-stamp-[ch]
+	  temporary files to make clean target
+
 2008-03-25 14:17  osborn
 
 	* NEWS, aclocal.m4, configure, configure.ac, doc/functions.texi,
