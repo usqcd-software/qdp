@@ -38,7 +38,7 @@ QDP$PC_vput_$ABBR(char *buf, size_t index, int count, void *qfin)
 
   for(i=0; i<count; i++) {
     dest = QDP$PC_expose_$ABBR(NC field[i] ) + index;
-    QDPIO_put_$ABBR(NC, $P, $PC, dest, src+i, qf->nc, QLA_Ns);
+    QDPIO_put_$ABBR(NC, $P, $PC, dest, src+i, qf->nc, qf->ns);
     QDP$PC_reset_$ABBR(NC field[i] );
   }
 }
@@ -53,7 +53,7 @@ QDP$PC_vput_$QLAABBR(char *buf, size_t index, int count, void *qfin)
   int i;
 
   for(i=0; i<count; i++) {
-    QDPIO_put_$ABBR(NC, $P, $PC, (dest+i), (src+i), qf->nc, QLA_Ns);
+    QDPIO_put_$ABBR(NC, $P, $PC, (dest+i), (src+i), qf->nc, qf->ns);
   }
 }
 
@@ -68,12 +68,13 @@ QDP$PC_vread_$ABBR($NC QDP_Reader *qdpr, QDP_String *md, $QDPPCTYPE *field[],
 
   qf.data = (char *) field;
   qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
-  qf.nc = $QDP_NC;
+  qf.nc = QDPIO_nc_$ABBR($QDP_NC);
+  qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
   cmp_info = QIO_create_record_info(QIO_FIELD, 0, 0, 0,
-				    "$QDPPCTYPE", "$P", $QDP_NC,
-				    QLA_Ns, qf.size, nv);
+				    "$QDPPCTYPE", "$P", qf.nc,
+				    qf.ns, qf.size, nv);
 
   for(i=0; i<nv; i++) QDP_prepare_dest( &field[i]->dc );
 
@@ -105,12 +106,13 @@ QDP$PC_vread_$QLAABBR($NC QDP_Reader *qdpr, QDP_String *md, $QLAPCTYPE *array,
 
   qf.data = (char *) array;
   qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
-  qf.nc   = $QDP_NC;
+  qf.nc = QDPIO_nc_$ABBR($QDP_NC);
+  qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
   cmp_info = QIO_create_record_info(QIO_GLOBAL, 0, 0, 0,
-				    "$QDPPCTYPE", "$P", $QDP_NC,
-				    QLA_Ns, qf.size, n);
+				    "$QDPPCTYPE", "$P", qf.nc,
+				    qf.ns, qf.size, n);
 
   status = QDP_read_check(qdpr, md, QIO_GLOBAL, QDP$PC_vput_$QLAABBR, &qf,
 			  n, cmp_info);

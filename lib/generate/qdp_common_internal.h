@@ -28,6 +28,7 @@ struct QDP_IO_field {
   char *data;
   int size;
   int nc;
+  int ns;
   int word_size;
 };
 
@@ -107,6 +108,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
 	     void (*get)(char *buf, size_t index, int count, void *qfin),
 	     struct QDP_IO_field *qf, int count, QIO_RecordInfo *rec_info);
 
+#define QDPIO_nc_S(x) 0
+#define QDPIO_ns_S(x) 0
 #define QDPIO_size_S(p, nc, ns) sizeof(QLA_RandomState)
 #define QDPIO_word_S(p) sizeof(QLA_Int)
 #define QDPIO_get_S(NC, p, pc, buf, s, nc, ns)	\
@@ -114,21 +117,29 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
 #define QDPIO_put_S(NC, p, pc, s, buf, nc, ns)	\
   memcpy(s, buf, sizeof(QLA_RandomState))
 
+#define QDPIO_nc_I(x) 0
+#define QDPIO_ns_I(x) 0
 #define QDPIO_size_I(p, nc, ns) sizeof(QLA_Int)
 #define QDPIO_word_I(p) sizeof(QLA_Int)
 #define QDPIO_get_I(NC, p, pc, buf, s, nc, ns) *((QLA_Int*)(buf)) = *(s)
 #define QDPIO_put_I(NC, p, pc, s, buf, nc, ns) *(s) = *((QLA_Int*)(buf))
 
+#define QDPIO_nc_R(x) 0
+#define QDPIO_ns_R(x) 0
 #define QDPIO_size_R(p, nc, ns) sizeof(QLA_##p##_Real)
 #define QDPIO_word_R(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_R(NC, p, pc, buf, s, nc, ns) *((QLA_##p##_Real*)(buf)) = *(s)
 #define QDPIO_put_R(NC, p, pc, s, buf, nc, ns) *(s) = *((QLA_##p##_Real*)(buf))
 
+#define QDPIO_nc_C(x) 0
+#define QDPIO_ns_C(x) 0
 #define QDPIO_size_C(p, nc, ns) sizeof(QLA_##p##_Complex)
 #define QDPIO_word_C(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_C(NC, p, pc, buf, s, nc, ns) *((QLA_##p##_Complex*)(buf)) = *(s)
 #define QDPIO_put_C(NC, p, pc, s, buf, nc, ns) *(s) = *((QLA_##p##_Complex*)(buf))
 
+#define QDPIO_nc_V(x) (x)
+#define QDPIO_ns_V(x) 0
 #define QDPIO_size_V(p, nc, ns) ((nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_V(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_V(NC, p, pc, buf, s, nc, ns) {			\
@@ -144,6 +155,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     }									\
   }
 
+#define QDPIO_nc_H(x) (x)
+#define QDPIO_ns_H(x) ((x)/2)
 #define QDPIO_size_H(p, nc, ns) ((ns/2)*(nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_H(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_H(NC, p, pc, buf, s, nc, ns) {			\
@@ -163,6 +176,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     }									\
   }
 
+#define QDPIO_nc_D(x) (x)
+#define QDPIO_ns_D(x) (x)
 #define QDPIO_size_D(p, nc, ns) ((ns)*(nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_D(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_D(NC, p, pc, buf, s, nc, ns) {			\
@@ -182,6 +197,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     }									\
   }
 
+#define QDPIO_nc_M(x) (x)
+#define QDPIO_ns_M(x) 0
 #define QDPIO_size_M(p, nc, ns) ((nc)*(nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_M(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_M(NC, p, pc, buf, s, nc, ns) {	\
@@ -201,6 +218,8 @@ extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
     }									\
   }
 
+#define QDPIO_nc_P(x) (x)
+#define QDPIO_ns_P(x) (x)
 #define QDPIO_size_P(p, nc, ns) ((ns)*(ns)*(nc)*(nc)*sizeof(QLA_##p##_Complex))
 #define QDPIO_word_P(p) sizeof(QLA_##p##_Real)
 #define QDPIO_get_P(NC, p, pc, buf, s, nc, ns) {			\

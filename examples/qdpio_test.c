@@ -82,6 +82,10 @@ main(int argc, char *argv[])
   QDP_set_latsize(4, lattice_size);
   QDP_create_layout();
 
+  if(argc>1) {
+    QIO_verbose(QIO_VERB_DEBUG);
+  }
+
   d1out = QDP_create_D();
   d2out = QDP_create_D();
   d1in = QDP_create_D();

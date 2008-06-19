@@ -36,7 +36,7 @@ QDP$PC_vget_$ABBR(char *buf, size_t index, int count, void *qfin)
    from the array of fields to the write buffer */
   for(i = 0; i < count; i++, dest++) {
     src = QDP$PC_expose_$ABBR(NC field[i] ) + index;
-    QDPIO_get_$ABBR(NC, $P, $PC, dest, src, qf->nc, QLA_Ns);
+    QDPIO_get_$ABBR(NC, $P, $PC, dest, src, qf->nc, qf->ns);
     QDP$PC_reset_$ABBR(NC field[i] );
   }
 }
@@ -51,7 +51,7 @@ QDP$PC_vget_$QLAABBR(char *buf, size_t index, int count, void *qfin)
   int i;
 
   for(i = 0; i < count; i++, src++, dest++)
-    QDPIO_get_$ABBR(NC, $P, $PC, dest, src, qf->nc, QLA_Ns);
+    QDPIO_get_$ABBR(NC, $P, $PC, dest, src, qf->nc, qf->ns);
 }
 
 /* Write an array of QDP fields */
@@ -65,12 +65,13 @@ QDP$PC_vwrite_$ABBR($NC QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *field[],
 
   qf.data = (char *) field;
   qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
-  qf.nc = $QDP_NC;
+  qf.nc = QDPIO_nc_$ABBR($QDP_NC);
+  qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
   rec_info = QIO_create_record_info(QIO_FIELD, 0, 0, 0, 
-				    "$QDPPCTYPE", "$P", $QDP_NC,
-				    QLA_Ns, qf.size, nv);
+				    "$QDPPCTYPE", "$P", qf.nc,
+				    qf.ns, qf.size, nv);
 
   for(i=0; i<nv; i++)
     QDP_prepare_dest( &field[i]->dc );
@@ -99,12 +100,13 @@ QDP$PC_vwrite_$QLAABBR($NC QDP_Writer *qdpw, QDP_String *md, $QLAPCTYPE *array,
 
   qf.data = (char *) array;
   qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
-  qf.nc = $QDP_NC;
+  qf.nc = QDPIO_nc_$ABBR($QDP_NC);
+  qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
   rec_info = QIO_create_record_info(QIO_GLOBAL, 0, 0, 0, 
-				    "$QDPPCTYPE", "$P", $QDP_NC,
-				    QLA_Ns, qf.size, count);
+				    "$QDPPCTYPE", "$P", qf.nc,
+				    qf.ns, qf.size, count);
 
   return QDP_write_check(qdpw, md, QIO_GLOBAL, QDP$PC_vget_$QLAABBR,
 			 &qf, count, rec_info);
