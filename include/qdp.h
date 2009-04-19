@@ -76,6 +76,7 @@
 #include <qdp_df2.h>
 #include <qdp_f2_color_generic.h>
 #include <qdp_d2_color_generic.h>
+#include <qdp_df2_color_generic.h>
 
 #if ( QDP_Precision == 'F' )
 #include <qdp_f2_generic.h>
@@ -90,6 +91,7 @@
 #include <qdp_df3.h>
 #include <qdp_f3_color_generic.h>
 #include <qdp_d3_color_generic.h>
+#include <qdp_df3_color_generic.h>
 
 #if ( QDP_Precision == 'F' )
 #include <qdp_f3_generic.h>
@@ -104,6 +106,7 @@
 #include <qdp_dfn.h>
 #include <qdp_fn_color_generic.h>
 #include <qdp_dn_color_generic.h>
+#include <qdp_dfn_color_generic.h>
 
 #if ( QDP_Precision == 'F' )
 #include <qdp_fn_generic.h>
