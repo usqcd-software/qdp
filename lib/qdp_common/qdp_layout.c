@@ -15,7 +15,7 @@ static int vol;
 extern void QDP_setup_layout(int len[], int nd);
 
 void
-QDP_set_latsize(int nd, int size[])
+QDP_set_latsize(int nd, const int size[])
 {
   int i;
   ndim = nd;
