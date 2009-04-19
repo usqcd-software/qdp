@@ -1,3 +1,16 @@
+2009-04-18 22:24  osborn
+
+	* lib/qdp_common/qdp_layout.c: fixed conflicting 'const' in
+	  prototype
+
+2009-04-18 21:53  osborn
+
+	* NEWS, aclocal.m4, configure, configure.ac, include/qdp.h,
+	  include/qdp_config.h.in, include/qdp_layout.h,
+	  include/qdp_shift.h, include/qdp_subset.h: Added extern "C" to
+	  all external headers.  Included qdp_dfX_color_generic.h header
+	  from qdp.h.
+
 2008-09-07 14:19  tag qdp1-8-1
 
 2008-09-07 14:19  osborn
