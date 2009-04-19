@@ -1,3 +1,5 @@
+2009-04-18 22:24  tag qdp1-8-2
+
 2009-04-18 22:24  osborn
 
 	* lib/qdp_common/qdp_layout.c: fixed conflicting 'const' in
