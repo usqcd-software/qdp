@@ -8,7 +8,7 @@
 
 void
 QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_s$ABBR2$ADJ2(
-  $NC$QDPPCTYPE3 *dest,
+  $QDPPCTYPE3 *dest,
   $QDPPCTYPE1 *src1,
   $QDPPCTYPE2 *src2,
   QDP_Shift shift,
@@ -35,7 +35,7 @@ QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_s$ABBR2$ADJ2(
   } else {
     QDP_switch_ptr_to_data(&src1->dc);
   }
-  mtag1 = QDP_declare_shift( temp1, (char *)src1->data, sizeof($QLAPCTYPE1),
+  mtag1 = QDP_declare_shift( temp1, (char *)src1->data, src1->dc.size,
 			     shift, fb, subset );
   QDP_do_gather(mtag1);
 
@@ -48,7 +48,7 @@ QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_s$ABBR2$ADJ2(
   } else {
     QDP_switch_ptr_to_data(&src2->dc);
   }
-  mtag2 = QDP_declare_shift( temp2, (char *)src2->data, sizeof($QLAPCTYPE2),
+  mtag2 = QDP_declare_shift( temp2, (char *)src2->data, src2->dc.size,
 			     shift, fb, subset );
   QDP_do_gather(mtag2);
 
@@ -57,12 +57,16 @@ QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_s$ABBR2$ADJ2(
   QDP_wait_gather(mtag1);
   QDP_wait_gather(mtag2);
 
-#define SRC1 (($QLAPCTYPE1 **)temp1)
-#define SRC2 (($QLAPCTYPE2 **)temp2)
+#define SRC1O(o) ((void *)(((void **)(temp1))+(o)))
+#define SRC2O(o) ((void *)(((void **)(temp2))+(o)))
+#define N -1
+#if ($C+0) == -1
+  int nc = QDP_get_nc(dest);
+#endif
   if(subset->indexed==0) {
-    fvpp($NCVAR dest->data+subset->offset, SRC1+subset->offset, SRC2+subset->offset, subset->len );
+    fvpp($NCVAR QDP_offset_data(dest,subset->offset), SRC1O(subset->offset), SRC2O(subset->offset), subset->len );
   } else {
-    fxpp($NCVAR dest->data, SRC1, SRC2, subset->index, subset->len );
+    fxpp($NCVAR QDP_offset_data(dest,0), SRC1O(0), SRC2O(0), subset->index, subset->len );
   }
 
   QDP_cleanup_gather(mtag1);

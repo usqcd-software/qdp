@@ -4,7 +4,6 @@
 			      NO_ADJ => 1,
 			      NO_PRECISION => 1,
 			      NO_COLOR => 1,
-			      NO_SHIFT => 1,
 			     },
 	      Int => {
 		      ABBR => "I",

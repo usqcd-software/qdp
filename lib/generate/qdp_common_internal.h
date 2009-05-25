@@ -70,16 +70,24 @@ typedef struct QDP_data_common_t {
   int exposed;
   QDP_shift_src_t *shift_src;
   QDP_shift_dest_t *shift_dest;
+  int nc;
 } QDP_data_common_t;
 
 !ALLTYPES
 struct $QDPPCTYPE_struct {
-  $QLAPCTYPE *data;
-  $QLAPCTYPE **ptr;
+  //  $QLAPCTYPE *data;
+  //$QLAPCTYPE **ptr;
+  void *data;
+  void **ptr;
   QDP_data_common_t dc;
 };
 
 !END
+
+#define QDP_offset_ptr(f,o) ((void *)(((void **)((f)->ptr))+(o)))
+#define QDP_offset_data(f,o) ((void *)(((char *)((f)->data))+(o)*((f)->dc.size)))
+#define QDP_get_nc(x) ((x)->dc.nc)
+
 extern int QDP_suspended;
 extern int QDP_block_size;
 extern int QDP_mem_align;

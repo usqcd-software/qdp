@@ -3,7 +3,7 @@
 #include "com_common.h"
 
 void
-QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv)
+QDP$PC_$ABBR_veq_s$ABBR($QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv)
 {
   int *ra, restart, i;
 
@@ -44,13 +44,13 @@ QDP$PC_$ABBR_veq_s$ABBR($NC$QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shif
     dest[0]->dc.shift_src->st = QDP_alloc_shift_tag(nv);
     dest[0]->dc.shift_src->st->msgtag =
       QDP_declare_shift( (char **)dest[0]->ptr, (char *)src[0]->data,
-			 sizeof($QLAPCTYPE), shift[0], fb[0], subset);
+			 dest[0]->dc.size, shift[0], fb[0], subset);
     for(i=1; i<nv; ++i) {
       dest[i]->dc.shift_src->st = dest[0]->dc.shift_src->st;
       QDP_declare_accumulate_shift( &dest[0]->dc.shift_src->st->msgtag,
 				    (char **)dest[i]->ptr,
 				    (char *)src[i]->data,
-				    sizeof($QLAPCTYPE),
+				    dest[i]->dc.size,
 				    shift[i], fb[i], subset );
     }
 

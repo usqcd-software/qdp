@@ -144,66 +144,6 @@ sub is_double($) {
   return $var->{PC} =~ /^_D/;
 }
 
-sub do_subset($$$$$$$$$$) {
-  my($indent, $qla1, $qla2, $y0, $dest, $y1, $src1, $y2, $src2, $y3) = @_;
-  my($v) = 'v';
-  my($x) = 'x';
-  my($dv,$dvi);
-  my($multi1, $multi2);
-  my($subset) = "subset";
-  if($dest->{SCALAR}) {
-    if($dest->{EXTENDED}) {
-      if($dest->{MULTI}) {
-	$dv = "&dtemp[i]";
-	$subset = "subset[i]";
-      } else {
-	$dv = "&dtemp";
-      }
-      $dvi = $dv;
-    } else {
-      if($dest->{MULTI}) {
-	$dv = "&dest[i]";
-	$subset = "subset[i]";
-      } else {
-	$dv = "dest";
-      }
-      $dvi = $dv;
-    }
-  } else {
-    $dv  = "dest->data+$subset->offset";
-    $dvi = "dest->data";
-  }
-  my($s1,$s1i);
-  $s1i = $src1;
-  $s1 = $src1."+$subset->offset" if($s1i);
-  my($s2,$s2i);
-  $s2i = $src2;
-  $s2 = $src2."+$subset->offset" if($s2i);
-  my($args) = "$y0 $dv$y1$s1$y2$s2$y3";
-  my($argsi) = "$y0 $dvi$y1$s1i$y2$s2i$y3";
-  my($body) = <<"  EOF;";
-  if($subset->indexed) {
-    /*QDP_math_time -= QDP_time();*/
-    $qla1$x$qla2($argsi, $subset->index, $subset->len );
-    /*QDP_math_time += QDP_time();*/
-  } else {
-    /*QDP_math_time -= QDP_time();*/
-    $qla1$v$qla2($args, $subset->len );
-    /*QDP_math_time += QDP_time();*/
-  }
-  EOF;
-  my($space);
-  if($dest->{MULTI}) {
-    $body = "int i;\nfor(i=0; i<ns; i++) {\n".$body;
-    $body .= "}\n";
-    $space = ' ' x ($indent);
-  } else {
-    $space = ' ' x ($indent-2);
-  }
-  $body =~ s/^/$space/gm;
-  return $body;
-}
-
 sub qla_ext_type($) {
   my($dt) = @_;
   my($type) = $dt->{TYPE};
@@ -225,10 +165,19 @@ sub prepare_dest($$) {
       if(!$dest->{VECT}) {
 	my($ext) = qla_ext_type($dest);
 	if($dest->{MULTI}) {
-	  $r = $sp.$ext." *dtemp;\n";
-	  $r .= $sp."dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	  if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
+	    $r = $sp."typedef ".$ext."(nc,foo);\n";
+	    $r .= $sp."foo *dtemp = (foo *) malloc(ns*sizeof(foo));\n";
+	  } else {
+	    $r = $sp.$ext." *dtemp;\n";
+	    $r .= $sp."dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	  }
 	} else {
-	  $r = $sp.$ext." dtemp;\n";
+	  if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
+	    $r = $sp.$ext."(nc,dtemp);\n";
+	  } else {
+	    $r = $sp.$ext." dtemp;\n";
+	  }
 	}
       }
     }
@@ -266,21 +215,23 @@ sub global_sum($$) {
     ($cpc = $tpc) =~ s/^_D/_DQ/;
   }
   my($nc,$ncn) = ('','');
+  my $st = "QLA".$epc."_".$dest->{TYPE};
   if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
     $nc = 'nc, ';
     $ncn = '_N';
+    $st .= "(nc,)";
   }
   if(!$eqop) { $eqop = "eq"; }
   if(($dest->{MULTI})||($dest->{VECT})) {
     my $vvar = "nv";
     if($dest->{MULTI}) { $vvar = "ns"; }
     if($dest->{EXTENDED}) {
-      $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof(QLA".$epc."_".$dest->{TYPE}."), dtemp, $vvar);\n";
+      $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof($st), dtemp, $vvar);\n";
       $r .= "  QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, dtemp, $vvar);\n";
       $r .= "  free(dtemp);\n";
       $r .= "  free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     } else {
-      $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof(QLA".$tpc."_".$dest->{TYPE}."), dest, $vvar);\n";
+      $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
     }
   } else {
     if($dest->{EXTENDED}) {
@@ -288,89 +239,20 @@ sub global_sum($$) {
 	$r = "  QMP_sum_double(&dtemp);\n";
 	$r .= "  *dest = dtemp;\n"
       } else {
-	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$epc.$uabbr."_peq".$uabbr.", sizeof(QLA".$epc."_".$dest->{TYPE}."), &dtemp);\n";
+	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$epc.$uabbr."_peq".$uabbr.", sizeof($st), &dtemp);\n";
 	$r .= "  QLA".$cpc.$uabbr."_eq".$uabbr."(".$nc."dest, &dtemp);\n";
       }
     } else {
       if( ($dest->{TYPE} eq 'Real') && ($tpc eq '_D') ) {
 	$r = "  QMP_sum_double(dest);\n";
       } else {
-	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$tpc.$uabbr."_peq".$uabbr.", sizeof(QLA".$tpc."_".$dest->{TYPE}."), dest);\n";
+	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$tpc.$uabbr."_peq".$uabbr.", sizeof($st), dest);\n";
       }
     }
   }
 
   return $r;
 }
-
-
-#### begin old functions ######
-
-#sub body0($$$$$) {
-#  my($qla1, $qla2, $y0, $dest, $y1) = @_;
-#  my($body) = "{\n";
-#  $body .= prepare_dest("  ", $dest);
-#  $body .= "\n";
-#  $body .= do_subset(2, $qla1, $qla2, $y0, $dest, $y1, '', '', '', '');
-#  $body .= "}\n";
-#  return $body;
-#}
-
-#sub body1ns($$$$$$$$$) {
-#  my($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $sv, $y2) = @_;
-#  my($ds) = $dest->{SCALAR};
-#  my($body) = "{\n";
-#  $body .= prepare_dest("  ", $dest);
-#  $body .= prepare_src("  ", $src, $sv);
-#  $body .= "\n";
-#  $body .= do_subset(2, $qla1, $qla2.$qla3, $y0, $dest, $y1, ", src->data", $y2, '', '');
-#  $body .= "}\n";
-#  return $body;
-#}
-
-#sub body1($$$$$$$$$) {
-#  my($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $sv, $y2) = @_;
-#  my($body) = "{\n";
-#  $body .= prepare_dest("  ", $dest);
-#  $body .= prepare_src("  ", $src, $sv);
-#  $body .= "\n";
-#  $body .= "  if($sv->ptr==NULL) {\n";
-#  $body .= do_subset(4, $qla1, $qla2.$qla3, $y0, $dest, $y1, ", $sv->data", $y2, '', '');
-#  $body .= "  } else {\n";
-#  $body .= do_subset(4, $qla1, $qla2.'p'.$qla3, $y0, $dest, $y1, ", $sv->ptr", $y2, '', '');
-#  $body .= "  }\n";
-#  if($dest->{SCALAR}) { $body .= global_sum($dest); }
-#  $body .= "}\n";
-#  return $body;
-#}
-
-#sub body2($$$$$$$$$$$$$) {
-#  my($qla1, $qla2, $qla3, $qla4, $y0, $dest, $y1, $src1, $s1v, $y2, $src2, $s2v, $y3) = @_;
-#  my($ds) = $dest->{SCALAR};
-#  my($body) = "{\n";
-#  $body .= prepare_dest("  ", $dest);
-#  $body .= prepare_src("  ", $src1, $s1v);
-#  $body .= prepare_src("  ", $src2, $s2v);
-#  $body .= "\n";
-#  $body .= "  if(src1->ptr==NULL) {\n";
-#  $body .= "    if(src2->ptr==NULL) {\n";
-#  $body .= do_subset(6, $qla1, $qla2.$qla3.$qla4, $y0, $dest, $y1, ", src1->data", $y2, ", src2->data", $y3);
-#  $body .= "    } else {\n";
-#  $body .= do_subset(6, $qla1, $qla2.$qla3.'p'.$qla4, $y0, $dest, $y1, ", src1->data", $y2, ", src2->ptr", $y3);
-#  $body .= "    }\n";
-#  $body .= "  } else {\n";
-#  $body .= "    if(src2->ptr==NULL) {\n";
-#  $body .= do_subset(6, $qla1, $qla2.'p'.$qla3.$qla4, $y0, $dest, $y1, ", src1->ptr", $y2, ", src2->data", $y3);
-#  $body .= "    } else {\n";
-#  $body .= do_subset(6, $qla1, $qla2.'p'.$qla3.'p'.$qla4, $y0, $dest, $y1, ", src1->ptr", $y2, ", src2->ptr", $y3);
-#  $body .= "    }\n";
-#  $body .= "  }\n";
-#  if($ds) { $body .= global_sum($dest); }
-#  $body .= "}\n";
-#  return $body;
-#}
-
-#### end old functions ######
 
 sub bod0($$$$$$$) {
   my($sp, $qla, $y0, $dv, $y1, $off, $arg) = @_;
@@ -383,11 +265,13 @@ sub bod1($$$$$$$$$$) {
   my($body) = "";
   $body .= $sp."if( ".$src->{VAR}."->ptr ) {\n";
   #$body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
-  $body .= $sp."  ".$qla1."p".$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->ptr".$off.$y2.$arg." );\n";
+  #$body .= $sp."  ".$qla1."p".$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->ptr".$off.$y2.$arg." );\n";
+  $body .= $sp."  ".$qla1."p".$qla2."( ".$y0.$dv.$y1.", QDP_offset_ptr(".$src->{VAR}.",".$off.")".$y2.$arg." );\n";
   #$body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."} else {\n";
   #$body .= $sp."  "."/*QDP_math_time -= QDP_time();*/\n";
-  $body .= $sp."  ".$qla1.$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->data".$off.$y2.$arg." );\n";
+  #$body .= $sp."  ".$qla1.$qla2."( ".$y0.$dv.$y1.", ".$src->{VAR}."->data".$off.$y2.$arg." );\n";
+  $body .= $sp."  ".$qla1.$qla2."( ".$y0.$dv.$y1.", QDP_offset_data(".$src->{VAR}.",".$off.")".$y2.$arg." );\n";
   #$body .= $sp."  "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."}\n";
   return $body;
@@ -399,21 +283,21 @@ sub bod2($$$$$$$$$$$$$) {
   $body .= $sp."if( ".$src1->{VAR}."->ptr ) {\n";
   $body .= $sp."  if( ".$src2->{VAR}."->ptr ) {\n";
   #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
-  $body .= $sp."    ".$qla1."p".$qla2."p".$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->ptr".$off.$y2.", ".$src2->{VAR}."->ptr".$off.$y3.$arg." );\n";
+  $body .= $sp."    ".$qla1."p".$qla2."p".$qla3."( ".$y0.$dv.$y1.", QDP_offset_ptr(".$src1->{VAR}.",".$off.")".$y2.", QDP_offset_ptr(".$src2->{VAR}.",".$off.")".$y3.$arg." );\n";
   #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  } else {\n";
   #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
-  $body .= $sp."    ".$qla1."p".$qla2.$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->ptr".$off.$y2.", ".$src2->{VAR}."->data".$off.$y3.$arg." );\n";
+  $body .= $sp."    ".$qla1."p".$qla2.$qla3."( ".$y0.$dv.$y1.", QDP_offset_ptr(".$src1->{VAR}.",".$off.")".$y2.", QDP_offset_data(".$src2->{VAR}.",".$off.")".$y3.$arg." );\n";
   #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."} else {\n";
   $body .= $sp."  if( ".$src2->{VAR}."->ptr ) {\n";
   #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
-  $body .= $sp."    ".$qla1.$qla2."p".$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->data".$off.$y2.", ".$src2->{VAR}."->ptr".$off.$y3.$arg." );\n";
+  $body .= $sp."    ".$qla1.$qla2."p".$qla3."( ".$y0.$dv.$y1.", QDP_offset_data(".$src1->{VAR}.",".$off.")".$y2.", QDP_offset_ptr(".$src2->{VAR}.",".$off.")".$y3.$arg." );\n";
   #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  } else {\n";
   #$body .= $sp."    "."/*QDP_math_time -= QDP_time();*/\n";
-  $body .= $sp."    ".$qla1.$qla2.$qla3."( ".$y0.$dv.$y1.", ".$src1->{VAR}."->data".$off.$y2.", ".$src2->{VAR}."->data".$off.$y3.$arg." );\n";
+  $body .= $sp."    ".$qla1.$qla2.$qla3."( ".$y0.$dv.$y1.", QDP_offset_data(".$src1->{VAR}.",".$off.")".$y2.", QDP_offset_data(".$src2->{VAR}.",".$off.")".$y3.$arg." );\n";
   #$body .= $sp."    "."/*QDP_math_time += QDP_time();*/\n";
   $body .= $sp."  }\n";
   $body .= $sp."}\n";
@@ -436,6 +320,26 @@ sub qla_name($$$$$) {
   $qla4 =~ s/^_//;
   if($qla4) { $qla3 .= '_'; }
   return ($qla1, $qla2, $qla3, $qla4);
+}
+
+sub get_nc_def($$$) {
+  my $s = '';
+  if($color eq 'N') {
+    my $t;
+    for my $tt (@_) {
+      if($tt->{TYPE} && !$tt->{SCALAR} && !$datatypes{$tt->{TYPE}}{NO_COLOR}) { $t = $tt; last; }
+    }
+    if($t->{VECT}) {
+      $s = "  int nc = QDP_get_nc(&".$t->{VAR}."[i]);\n";
+    } else {
+      $s = "  int nc = QDP_get_nc(".$t->{VAR}.");\n";
+    }
+    my ($d) = @_;
+    if($d->{SCALAR} && !$datatypes{$d->{TYPE}}{NO_COLOR}) {
+      $s .= "  ".type_name($d)."(nc, (*dest)) = destv;\n";
+    }
+  }
+  return $s;
 }
 
 # construct body of function
@@ -463,7 +367,7 @@ sub func_body($$$$$$$$) {
   }
 
   my($y0) = ('');
-  if($color eq 'N') { $y0 = ' nc,'; }
+  if($color eq 'N') { $y0 = 'nc, '; }
   my($y1) = $x1;
   $y1 =~ s/[^, ]*[ *]+([^, *]+),/$1,/g;
   my($y2) = $x2;
@@ -520,8 +424,10 @@ sub func_body($$$$$$$$) {
   my($subset) = "subset";
   if($dest->{MULTI}) { $subset = "subset[i]"; }
 
-  my($voff) = "+".$subset."->offset";
-  my($xoff) = "";
+  #my($voff) = "+".$subset."->offset";
+  #my($xoff) = "";
+  my($voff) = $subset."->offset";
+  my($xoff) = "0";
   my($xarg) = ", ".$subset."->index, ".$subset."->len";
   my($varg) = ", ".$subset."->len";
   my($sp) = "  ";
@@ -531,11 +437,13 @@ sub func_body($$$$$$$$) {
   my($botsum) = "";
   my($global_eqop) = "eq";
 
+  $def = get_nc_def($dest, $src1, $src2);
+
   if($dest->{VECT}) {
     if($dest->{MULTI}) {
       my($ssv) = "subset[i]";
       my($nvv) = "ns";
-      $def  = "  int i;\n";
+      $def = "  int i;\n";
       if($dest->{EXTENDED}) {
 	my($ext) = qla_ext_type($dest);
 	$def .= $sp.$ext." *dtemp;\n";
@@ -545,12 +453,14 @@ sub func_body($$$$$$$$) {
       $top  = "  }\n";
       $top .= "\n";
       $top .= "  for(i=0; i<$nvv; ++i) {\n";
+      $top .= get_nc_def($dest, $src1, $src2);
       $bot  = "  }\n";
       $sp .= "  ";
     } else {
       my($ssv) = "subset";
       my($nvv) = "nv";
       $voff .= "+offset";
+      #$voff .= "offset";
       $xarg = ", ".$subset."->index+offset, blen";
       $varg = ", blen";
       $def  = "  int i, offset, blen;\n";
@@ -600,6 +510,7 @@ sub func_body($$$$$$$$) {
       $def .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
       $def .= "    if( blen <= 0) break;\n";
       $def .= "    for(i=0; i<$nvv; ++i) {\n";
+      $def .= get_nc_def($dest, $src1, $src2);
       $def .= "      if(offset==0) {\n";
       $top  = "      }\n";
       $bot  = "    }\n";
@@ -610,8 +521,10 @@ sub func_body($$$$$$$$) {
     }
   }
 
-  my($vdv) = $dest->{VAR}."->data".$voff;
-  my($xdv) = $dest->{VAR}."->data".$xoff;
+  #my($vdv) = $dest->{VAR}."->data".$voff;
+  #my($xdv) = $dest->{VAR}."->data".$xoff;
+  my($vdv) = "QDP_offset_data(".$dest->{VAR}.",".$voff.")";
+  my($xdv) = "QDP_offset_data(".$dest->{VAR}.",".$xoff.")";
   if($dest->{SCALAR}) {
     if(($dest->{MULTI})&&(!$dest->{VECT})) {
       if($dest->{EXTENDED}) {
@@ -619,7 +532,7 @@ sub func_body($$$$$$$$) {
       } else {
 	$vdv = $xdv = "&".$dest->{VAR}."[i]";
       }
-      $def = "  int i;\n";
+      $def .= "  int i;\n";
       $top .= "  for(i=0; i<ns; i++) {\n";
       $bot = "  }\n";
       #$sp .= "  ";
@@ -772,6 +685,46 @@ sub qdp_name($$$$$$) {
   return "QDP".$pc.$da."_".$op.$s1aa.$func.$s2aa.$multi;
 }
 
+sub get_arg_v($) {
+    my ($t) = @_;
+    my $s = '';
+    if($t->{SCALAR}) {
+	my $type = $t->{TYPE};
+	if($color ne 'N' || $datatypes{$type}{NO_COLOR}) {
+	    $s = type_name($t)." ".$t->{VAR}."[], ";
+	} else {
+	  if($t->{VAR} eq 'dest') {
+	    $s = "void *".$t->{VAR}."v, ";
+	  } else {
+	    $s = "void *".$t->{VAR}.", ";
+	  }
+	}
+    } else {
+	$s = type_name($t)." *".$t->{VAR}."[], ";
+    }
+    return $s;
+}
+
+sub get_arg_s($) {
+    my ($t) = @_;
+    my $s = '';
+    if($t->{SCALAR}) {
+	my $type = $t->{TYPE};
+	if($color ne 'N' || $datatypes{$type}{NO_COLOR}) {
+	    $s = type_name($t)." *".$t->{VAR}.", ";
+	} else {
+	  if($t->{VAR} eq 'dest') {
+	    $s = "void *".$t->{VAR}."v, ";
+	  } else {
+	    $s = "void *".$t->{VAR}.", ";
+	  }
+	}
+    } else {
+	$s = type_name($t)." *".$t->{VAR}.", ";
+    }
+    return $s;
+}
+
 # construct arguments to QDP function
 sub qdp_args($$$$$$) {
   my($dest, $x1, $src1, $x2, $src2, $x3) = @_;
@@ -805,38 +758,26 @@ sub qdp_args($$$$$$) {
   my($s1arg) = '';
   if($s1t) {
     if($dest->{VECT}) {
-      if($src1->{SCALAR}) {
-	$s1arg = type_name($src1)." ".$src1->{VAR}."[], ";
-      } else {
-	$s1arg = type_name($src1)." *".$src1->{VAR}."[], ";
-      }
+      $s1arg = get_arg_v($src1);
     } else {
-      $s1arg = type_name($src1)." *".$src1->{VAR}.", ";
+      $s1arg = get_arg_s($src1);
     }
   }
   my($s2arg) = '';
   if($s2t) {
     if($dest->{VECT}) {
-      if($src2->{SCALAR}) {
-	$s2arg = type_name($src2)." ".$src2->{VAR}."[], ";
-      } else {
-	$s2arg = type_name($src2)." *".$src2->{VAR}."[], ";
-      }
+      $s2arg = get_arg_v($src2);
     } else {
-      $s2arg = type_name($src2)." *".$src2->{VAR}.", ";
+      $s2arg = get_arg_s($src2);
     }
   }
   my($args) = "( ";
-  if($color eq 'N') { $args .= 'int nc, '; }
-  $args .= type_name($dest);
+  #if($color eq 'N') { $args .= 'int nc, '; }
+  #$args .= type_name($dest);
   if(($dest->{MULTI})||($dest->{VECT})) {
-    if($dest->{SCALAR}) {
-      $args .= " ".$dest->{VAR}."[], ";
-    } else {
-      $args .= " *".$dest->{VAR}."[], ";
-    }
+      $args .= get_arg_v($dest);
   } else {
-    $args .= " *".$dest->{VAR}.", ";
+      $args .= get_arg_s($dest);
   }
   $args .= $x1.$s1arg.$x2.$s2arg.$x3;
   if($dest->{MULTI}) {

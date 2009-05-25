@@ -28,16 +28,16 @@ int QDP_next_record(QDP_Reader *qr);
 /* Read and write single field */
 
 !ALLTYPES
-int QDP$PC_read_$ABBR($NC QDP_Reader *qr, QDP_String *md, $QDPPCTYPE *field);
-int QDP$PC_write_$ABBR($NC QDP_Writer *qw, QDP_String *md, $QDPPCTYPE *field);
+int QDP$PC_read_$ABBR(QDP_Reader *qr, QDP_String *md, $QDPPCTYPE *field);
+int QDP$PC_write_$ABBR(QDP_Writer *qw, QDP_String *md, $QDPPCTYPE *field);
 !END
 
 /* Read and write arrays of fields */
 
 !ALLTYPES
-int QDP$PC_vread_$ABBR($NC QDP_Reader *qr, QDP_String *md,
+int QDP$PC_vread_$ABBR(QDP_Reader *qr, QDP_String *md,
 		       $QDPPCTYPE *field[], int n);
-int QDP$PC_vwrite_$ABBR($NC QDP_Writer *qw, QDP_String *md,
+int QDP$PC_vwrite_$ABBR(QDP_Writer *qw, QDP_String *md,
 			$QDPPCTYPE *field[], int n);
 !END
 
@@ -45,9 +45,9 @@ int QDP$PC_vwrite_$ABBR($NC QDP_Writer *qw, QDP_String *md,
 
 !ALLTYPES
 int QDP$PC_vread_$QLAABBR($NC QDP_Reader *qr, QDP_String *md,
-			  $QLAPCTYPE *field, int n);
+			  $QLAPCTYPE($NCVAR(*field)), int n);
 int QDP$PC_vwrite_$QLAABBR($NC QDP_Writer *qw, QDP_String *md,
-			   $QLAPCTYPE *field, int n);
+			   $QLAPCTYPE($NCVAR(*field)), int n);
 !END
 
 #ifdef __cplusplus

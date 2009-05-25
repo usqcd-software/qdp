@@ -1,18 +1,20 @@
 #include "qdp_$lib_internal.h"
 
+#define OFF(x,o,s) ((void *)(((char *)(x))+(o)*(s)))
+
 void
-QDP$PC_extract_packed_$ABBR($NC$QLAPCTYPE *dest, $QDPPCTYPE *src, QDP_Subset subset)
+QDP$PC_extract_packed_$ABBR(void *dest, $QDPPCTYPE *src, QDP_Subset subset)
 {
   QDP_prepare_src(&src->dc);
 
   if(src->ptr==NULL) {
     if(subset->indexed==0) {
-      memcpy(dest, src->data+subset->offset, src->dc.size*subset->len);
+      memcpy(dest, QDP_offset_data(src,subset->offset), src->dc.size*subset->len);
     } else {
       int i;
       for(i=0; i<subset->len; i++) {
 	int j = subset->index[i];
-	memcpy(&dest[i], &src->data[j], src->dc.size);
+	memcpy(OFF(dest,i,src->dc.size), QDP_offset_data(src,j), src->dc.size);
       }
     }
   } else {
@@ -20,30 +22,30 @@ QDP$PC_extract_packed_$ABBR($NC$QLAPCTYPE *dest, $QDPPCTYPE *src, QDP_Subset sub
       int i;
       for(i=0; i<subset->len; i++) {
 	int j = subset->offset + i;
-	memcpy(&dest[i], src->ptr[j], src->dc.size);
+	memcpy(OFF(dest,i,src->dc.size), QDP_offset_ptr(src,j), src->dc.size);
       }
     } else {
       int i;
       for(i=0; i<subset->len; i++) {
 	int j = subset->index[i];
-	memcpy(&dest[i], src->ptr[j], src->dc.size);
+	memcpy(OFF(dest,i,src->dc.size), QDP_offset_ptr(src,j), src->dc.size);
       }
     }
   }
 }
 
 void
-QDP$PC_insert_packed_$ABBR($NC$QDPPCTYPE *dest, $QLAPCTYPE *src, QDP_Subset subset)
+QDP$PC_insert_packed_$ABBR($QDPPCTYPE *dest, void *src, QDP_Subset subset)
 {
   QDP_prepare_dest(&dest->dc);
 
   if(subset->indexed==0) {
-    memcpy(dest->data+subset->offset, src, dest->dc.size*subset->len);
+    memcpy(QDP_offset_data(dest,subset->offset), src, dest->dc.size*subset->len);
   } else {
     int i;
     for(i=0; i<subset->len; i++) {
       int j = subset->index[i];
-      memcpy(&dest->data[j], &src[i], dest->dc.size);
+      memcpy(QDP_offset_data(dest,j), OFF(src,i,dest->dc.size), dest->dc.size);
     }
   }
 }

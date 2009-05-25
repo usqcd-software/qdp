@@ -10,7 +10,7 @@
 
 void
 QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_$ABBR2$ADJ2(
-  $NC$QDPPCTYPE3 *dest,
+  $QDPPCTYPE3 *dest,
   $QDPPCTYPE1 *src1,
   $QDPPCTYPE2 *src2,
   QDP_Shift shift,
@@ -37,27 +37,29 @@ QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_$ABBR2$ADJ2(
     QDP_switch_ptr_to_data(&src1->dc);
   }
 
-  mtag = QDP_declare_shift( temp1, (char *)src1->data, sizeof($QLAPCTYPE1),
+  mtag = QDP_declare_shift( temp1, (char *)src1->data, src1->dc.size,
 			    shift, fb, subset );
   QDP_do_gather(mtag);
   QDP_prepare_dest(&dest->dc);
   QDP_prepare_src(&src2->dc);
   QDP_wait_gather(mtag);
 
-#define SRC1 (($QLAPCTYPE1 **)temp1)
-#define SRC2D src2->data
-#define SRC2P src2->ptr
+#define SRC1O(o) ((void *)(((void **)(temp1))+(o)))
+#define N -1
+#if ($C+0) == -1
+  int nc = QDP_get_nc(dest);
+#endif
   if(src2->ptr==NULL) {
     if(subset->indexed==0) {
-      fvpd($NCVAR dest->data+subset->offset, SRC1+subset->offset, SRC2D+subset->offset, subset->len );
+      fvpd($NCVAR QDP_offset_data(dest,subset->offset), SRC1O(subset->offset), QDP_offset_data(src2,subset->offset), subset->len );
     } else {
-      fxpd($NCVAR dest->data, SRC1, SRC2D, subset->index, subset->len );
+      fxpd($NCVAR QDP_offset_data(dest,0), SRC1O(0), QDP_offset_data(src2,0), subset->index, subset->len );
     }
   } else {
     if(subset->indexed==0) {
-      fvpp($NCVAR dest->data+subset->offset, SRC1+subset->offset, SRC2P+subset->offset, subset->len );
+      fvpp($NCVAR QDP_offset_data(dest,subset->offset), SRC1O(subset->offset), QDP_offset_ptr(src2,subset->offset), subset->len );
     } else {
-      fxpp($NCVAR dest->data, SRC1, SRC2P, subset->index, subset->len );
+      fxpp($NCVAR QDP_offset_data(dest,0), SRC1O(0), QDP_offset_ptr(src2,0), subset->index, subset->len );
     }
   }
 

@@ -126,6 +126,7 @@ if($cflag) {
 	      $temp =~ s/\$NCVAR/$ncvar/g;
 	      $temp =~ s/\$NC/$ncarg/g;
 	      $temp =~ s/\$PC/$pc/g;
+	      $temp =~ s/\$C/$color/g;
 	      $temp =~ s/\$PORPC/$porpc/g;
 	      $temp =~ s/\$LIB/$lib/g;
 	      $temp =~ s/\$lib/$llib/g;
@@ -240,10 +241,12 @@ if($cflag) {
 	      if($tc eq 'N') {
 		$ncarg = "int nc, ";
 		$ncvoid = "int nc";
+		$ncvar = "nc, ";
 		$qdpncvar = "QDP_Nc, ";
 	      } else {
 		$ncarg = "";
 		$ncvoid = "void";
+		$ncvar = "";
 		$qdpncvar = "";
 	      }
 	      $temp = $text;
@@ -259,6 +262,7 @@ if($cflag) {
 	      $temp =~ s/\$QLAPCTYPE/QLA$tpc$us$dt/g;
 	      $temp =~ s/\$NCVOID/$ncvoid/g;
 	      $temp =~ s/\$QDPNCVAR/$qdpncvar/g;
+	      $temp =~ s/\$NCVAR/$ncvar/g;
 	      $temp =~ s/\$NC/$ncarg/g;
 	      if($begin_eqops) {
 		for $eqop ('eq','peq','meq','eqm') {

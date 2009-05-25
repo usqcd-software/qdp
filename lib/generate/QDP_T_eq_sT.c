@@ -3,7 +3,7 @@
 #include "com_common.h"
 
 void
-QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset)
+QDP$PC_$ABBR_eq_s$ABBR($QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset)
 {
   int restart;
 
@@ -32,7 +32,7 @@ QDP$PC_$ABBR_eq_s$ABBR($NC$QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QD
 
     dest->dc.shift_src->st->msgtag =
       QDP_declare_shift( (char **)dest->ptr, (char *)src->data,
-			 sizeof($QLAPCTYPE), shift, fb, subset );
+			 src->dc.size, shift, fb, subset );
 
   }
 

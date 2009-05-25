@@ -4,7 +4,16 @@ ALL_LDADD = -L$(top_builddir)/lib -L$(QLADIR)/lib -L$(QIODIR)/lib $(QMP_LDFLAGS)
 F3_CFLAGS = -DQDP_Precision=1 -DQDP_Nc=3 $(ALL_CFLAGS)
 F3_LDADD = -lqdp_f -lqdp_f3 -lqla_f -lqla_f3 -lqla_d -lqla_d3 -lqla_df -lqla_df3 $(ALL_LDADD)
 
-check_PROGRAMS = qdp_test_f3 qdpio_test_f3 plaquette_f3 sample_ks_f3 sample_wilson_f3
+D3_CFLAGS = -DQDP_Precision=2 -DQDP_Nc=3 $(ALL_CFLAGS)
+D3_LDADD = -lqdp_d -lqdp_d3 -lqla_d -lqla_d3 $(ALL_LDADD)
+
+FN_CFLAGS = -DQDP_Precision=1 -DQDP_Nc=10 $(ALL_CFLAGS)
+FN_LDADD = -lqdp_f -lqdp_fn -lqla_f -lqla_fn -lqla_d -lqla_dn -lqla_df -lqla_dfn $(ALL_LDADD)
+
+check_PROGRAMS = \
+  qdp_test_f3 qdpio_test_f3 plaquette_f3 sample_ks_f3 sample_wilson_f3 \
+  qdp_test_d3 qdpio_test_d3 plaquette_d3 \
+  qdp_test_fn qdpio_test_fn plaquette_fn
 
 CLEANFILES = *.bin
 
@@ -14,13 +23,37 @@ qdp_test_f3_SOURCES = qdp_test.c
 qdp_test_f3_CFLAGS = $(F3_CFLAGS)
 qdp_test_f3_LDADD = $(F3_LDADD)
 
+qdp_test_d3_SOURCES = qdp_test.c
+qdp_test_d3_CFLAGS = $(D3_CFLAGS)
+qdp_test_d3_LDADD = $(D3_LDADD)
+
+qdp_test_fn_SOURCES = qdp_test.c
+qdp_test_fn_CFLAGS = $(FN_CFLAGS)
+qdp_test_fn_LDADD = $(FN_LDADD)
+
 qdpio_test_f3_SOURCES = qdpio_test.c
 qdpio_test_f3_CFLAGS = $(F3_CFLAGS)
 qdpio_test_f3_LDADD = $(F3_LDADD)
 
+qdpio_test_d3_SOURCES = qdpio_test.c
+qdpio_test_d3_CFLAGS = $(D3_CFLAGS)
+qdpio_test_d3_LDADD = $(D3_LDADD)
+
+qdpio_test_fn_SOURCES = qdpio_test.c
+qdpio_test_fn_CFLAGS = $(FN_CFLAGS)
+qdpio_test_fn_LDADD = $(FN_LDADD)
+
 plaquette_f3_SOURCES = plaquette.c
 plaquette_f3_CFLAGS = $(F3_CFLAGS)
 plaquette_f3_LDADD = $(F3_LDADD)
+
+plaquette_d3_SOURCES = plaquette.c
+plaquette_d3_CFLAGS = $(D3_CFLAGS)
+plaquette_d3_LDADD = $(D3_LDADD)
+
+plaquette_fn_SOURCES = plaquette.c
+plaquette_fn_CFLAGS = $(FN_CFLAGS)
+plaquette_fn_LDADD = $(FN_LDADD)
 
 sample_ks_f3_SOURCES = sample_ks.c congrad_ks.c dslash_ks.c congrad_ks.h
 sample_ks_f3_CFLAGS = $(F3_CFLAGS)

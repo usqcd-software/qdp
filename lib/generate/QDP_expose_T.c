@@ -1,7 +1,7 @@
 #include "qdp_$lib_internal.h"
 
-$QLAPCTYPE *
-QDP$PC_expose_$ABBR($NC$QDPPCTYPE *dest)
+void *
+QDP$PC_expose_$ABBR($QDPPCTYPE *dest)
 {
   QDP_prepare_dest(&dest->dc);
   dest->dc.exposed = 1;
@@ -9,7 +9,7 @@ QDP$PC_expose_$ABBR($NC$QDPPCTYPE *dest)
 }
 
 void
-QDP$PC_reset_$ABBR($NC$QDPPCTYPE *dest)
+QDP$PC_reset_$ABBR($QDPPCTYPE *dest)
 {
   if(!dest->dc.exposed) {
     fprintf(stderr,"error: trying to restore non-exposed data\n");

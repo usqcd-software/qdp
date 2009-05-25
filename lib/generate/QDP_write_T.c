@@ -28,16 +28,19 @@ QDP$PC_vget_$ABBR(char *buf, size_t index, int count, void *qfin)
 {
   struct QDP_IO_field *qf = qfin;
   $QDPPCTYPE **field = ($QDPPCTYPE **)(qf->data);
-  $QLAPCTYPE *src;
-  $QLAPCTYPE *dest = ($QLAPCTYPE *)buf;
+#define nc qf->nc
+  $QLAPCTYPE($NCVAR(*src));
+  $QLAPCTYPE($NCVAR(*dest)) = (void *)buf;
+#undef nc
   int i;
 
 /* For the site specified by "index", move an array of "count" data
    from the array of fields to the write buffer */
   for(i = 0; i < count; i++, dest++) {
-    src = QDP$PC_expose_$ABBR(NC field[i] ) + index;
+    //src = QDP$PC_expose_$ABBR(NC field[i] ) + index;
+    src = QDP_offset_data(field[i],index);
     QDPIO_get_$ABBR(NC, $P, $PC, dest, src, qf->nc, qf->ns);
-    QDP$PC_reset_$ABBR(NC field[i] );
+    //QDP$PC_reset_$ABBR(NC field[i] );
   }
 }
 
@@ -46,8 +49,10 @@ static void
 QDP$PC_vget_$QLAABBR(char *buf, size_t index, int count, void *qfin)
 {
   struct QDP_IO_field *qf = qfin;
-  $QLAPCTYPE *src = ($QLAPCTYPE *)(qf->data);
-  $QLAPCTYPE *dest = ($QLAPCTYPE *)buf;
+#define nc qf->nc
+  $QLAPCTYPE($NCVAR(*src)) = (void *)(qf->data);
+  $QLAPCTYPE($NCVAR(*dest)) = (void *)buf;
+#undef nc
   int i;
 
   for(i = 0; i < count; i++, src++, dest++)
@@ -56,7 +61,7 @@ QDP$PC_vget_$QLAABBR(char *buf, size_t index, int count, void *qfin)
 
 /* Write an array of QDP fields */
 int
-QDP$PC_vwrite_$ABBR($NC QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *field[],
+QDP$PC_vwrite_$ABBR(QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *field[],
 		    int nv)
 {
   struct QDP_IO_field qf;
@@ -64,8 +69,8 @@ QDP$PC_vwrite_$ABBR($NC QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *field[],
   QIO_RecordInfo *rec_info;
 
   qf.data = (char *) field;
-  qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
-  qf.nc = QDPIO_nc_$ABBR($QDP_NC);
+  qf.size = QDPIO_size_$ABBR($P, QDP_get_nc(field[0]), QLA_Ns);
+  qf.nc = QDPIO_nc_$ABBR(QDP_get_nc(field[0]));
   qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
@@ -83,17 +88,17 @@ QDP$PC_vwrite_$ABBR($NC QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *field[],
 
 /* Write a single QDP field */
 int
-QDP$PC_write_$ABBR($NC QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *f)
+QDP$PC_write_$ABBR(QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *f)
 {
   $QDPPCTYPE *field[1];
   field[0] = f;
-  return QDP$PC_vwrite_$ABBR($NCVAR qdpw, md, field, 1);
+  return QDP$PC_vwrite_$ABBR(qdpw, md, field, 1);
 }
 
 /* Write a global array of QLA data */
 int
-QDP$PC_vwrite_$QLAABBR($NC QDP_Writer *qdpw, QDP_String *md, $QLAPCTYPE *array,
-		       int count)
+QDP$PC_vwrite_$QLAABBR($NC QDP_Writer *qdpw, QDP_String *md,
+		       $QLAPCTYPE($NCVAR(*array)), int count)
 {
   struct QDP_IO_field qf;
   QIO_RecordInfo *rec_info;

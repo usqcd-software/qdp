@@ -69,16 +69,22 @@ sub get_arg_lists($$) {
     ($op, $cp) = count_paren($_);
     if($pl==0) {
       $pl += $op - $cp;
+#      if($pl) {
+#	$arg =~ s/\([^()]*$//;
+#      }
+#      $arg =~ s/.*[^\w]([\w]+)[^\w]*$/$1/;
       if($pl) {
-	$arg =~ s/\([^()]*$//;
+	$arg = "func";
+      } else {
+	$arg =~ s/.*[^\w]([\w]+)[^\w]*$/$1/;
       }
-      $arg =~ s/.*[^\w]([\w]+)[^\w]*$/$1/;
       if($arg ne "void") { push @list, $arg; }
     } else {
       $pl += $op - $cp;
     }
   }
-  if($pc=~/.*N/) {
+#  if($pc=~/.*N/) {
+  if($list[0] eq 'nc') {
     shift @list;
     @glist = @list;
     unshift @list, 'QDP_Nc';
