@@ -1,3 +1,25 @@
+2009-05-25 12:56  osborn
+
+	* NEWS: updated NEWS
+
+2009-05-25 12:43  osborn
+
+	* aclocal.m4, configure, configure.ac, examples/Makefile.am,
+	  lib/generate/QDP_T3_EQOP_T1_times_sT2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_T2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_sT2.c,
+	  lib/generate/QDP_T_eq_func.c, lib/generate/QDP_T_eq_funci.c,
+	  lib/generate/QDP_T_eq_sT.c, lib/generate/QDP_T_veq_sT.c,
+	  lib/generate/QDP_create_T.c, lib/generate/QDP_discard_T.c,
+	  lib/generate/QDP_expose_T.c, lib/generate/QDP_extract_T.c,
+	  lib/generate/QDP_extract_packed_T.c, lib/generate/QDP_read_T.c,
+	  lib/generate/QDP_write_T.c, lib/generate/datatypes.pl,
+	  lib/generate/generate_qdp.pl, lib/generate/generate_types.pl,
+	  lib/generate/generic.pl, lib/generate/qdp_color_generic.h,
+	  lib/generate/qdp_common_internal.h, lib/generate/qdp_generic.h,
+	  lib/generate/qdp_io.h, lib/generate/qdp_pc.h: made QDP work with
+	  arbitrary Nc QLA
+
 2009-04-18 22:24  tag qdp1-8-2
 
 2009-04-18 22:24  osborn
