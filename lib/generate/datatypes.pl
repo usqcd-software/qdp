@@ -4,6 +4,7 @@
 			      NO_ADJ => 1,
 			      NO_PRECISION => 1,
 			      NO_COLOR => 1,
+			      NO_ARITH => 1,
 			     },
 	      Int => {
 		      ABBR => "I",
@@ -51,6 +52,9 @@ for(@all_types) {
   }
   if(!$datatypes{$_}{NO_COLOR}) {
     push @color_types, $_;
+  }
+  if(!$datatypes{$_}{NO_ARITH}) {
+    push @arith_types, $_;
   }
 }
 

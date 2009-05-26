@@ -75,10 +75,12 @@ if($cflag) {
 	} elsif(/^!GAUGEMULT/) {
 	  $gauge_mult = 3;
 	  if($datatypes{$dt}{NO_COLOR}) { $save = 0; }
-	} elsif(/^!PCSHIFTTYPES/) {
-	  if($datatypes{$dt}{NO_SHIFT}) { $save = 0; }
-	} elsif(/^!PCNOSHIFTTYPES/) {
-	  if(!$datatypes{$dt}{NO_SHIFT}) { $save = 0; }
+	} elsif(/^!PCARITHTYPES/) {
+	  if($datatypes{$dt}{NO_ARITH}) { $save = 0; }
+	} elsif(/^!PCNOARITHTYPES/) {
+	  if(!$datatypes{$dt}{NO_ARITH}) { $save = 0; }
+	} elsif(/^!PCTYPES/) {
+	  # all compatible types
 	} elsif(/^!END/) {
 	  $save = 1;
 	} else {
@@ -230,11 +232,11 @@ if($cflag) {
 	  for $tp ('','F','D') {
 	    for $tc ('','2','3','N') {
 	      next if(!compatible_pc($dt,$tp,$tc));
-	      next if((($begin_types==2)||($begin_types==4))&&($datatypes{$dt}{NO_SHIFT}));
+	      next if((($begin_types==2)||($begin_types==4))&&($datatypes{$dt}{NO_ARITH}));
 	      next if((($begin_types==3)||($begin_types==4)||($begin_types==6)||($begin_types==8))&&
 		      (($tp ne $precision)||($tc ne $color)));
 	      next if(($begin_types==5)&&((($tp)&&($tp ne $precision))||(($tc)&&($tc ne $color))));
-	      next if((($begin_types==6)||($begin_types==7))&&(!$datatypes{$dt}{NO_SHIFT}));
+	      next if((($begin_types==6)||($begin_types==7))&&(!$datatypes{$dt}{NO_ARITH}));
 	      next if(($begin_types==8)&&($datatypes{$dt}{NO_COLOR}));
 	      $tpc = $tp.$tc;
 	      if($tpc) { $tpc = "_".$tpc; }
@@ -283,22 +285,22 @@ if($cflag) {
       if(/^!ALLTYPES/) { # all types
 	$begin_types = 1;
 	$text = '';
-      } elsif(/^!SHIFTTYPES/) { # shiftable types
+      } elsif(/^!ARITHTYPES/) { # shiftable types
 	$begin_types = 2;
 	$text = '';
       } elsif(/^!PCTYPES/) { # types with same PC as lib
 	$begin_types = 3;
 	$text = '';
-      } elsif(/^!PCSHIFTTYPES/) { # shiftable types with same PC as lib
+      } elsif(/^!PCARITHTYPES/) { # shiftable types with same PC as lib
 	$begin_types = 4;
 	$text = '';
       } elsif(/^!PCSUBTYPES/) { # types that are compatible with PC of lib
 	$begin_types = 5;
 	$text = '';
-      } elsif(/^!PCNOSHIFTTYPES/) { # non-shiftable types with same PC as lib
+      } elsif(/^!PCNOARITHTYPES/) { # non-shiftable types with same PC as lib
 	$begin_types = 6;
 	$text = '';
-      } elsif(/^!NOSHIFTTYPES/) { # non-shiftable types
+      } elsif(/^!NOARITHTYPES/) { # non-shiftable types
 	$begin_types = 7;
 	$text = '';
       } elsif(/^!PCCOLORTYPES/) { # colored types

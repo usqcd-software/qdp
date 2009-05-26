@@ -1,5 +1,4 @@
-This is /home/josborn/lqcd/src/qdp-cvs/doc/qdpc.info, produced by
-makeinfo version 4.8 from /home/josborn/lqcd/src/qdp-cvs/doc/qdpc.texi.
+This is /Users/osborn/lqcd/src/qdp-cvs/doc/qdpc.info, produced by makeinfo version 4.13 from /Users/osborn/lqcd/src/qdp-cvs/doc/qdpc.texi.
 
 
 File: qdpc.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
@@ -621,7 +620,7 @@ File: qdpc.info,  Node: Naming Conventions for Data Parallel Functions,  Next: C
 4.3 Naming Conventions for Data Parallel Functions
 ==================================================
 
-Data parallel functions are described in detail in *Note Function
+Data parallel functions are described in detail in *note Function
 Details::.  Here we desribe the naming conventions.  Data parallel
 function names are constructed with a pattern that suggests their
 functionality.  Thus the function
@@ -641,7 +640,7 @@ name continues with a precision and color label as in
 `QDP_F3_V_eq_M_times_V' for single precision _SU(3)_.  Then comes a
 string of elements that mimics the algebraic expression.  The next
 character `V' abbreviates the type for the destination operand, in this
-case the argument `c'.  The abbreviations are listed in *Note
+case the argument `c'.  The abbreviations are listed in *note
 Datatypes::.  The next string `eq' specifies the assignment operator.
 In this case it is a straight replacement, but modifications are also
 supported, as described below.  Then comes the first rhs operand type
@@ -792,7 +791,7 @@ Example     `u = QDP_create_M();'
 
 In prototype specifications throughout this document the notation
 _Type_ specifies the generic or specific datatype name matching the
-abbreviation _T_ according to the table in *Note Datatypes::.
+abbreviation _T_ according to the table in *note Datatypes::.
 
 Destroying a lattice field
 --------------------------
@@ -1517,7 +1516,7 @@ functionality without consulting a list.
 
    In prototype specifications throughout this document the notation
 TYPE specifies the generic or specific datatype name matching the
-abbreviation T according to the table in *Note Datatypes::.  We also
+abbreviation T according to the table in *note Datatypes::.  We also
 introduce the shorthand
 
    `#define SUBSET QDP_Subset subset'
@@ -2327,50 +2326,50 @@ TYPE        `R, C, V, H, D, M, P'
 
 
 Tag Table:
-Node: Top139
-Node: Introduction637
-Node: Compilation with QDP2527
-Node: Header and macros2752
-Node: Libraries5117
-Node: Nonuniform color and precision7086
-Node: Datatypes8893
-Node: Generic Names9527
-Node: Specific Types for Color and Precision11403
-Node: Color and Precision Uniformity12694
-Node: Breaking Color and Precision Uniformity14038
-Node: QDP Functions14550
-Node: Entry and exit from QDP15232
-Node: Layout utilities18115
-Node: Naming Conventions for Data Parallel Functions22537
-Node: Constant Arguments24492
-Node: Color argument25108
-Node: Adjoint25918
-Node: Shift26288
-Node: Operations on arrays of fields26746
-Node: Creating and destroying lattice fields28030
-Node: Subsets29126
-Node: Defining a subset30202
-Node: Reductions on subsets31761
-Node: Shifts32662
-Node: Creating displacement shifts34591
-Node: Creating arbitrary permutations35247
-Node: Destroying a shift36563
-Node: I/O utilities36919
-Node: Opening and closing binary files37445
-Node: Reading and writing QDP fields39986
-Node: Reading and writing QLA arrays43514
-Node: String Handling45850
-Node: Temporary entry and exit from QDP47584
-Node: Optimization Calls52497
-Node: Function Details56521
-Node: Functions involving shifts57805
-Node: Fills and random numbers59088
-Node: Unary Operations60827
-Node: Type conversion and component extraction and insertion63103
-Node: Binary operations with constants71584
-Node: Binary operations with fields73255
-Node: Ternary operations with fields77462
-Node: Boolean operations78744
-Node: Reductions79262
+Node: Top0
+Node: Introduction638
+Node: Compilation with QDP2528
+Node: Header and macros2753
+Node: Libraries5118
+Node: Nonuniform color and precision7087
+Node: Datatypes8894
+Node: Generic Names9528
+Node: Specific Types for Color and Precision11404
+Node: Color and Precision Uniformity12695
+Node: Breaking Color and Precision Uniformity14039
+Node: QDP Functions14551
+Node: Entry and exit from QDP15233
+Node: Layout utilities18116
+Node: Naming Conventions for Data Parallel Functions22538
+Node: Constant Arguments24493
+Node: Color argument25109
+Node: Adjoint25919
+Node: Shift26289
+Node: Operations on arrays of fields26747
+Node: Creating and destroying lattice fields28031
+Node: Subsets29127
+Node: Defining a subset30203
+Node: Reductions on subsets31762
+Node: Shifts32663
+Node: Creating displacement shifts34592
+Node: Creating arbitrary permutations35248
+Node: Destroying a shift36564
+Node: I/O utilities36920
+Node: Opening and closing binary files37446
+Node: Reading and writing QDP fields39987
+Node: Reading and writing QLA arrays43515
+Node: String Handling45851
+Node: Temporary entry and exit from QDP47585
+Node: Optimization Calls52498
+Node: Function Details56522
+Node: Functions involving shifts57806
+Node: Fills and random numbers59089
+Node: Unary Operations60828
+Node: Type conversion and component extraction and insertion63104
+Node: Binary operations with constants71585
+Node: Binary operations with fields73256
+Node: Ternary operations with fields77463
+Node: Boolean operations78745
+Node: Reductions79263
 
 End Tag Table

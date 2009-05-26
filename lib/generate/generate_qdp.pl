@@ -82,7 +82,7 @@ if($making_header_file) {
 # Now define some variables
 
 my(%datatypes);
-my(@all_types, @shift_types, @float_types, @complex_types, @color_types);
+my(@all_types, @shift_types, @float_types, @complex_types, @color_types, @arith_types);
 my($thisdir);
 ($thisdir = $0) =~ s/[^\/]*$//;
 scalar eval `cat ${thisdir}datatypes.pl`;

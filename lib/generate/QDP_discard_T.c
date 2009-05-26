@@ -1,4 +1,4 @@
-!PCSHIFTTYPES
+!PCTYPES
 #include "qdp_$lib_internal.h"
 
 void

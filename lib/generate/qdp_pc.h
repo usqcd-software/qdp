@@ -37,20 +37,20 @@ void QDP$PC_insert_packed_$ABBR($QDPPCTYPE *dest, void *src, QDP_Subset subset);
 
 /* optimization */
 
-!PCSHIFTTYPES
+!PCTYPES
 void QDP$PC_discard_$ABBR($QDPPCTYPE *field);
 !END
 
 /* set by function */
 
-!PCSHIFTTYPES
+!PCTYPES
 void QDP$PC_$ABBR_eq_func($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int coords[]), QDP_Subset subset );
 void QDP$PC_$ABBR_eq_funci($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int index), QDP_Subset subset );
 !END
 
 /* shift */
 
-!PCSHIFTTYPES
+!PCTYPES
 void QDP$PC_$ABBR_eq_s$ABBR($QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
 void QDP$PC_$ABBR_veq_s$ABBR($QDPPCTYPE *dest[], $QDPPCTYPE *src[], QDP_Shift shift[], QDP_ShiftDir fb[], QDP_Subset subset, int nv);
 !END

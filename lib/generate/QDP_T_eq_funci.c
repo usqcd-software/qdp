@@ -1,4 +1,4 @@
-!PCSHIFTTYPES
+!PCARITHTYPES
 /*
  *  T = funci
  */

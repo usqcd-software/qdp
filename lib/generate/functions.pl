@@ -15,7 +15,7 @@ comment2("r = 0");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @shift_types ],
+   DEST_TYPES  => [ @arith_types ],
    EQ_OPS      => [ 'eq' ],
    FUNCS       => [ 'zero' ],
   )}});
@@ -25,7 +25,7 @@ comment2("r = a");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @shift_types ],
+   DEST_TYPES  => [ @arith_types ],
    EQ_OPS      => [ 'eq' ],
    SRC1_TYPES  => [ 'DEST' ],
    SRC1_SCALAR => 1,
@@ -148,7 +148,7 @@ comment2("r <eqop> a");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @shift_types ],
+   DEST_TYPES  => [ @arith_types ],
    EQ_OPS      => [ 'eqm','peq','meq','veqm','vpeq','vmeq' ],
    SRC1_TYPES  => [ 'DEST' ],
   )}});
@@ -686,7 +686,7 @@ comment2("r = a + b");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @shift_types ],
+   DEST_TYPES  => [ @arith_types ],
    EQ_OPS      => [ 'eq', 'veq' ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'plus' ],
@@ -698,7 +698,7 @@ comment2("r = a - b");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @shift_types ],
+   DEST_TYPES  => [ @arith_types ],
    EQ_OPS      => [ 'eq', 'veq' ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'minus' ],
@@ -891,7 +891,7 @@ comment2("r = a (if b is not 0)");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @shift_types ],
+   DEST_TYPES  => [ @arith_types ],
    EQ_OPS      => [ 'eq' ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'mask' ],
@@ -909,7 +909,7 @@ make_functions(%{{
    DEST_SCALAR => 1,
    EQ_OPS      => [ 'eq','veq' ],
    FUNCS       => [ 'norm2' ],
-   SRC2_TYPES  => [ @shift_types ],
+   SRC2_TYPES  => [ @arith_types ],
   )}});
 
 comment1("Global inner product");
@@ -981,7 +981,7 @@ make_functions(%{{
    DEST_MULTI  => 1,
    EQ_OPS      => [ 'eq','veq' ],
    FUNCS       => [ 'norm2' ],
-   SRC2_TYPES  => [ @shift_types ],
+   SRC2_TYPES  => [ @arith_types ],
   )}});
 
 comment1("Multisubset inner products");
