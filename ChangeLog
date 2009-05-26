@@ -1,3 +1,13 @@
+2009-05-26 14:05  osborn
+
+	* doc/qdpc.info, lib/generate/QDP_T_eq_func.c,
+	  lib/generate/QDP_T_eq_funci.c, lib/generate/QDP_T_eq_sT.c,
+	  lib/generate/QDP_T_veq_sT.c, lib/generate/QDP_discard_T.c,
+	  lib/generate/datatypes.pl, lib/generate/functions.pl,
+	  lib/generate/generate_qdp.pl, lib/generate/generate_types.pl,
+	  lib/generate/qdp_pc.h, lib/qdp_int/Makefile.am: fixed distcheck
+	  problems
+
 2009-05-25 12:56  osborn
 
 	* NEWS: updated NEWS
