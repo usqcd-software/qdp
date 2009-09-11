@@ -16,9 +16,11 @@ BUILT_SOURCES = qdp_types.h qdp_io.h
 nodist_include_HEADERS = $(BUILT_SOURCES)
 
 EXTRA_DIST = \
+	qdp_internal.h \
 	com_common.h \
 	com_specific.h \
 	com_common_internal.h \
+	qdp_layout_internal.h \
 	qdp_shift_internal.h \
 	qdp_subset_internal.h
 
