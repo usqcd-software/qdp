@@ -1,7 +1,5 @@
 #include <stdlib.h>
-#include "qdp_layout.h"
-#include "qdp_shift.h"
-#include "qdp_shift_internal.h"
+#include "qdp_internal.h"
 
 QDP_Shift *QDP_neighbor = NULL;
 
@@ -11,6 +9,7 @@ QDP_make_shifts()
   int i;
   int *disp;
 
+  TRACE;
   QDP_neighbor = (QDP_Shift *) malloc(QDP_ndim()*sizeof(QDP_Shift));
   disp = (int *) malloc(QDP_ndim()*sizeof(int));
   for(i=0; i<QDP_ndim(); ++i) disp[i] = 0;
@@ -20,6 +19,7 @@ QDP_make_shifts()
     disp[i] = 0;
   }
   free(disp);
+  TRACE;
 }
 
 QDP_Shift
@@ -27,12 +27,15 @@ QDP_create_shift(int disp[])
 {
   QDP_Shift shift;
 
+  TRACE;
   shift = (QDP_Shift) malloc(sizeof(struct QDP_Shift_struct));
   shift->func = NULL;
   shift->args = NULL;
   shift->argsize = 0;
   shift->disp = NULL;
+  TRACE;
   shift->gather = QDP_make_gather_shift( disp, QDP_WANT_INVERSE );
+  TRACE;
   return shift;
 }
 

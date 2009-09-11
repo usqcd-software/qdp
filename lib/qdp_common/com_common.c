@@ -63,10 +63,7 @@
 #include <string.h>
 #include <qmp.h>
 
-#include "qdp_layout.h"
-#include "com_common.h"
-#include "com_common_internal.h"
-#include "com_specific.h"
+#include "qdp_internal.h"
 
 #define NOWHERE -1	/* Not an index in array of fields */
 
@@ -270,6 +267,7 @@ make_gather_map_dir(gather_t *gt,
   int *xr,*xs;		/* coordinates */
   int *ls, *ns, **sl, **dl;
 
+  TRACE;
   xs = (int *) malloc(QDP_ndim()*sizeof(int));
   xr = (int *) malloc(QDP_ndim()*sizeof(int));
 
@@ -284,19 +282,25 @@ make_gather_map_dir(gather_t *gt,
     dl[i] = NULL;
   }
 
+  TRACE;
   gt->fromlist = (int *)malloc( QDP_sites_on_node*sizeof(int) );
   if( gt->fromlist==NULL ) {
     printf("make_gather: NODE %d: no room for fromlist array\n",QDP_this_node);
     QDP_comm_error();
   }
 
+  TRACE;
   /* RECEIVE LISTS */
   gt->nrecvs = 0;
   for(i=0; i<QDP_sites_on_node; ++i) {
+    TRACE;
     QDP_get_coords(xr, QDP_this_node, i);
+    TRACE;
     func(xr, xs, dir, args);
+    TRACE;
     j = QDP_node_number(xs);
-    if( j==QDP_mynode() ) {
+    TRACE;
+    if( j==QDP_this_node ) {
       gt->fromlist[i] = QDP_index(xs);
     } else {
       gt->fromlist[i] = NOWHERE;
@@ -312,6 +316,7 @@ make_gather_map_dir(gather_t *gt,
     }
   }
 
+  TRACE;
   if(gt->nrecvs) {
     gt->recvlist = (recvlist_t *) malloc(gt->nrecvs*sizeof(recvlist_t));
     j = 0;
@@ -328,6 +333,7 @@ make_gather_map_dir(gather_t *gt,
     gt->recvlist = NULL;
   }
 
+  TRACE;
   /* SEND LISTS: */
   for(i=0; i<QDP_numnodes(); ++i) {
     ls[i] = 0;
@@ -354,6 +360,7 @@ make_gather_map_dir(gather_t *gt,
     }
   }
 
+  TRACE;
   if(gt->nsends) {
     gt->sendlist = (sendlist_t *) malloc(gt->nsends*sizeof(sendlist_t));
     j = 0;
@@ -377,6 +384,7 @@ make_gather_map_dir(gather_t *gt,
   free(ls);
   free(xr);
   free(xs);
+  TRACE;
 }
 
 /*

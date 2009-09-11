@@ -2,15 +2,24 @@
 #define _QDP_SHIFT_INTERNAL_H
 
 #include "com_common.h"
+#include "qdp_shift.h"
 
-struct QDP_Shift_struct {
-  int *disp;
-  void (*func)(int sx[], int rx[], QDP_ShiftDir fb, void *args);
-  void *args;
-  int argsize;
-  QDP_gather *gather;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern void QDP_make_shifts(void);
+  struct QDP_Shift_struct {
+    int *disp;
+    void (*func)(int sx[], int rx[], QDP_ShiftDir fb, void *args);
+    void *args;
+    int argsize;
+    QDP_gather *gather;
+  };
+
+  extern void QDP_make_shifts(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

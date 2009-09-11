@@ -1120,11 +1120,12 @@ Reading only the record information
 It may be convenient to examine the record metadata first to decide
 whether to read or skip the accompanying binary data.
 
-Syntax      `int QDP_read_record_info(QDP_Reader *in, QDP_String
-            *record_xml);'
-Meaning     Reads the only the metadata from the next record in the
-            specified file.
-Example     `QDP_read_record_info(reader, record_xml); '
+Syntax      `int QDP_read_record_info(QDP_Reader *in, QIO_RecordInfo
+            *record_info, QDP_String *record_xml);'
+Meaning     Reads the record info and/or metadata from the next record
+            in the specified file.  Either of record_info or record_xml
+            can be NULL in which case it is ignored.
+Example     `QDP_read_record_info(reader, record_info, record_xml); '
 
    A subsequent call to `QDP_read_'T returns a copy of the same
 metadata along with the lattice field.
@@ -2357,19 +2358,19 @@ Node: Destroying a shift36564
 Node: I/O utilities36920
 Node: Opening and closing binary files37446
 Node: Reading and writing QDP fields39987
-Node: Reading and writing QLA arrays43515
-Node: String Handling45851
-Node: Temporary entry and exit from QDP47585
-Node: Optimization Calls52498
-Node: Function Details56522
-Node: Functions involving shifts57806
-Node: Fills and random numbers59089
-Node: Unary Operations60828
-Node: Type conversion and component extraction and insertion63104
-Node: Binary operations with constants71585
-Node: Binary operations with fields73256
-Node: Ternary operations with fields77463
-Node: Boolean operations78745
-Node: Reductions79263
+Node: Reading and writing QLA arrays43657
+Node: String Handling45993
+Node: Temporary entry and exit from QDP47727
+Node: Optimization Calls52640
+Node: Function Details56664
+Node: Functions involving shifts57948
+Node: Fills and random numbers59231
+Node: Unary Operations60970
+Node: Type conversion and component extraction and insertion63246
+Node: Binary operations with constants71727
+Node: Binary operations with fields73398
+Node: Ternary operations with fields77605
+Node: Boolean operations78887
+Node: Reductions79405
 
 End Tag Table

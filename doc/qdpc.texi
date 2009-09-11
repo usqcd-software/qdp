@@ -1194,9 +1194,9 @@ to read or skip the accompanying binary data.
 
 @funce{
 int QDP_read_record_info,
-QDP_Reader *in@comma{} QDP_String *record_xml,
-Reads the only the metadata from the next record in the specified file.,
-QDP_read_record_info(reader@comma{} record_xml);
+QDP_Reader *in@comma{} QIO_RecordInfo *record_info@comma{} QDP_String *record_xml,
+Reads the record info and/or metadata from the next record in the specified file.  Either of record_info or record_xml can be NULL in which case it is ignored.,
+QDP_read_record_info(reader@comma{} record_info@comma{} record_xml);
 }
 
 A subsequent call to @code{QDP_read_}@var{T} returns a copy of the same

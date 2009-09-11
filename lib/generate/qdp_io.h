@@ -22,7 +22,7 @@ int QDP_close_write(QDP_Writer *qw);
 QDP_Reader *QDP_open_read(QDP_String *md, char *filename);
 int QDP_close_read(QDP_Reader *qr);
 
-int QDP_read_record_info(QDP_Reader *qdpr, QDP_String *md);
+int QDP_read_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md);
 int QDP_next_record(QDP_Reader *qr);
 
 /* Read and write single field */

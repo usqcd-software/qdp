@@ -47,11 +47,15 @@ sub get_arg_lists($$) {
     ($op, $cp) = count_paren($arg);
     if($pl==0) {
       $pl += $op - $cp;
+#      if($pl) {
+#	$arg =~ s/\([^()]*$//;
+#      }
+#      $arg =~ s/\[.*\]//;
       if($pl) {
-	$arg =~ s/\([^()]*$//;
+	$arg = "func";
+      } else {
+	$arg =~ s/.*[^\w]([\w]+)[^\w]*$/$1/;
       }
-      $arg =~ s/\[.*\]//;
-      $arg =~ s/.*[^\w]([\w]+)[^\w]*$/$1/;
       if($arg ne "void") { push @list, "_".$arg; }
     } else {
       $pl += $op - $cp;
