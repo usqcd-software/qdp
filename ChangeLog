@@ -1,25 +1,3 @@
-2009-09-10 22:56  tag qdp1-9-0-a2
-
-2009-09-10 22:56  osborn
-
-	* include/Makefile.am: included new headers in Makefile.am
-
-2009-09-10 21:41  osborn
-
-	* include/: qdp_internal.h, qdp_layout_internal.h: added missing
-	  headers
-
-2009-09-10 21:40  osborn
-
-	* NEWS, aclocal.m4, configure, configure.ac, doc/qdpc.info,
-	  doc/qdpc.texi, include/qdp_layout.h, include/qdp_shift.h,
-	  include/qdp_shift_internal.h, include/qdp_subset.h,
-	  lib/generate/profile.pl, lib/generate/qdp_io.h,
-	  lib/qdp_common/com_common.c, lib/qdp_common/layout_hyper.c,
-	  lib/qdp_common/qdp_common.c, lib/qdp_common/qdp_layout.c,
-	  lib/qdp_common/qdp_shift.c: started adding support for
-	  multi-lattice
-
 2009-05-26 14:05  tag qdp1-9-0-a1
 
 2009-05-26 14:05  osborn
