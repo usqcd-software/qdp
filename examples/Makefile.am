@@ -11,9 +11,13 @@ FN_CFLAGS = -DQDP_Precision=1 -DQDP_Nc=10 $(ALL_CFLAGS)
 FN_LDADD = -lqdp_f -lqdp_fn -lqla_f -lqla_fn -lqla_d -lqla_dn -lqla_df -lqla_dfn $(ALL_LDADD)
 
 check_PROGRAMS = \
-  qdp_test_f3 qdpio_test_f3 plaquette_f3 sample_ks_f3 sample_wilson_f3 \
-  qdp_test_d3 qdpio_test_d3 plaquette_d3 \
-  qdp_test_fn qdpio_test_fn plaquette_fn
+ qdp_test_f3 qdp_test_d3 qdp_test_fn \
+ qdp_test_L_f3 qdp_test_L_d3 qdp_test_L_fn \
+ qdpio_test_f3 qdpio_test_d3 qdpio_test_fn \
+ qdpio_test_L_f3 qdpio_test_L_d3 qdpio_test_L_fn \
+ plaquette_f3 plaquette_d3 plaquette_fn \
+ sample_ks_f3 \
+ sample_wilson_f3
 
 CLEANFILES = *.bin
 
@@ -31,6 +35,18 @@ qdp_test_fn_SOURCES = qdp_test.c
 qdp_test_fn_CFLAGS = $(FN_CFLAGS)
 qdp_test_fn_LDADD = $(FN_LDADD)
 
+qdp_test_L_f3_SOURCES = qdp_test_L.c
+qdp_test_L_f3_CFLAGS = $(F3_CFLAGS)
+qdp_test_L_f3_LDADD = $(F3_LDADD)
+
+qdp_test_L_d3_SOURCES = qdp_test_L.c
+qdp_test_L_d3_CFLAGS = $(D3_CFLAGS)
+qdp_test_L_d3_LDADD = $(D3_LDADD)
+
+qdp_test_L_fn_SOURCES = qdp_test_L.c
+qdp_test_L_fn_CFLAGS = $(FN_CFLAGS)
+qdp_test_L_fn_LDADD = $(FN_LDADD)
+
 qdpio_test_f3_SOURCES = qdpio_test.c
 qdpio_test_f3_CFLAGS = $(F3_CFLAGS)
 qdpio_test_f3_LDADD = $(F3_LDADD)
@@ -42,6 +58,18 @@ qdpio_test_d3_LDADD = $(D3_LDADD)
 qdpio_test_fn_SOURCES = qdpio_test.c
 qdpio_test_fn_CFLAGS = $(FN_CFLAGS)
 qdpio_test_fn_LDADD = $(FN_LDADD)
+
+qdpio_test_L_f3_SOURCES = qdpio_test_L.c
+qdpio_test_L_f3_CFLAGS = $(F3_CFLAGS)
+qdpio_test_L_f3_LDADD = $(F3_LDADD)
+
+qdpio_test_L_d3_SOURCES = qdpio_test_L.c
+qdpio_test_L_d3_CFLAGS = $(D3_CFLAGS)
+qdpio_test_L_d3_LDADD = $(D3_LDADD)
+
+qdpio_test_L_fn_SOURCES = qdpio_test_L.c
+qdpio_test_L_fn_CFLAGS = $(FN_CFLAGS)
+qdpio_test_L_fn_LDADD = $(FN_LDADD)
 
 plaquette_f3_SOURCES = plaquette.c
 plaquette_f3_CFLAGS = $(F3_CFLAGS)

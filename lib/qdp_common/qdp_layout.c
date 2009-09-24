@@ -129,19 +129,13 @@ QDP_set_default_lattice(QDP_Lattice *lat)
   vol = lat->vol;
 
   TRACE;
-  QDP_make_shifts();
+  QDP_neighbor = QDP_neighbor_L(lat);
   TRACE;
-  QDP_make_subsets();
+  QDP_all = QDP_all_L(lat);
+  QDP_even_and_odd = QDP_even_and_odd_L(lat);
+  QDP_even = QDP_even_L(lat);
+  QDP_odd = QDP_odd_L(lat);
   TRACE;
-
-  /* also need to update
-     QDP_Subset *QDP_all_array = NULL;
-     QDP_Subset QDP_all;
-     QDP_Subset *QDP_even_and_odd = NULL;
-     QDP_Subset QDP_even;
-     QDP_Subset QDP_odd;
-     QDP_Shift *QDP_neighbor = NULL;
-  */
 }
 
 QDP_Lattice *
@@ -185,8 +179,8 @@ QDP_destroy_lattice(QDP_Lattice *lat)
       }
       QDP_free(lat->neighbor);
     }
-    QDP_free(lat->eo);
-    QDP_free(lat->all);
+    if(lat->all) QDP_destroy_subset(lat->all);
+    if(lat->eo) QDP_destroy_subset(lat->eo);
     QDP_free(lat->params);
     QDP_free(lat->dims);
     QDP_free(lat);

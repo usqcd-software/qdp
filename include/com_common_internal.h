@@ -23,6 +23,7 @@ typedef struct {
   recvlist_t *recvlist; /* list for receiving messages */
   sendlist_t *sendlist; /* list for sending messages */
   int nrecvs, nsends;   /* number of messages to receive and send */ 
+  //QDP_lattice *rlat, *slat;
 } gather_t;
 
 struct QDP_gather_struct {

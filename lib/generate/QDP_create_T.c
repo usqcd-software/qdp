@@ -7,6 +7,13 @@
 $QDPPCTYPE *
 QDP$PC_create_$ABBR($NCVOID)
 {
+  QDP_Lattice *lat = QDP_get_default_lattice();
+  return QDP$PC_create_$ABBR_L($NCVAR lat);
+}
+
+$QDPPCTYPE *
+QDP$PC_create_$ABBR_L($NC QDP_Lattice *lat)
+{
   typedef $QLAPCTYPE($NCVAR foo);
   $QDPPCTYPE *m;
 
@@ -23,6 +30,7 @@ QDP$PC_create_$ABBR($NCVOID)
     m->dc.shift_src = NULL;
     m->dc.shift_dest = NULL;
     m->dc.nc = NC;
+    m->dc.lat = lat;
   }
 
   return m;
@@ -35,4 +43,10 @@ QDP$PC_destroy_$ABBR($QDPPCTYPE *field)
   if(field->dc.qmpmem) QMP_free_memory(field->dc.qmpmem);
   free((void*)field->ptr);
   free(field);
+}
+
+QDP_Lattice *
+QDP$PC_get_lattice_$ABBR($QDPPCTYPE *field)
+{
+  return get_lat(field);
 }

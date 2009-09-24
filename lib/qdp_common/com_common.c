@@ -65,6 +65,23 @@
 
 #include "qdp_internal.h"
 
+// prevent use of default lattice variables/functions
+#define QDP_sites_on_node ERROR
+#define QDP_ndim() ERROR
+#define QDP_coord_size(i) ERROR
+#define QDP_latsize(ls) ERROR
+#define QDP_volume() ERROR
+#define QDP_numsites(node) ERROR
+#define QDP_node_number(x) ERROR
+#define QDP_index(x) ERROR
+#define QDP_get_coords(x, node, index) ERROR
+#define QDP_all ERROR
+#define QDP_even_and_odd ERROR
+#define QDP_even ERROR
+#define QDP_odd ERROR
+#define QDP_neighbor ERROR
+////////////////////////////////////
+
 #define NOWHERE -1	/* Not an index in array of fields */
 
 /* If we want to do our own checksums */
@@ -259,23 +276,24 @@ sort_sendlist(int *list, int *key, int n)
 }
 
 static void
-make_gather_map_dir(gather_t *gt,
-		    void (*func)(int[], int[], QDP_ShiftDir, void *),
-		    void *args, QDP_ShiftDir dir)
+make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
+		      void (*func)(QDP_Lattice *rlat, QDP_Lattice *slat,
+				   int rx[], int sx[], int *num,
+				   int idx, QDP_ShiftDir fb, void *args),
+		      void *args, QDP_ShiftDir dir)
 {
-  int i, j;
-  int *xr,*xs;		/* coordinates */
+  int *xr, *xs;		/* coordinates */
   int *ls, *ns, **sl, **dl;
 
   TRACE;
-  xs = (int *) malloc(QDP_ndim()*sizeof(int));
-  xr = (int *) malloc(QDP_ndim()*sizeof(int));
+  xs = (int *) malloc(QDP_ndim_L(slat)*sizeof(int));
+  xr = (int *) malloc(QDP_ndim_L(rlat)*sizeof(int));
 
   ls = (int *) malloc(QDP_numnodes()*sizeof(int));
   ns = (int *) malloc(QDP_numnodes()*sizeof(int));
   sl = (int **) malloc(QDP_numnodes()*sizeof(int *));
   dl = (int **) malloc(QDP_numnodes()*sizeof(int *));
-  for(i=0; i<QDP_numnodes(); ++i) {
+  for(int i=0; i<QDP_numnodes(); ++i) {
     ls[i] = 0;
     ns[i] = 0;
     sl[i] = NULL;
@@ -283,7 +301,7 @@ make_gather_map_dir(gather_t *gt,
   }
 
   TRACE;
-  gt->fromlist = (int *)malloc( QDP_sites_on_node*sizeof(int) );
+  gt->fromlist = (int *)malloc( QDP_sites_on_node_L(rlat)*sizeof(int) );
   if( gt->fromlist==NULL ) {
     printf("make_gather: NODE %d: no room for fromlist array\n",QDP_this_node);
     QDP_comm_error();
@@ -292,16 +310,17 @@ make_gather_map_dir(gather_t *gt,
   TRACE;
   /* RECEIVE LISTS */
   gt->nrecvs = 0;
-  for(i=0; i<QDP_sites_on_node; ++i) {
+  for(int i=0; i<QDP_sites_on_node_L(rlat); ++i) {
     TRACE;
-    QDP_get_coords(xr, QDP_this_node, i);
+    QDP_get_coords_L(rlat, xr, QDP_this_node, i);
     TRACE;
-    func(xr, xs, dir, args);
+    int num, idx = 0; // FIXME: get only the first source site for now
+    func(rlat, slat, xr, xs, &num, idx, dir, args);
     TRACE;
-    j = QDP_node_number(xs);
+    int j = QDP_node_number_L(slat, xs);
     TRACE;
     if( j==QDP_this_node ) {
-      gt->fromlist[i] = QDP_index(xs);
+      gt->fromlist[i] = QDP_index_L(slat, xs);
     } else {
       gt->fromlist[i] = NOWHERE;
       if(ns[j]==0) ++gt->nrecvs;
@@ -311,7 +330,7 @@ make_gather_map_dir(gather_t *gt,
 	dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
       }
       sl[j][ns[j]] = i;
-      dl[j][ns[j]] = QDP_index(xs);
+      dl[j][ns[j]] = QDP_index_L(slat, xs);
       ++ns[j];
     }
   }
@@ -319,8 +338,8 @@ make_gather_map_dir(gather_t *gt,
   TRACE;
   if(gt->nrecvs) {
     gt->recvlist = (recvlist_t *) malloc(gt->nrecvs*sizeof(recvlist_t));
-    j = 0;
-    for(i=0; i<QDP_numnodes(); ++i) {
+    int j = 0;
+    for(int i=0; i<QDP_numnodes(); ++i) {
       if(ns[i]) {
 	gt->recvlist[j].node = i;
 	gt->recvlist[j].nsites = ns[i];
@@ -335,7 +354,7 @@ make_gather_map_dir(gather_t *gt,
 
   TRACE;
   /* SEND LISTS: */
-  for(i=0; i<QDP_numnodes(); ++i) {
+  for(int i=0; i<QDP_numnodes(); ++i) {
     ls[i] = 0;
     ns[i] = 0;
     sl[i] = NULL;
@@ -343,10 +362,13 @@ make_gather_map_dir(gather_t *gt,
   }
   dir = (QDP_forward+QDP_backward) - dir;
   gt->nsends = 0;
-  for(i=0; i<QDP_sites_on_node; ++i) {
-    QDP_get_coords(xs, QDP_this_node, i);
-    func(xs, xr, dir, args);
-    j = QDP_node_number(xr);
+  for(int i=0; i<QDP_sites_on_node_L(slat); ++i) {
+    QDP_get_coords_L(slat, xs, QDP_this_node, i);
+    int num, idx = 0; // FIXME: get only the first dest site for now
+    // need to find lowest index for each node of all dest sites
+    // maybe store an recv buffer index for the recv lists
+    func(slat, rlat, xs, xr, &num, idx, dir, args);
+    int j = QDP_node_number_L(rlat, xr);
     if( j!=QDP_mynode() ) {
       if(ns[j]==0) ++gt->nsends;
       if(ns[j]>=ls[j]) {
@@ -355,7 +377,7 @@ make_gather_map_dir(gather_t *gt,
 	dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
       }
       sl[j][ns[j]] = i;
-      dl[j][ns[j]] = QDP_index(xr);
+      dl[j][ns[j]] = QDP_index_L(rlat, xr);
       ++ns[j];
     }
   }
@@ -363,8 +385,8 @@ make_gather_map_dir(gather_t *gt,
   TRACE;
   if(gt->nsends) {
     gt->sendlist = (sendlist_t *) malloc(gt->nsends*sizeof(sendlist_t));
-    j = 0;
-    for(i=0; i<QDP_numnodes(); ++i) {
+    int j = 0;
+    for(int i=0; i<QDP_numnodes(); ++i) {
       if(ns[i]) {
 	sort_sendlist(sl[i], dl[i], ns[i]);
 	gt->sendlist[j].node = i;
@@ -377,6 +399,8 @@ make_gather_map_dir(gather_t *gt,
   } else {
     gt->sendlist = NULL;
   }
+  //gt->rlat = rlat;
+  //gt->slat = slat;
 
   free((void*)dl);
   free((void*)sl);
@@ -391,9 +415,12 @@ make_gather_map_dir(gather_t *gt,
 **  add another gather to the list of tables
 */
 QDP_gather *
-QDP_make_gather_map(
-  void (*func)(int[], int[], QDP_ShiftDir, void *),
-                        /* function which defines sites to gather from */
+QDP_make_gather_map_L(
+  QDP_Lattice *rlat, QDP_Lattice *slat,
+  void (*func)(QDP_Lattice *rlat, QDP_Lattice *slat,
+	       int rx[], int sx[], int *num,
+	       int idx, QDP_ShiftDir fb, void *args),
+  /* function which defines sites to gather from */
   void *args,		/* list of arguments, to be passed to function */
   int argsize,
   int inverse)		/* OWN_INVERSE, WANT_INVERSE, or NO_INVERSE */
@@ -402,31 +429,39 @@ QDP_make_gather_map(
 
   g = new_gather();
 
-  make_gather_map_dir(&g->g[0], func, args, QDP_forward);
+  make_gather_map_dir_L(rlat, slat, &g->g[0], func, args, QDP_forward);
 
   if( inverse == QDP_NO_INVERSE ) {
     g->g[1].fromlist = NULL;
     g->g[1].recvlist = NULL;
     g->g[1].sendlist = NULL;
   } else {
-    make_gather_map_dir(&g->g[1], func, args, QDP_backward);
+    make_gather_map_dir_L(slat, rlat, &g->g[1], func, args, QDP_backward);
   }
 
   return(g);
 }
 
-static void
-disp_func(int x[], int t[], QDP_ShiftDir fb, void *args)
-{
-  int i;
+typedef struct {
+  int ndim;
+  int *sizes;
+  int *disp;
+} disp_func_dat;
 
+static void
+disp_func(QDP_Lattice *rlat, QDP_Lattice *slat, int x[], int t[],
+	  int *num, int idx, QDP_ShiftDir fb, void *args)
+{
+  disp_func_dat *dfd = (disp_func_dat *) args;
+
+  *num = 1;
   if(fb==QDP_forward) {
-    for(i=0; i<QDP_ndim(); ++i) {
-      t[i] = (QDP_coord_size(i)*abs(((int*)args)[i])+x[i]+((int*)args)[i])%QDP_coord_size(i);
+    for(int i=0; i<dfd->ndim; ++i) {
+      t[i] = ( dfd->sizes[i]*abs(dfd->disp[i]) + x[i] + dfd->disp[i] ) % dfd->sizes[i];
     }
   } else {
-    for(i=0; i<QDP_ndim(); ++i) {
-      t[i] = (QDP_coord_size(i)*abs(((int*)args)[i])+x[i]-((int*)args)[i])%QDP_coord_size(i);
+    for(int i=0; i<dfd->ndim; ++i) {
+      t[i] = ( dfd->sizes[i]*abs(dfd->disp[i]) + x[i] - dfd->disp[i] ) % dfd->sizes[i];
     }
   }
 }
@@ -435,12 +470,19 @@ disp_func(int x[], int t[], QDP_ShiftDir fb, void *args)
 **  add another gather to the list of tables from displacement
 */
 QDP_gather *
-QDP_make_gather_shift(
+QDP_make_gather_shift_L(
+  QDP_Lattice *lat,
   int disp[],		/* displacement */
   int inverse)		/* OWN_INVERSE, WANT_INVERSE, or NO_INVERSE */
 {
-  return QDP_make_gather_map(disp_func, (void *)disp, QDP_ndim()*sizeof(int),
-			     inverse);
+  disp_func_dat dfd;
+  dfd.ndim = QDP_ndim_L(lat);
+  int sizes[dfd.ndim];
+  QDP_latsize_L(lat, sizes);
+  dfd.sizes = sizes;
+  dfd.disp = disp;
+  return QDP_make_gather_map_L(lat, lat, disp_func, (void *)&dfd,
+			       sizeof(disp_func_dat), inverse);
 }
 
 
@@ -579,16 +621,17 @@ make_send_msg(send_msg_t ***ppsm, sendlist_t *sl, QDP_Subset subset,
   send_msg_t *sm;
   int n=0, *x;
   int c, i, len;
+  QDP_Lattice *rlat = QDP_subset_lattice(subset);
 
-  x = (int *) malloc(QDP_ndim()*sizeof(int));
+  x = (int *) malloc(QDP_ndim_L(rlat)*sizeof(int));
 
   len = 0;
   //fprintf(stderr, "nsites=%i\n", sl->nsites);
   for(i=0; i<sl->nsites; i++) {
     //fprintf(stderr, "i=%i node=%i dest=%i\n", i, sl->node, sl->destlist[i]);
-    QDP_get_coords(x, sl->node, sl->destlist[i]);
+    QDP_get_coords_L(rlat, x, sl->node, sl->destlist[i]);
     //fprintf(stderr, "%i %i %i %i\n", x[0], x[1], x[2], x[3]);
-    c = subset->func(x, subset->args);
+    c = subset->func(rlat, x, subset->args);
     //fprintf(stderr, "c=%i\n", c);
     if(c==subset->coloring) ++len;
   }
@@ -622,8 +665,8 @@ make_send_msg(send_msg_t ***ppsm, sendlist_t *sl, QDP_Subset subset,
     for(i=0; i<sl->nsites; i++) {
       //if((QDP_this_node==0)&&(subset==QDP_even))
       //printf("-- %i %i\n", i, sl->sitelist[i]);
-      QDP_get_coords(x, sl->node, sl->destlist[i]);
-      c = subset->func(x, subset->args);
+      QDP_get_coords_L(rlat, x, sl->node, sl->destlist[i]);
+      c = subset->func(rlat, x, subset->args);
       //if(QDP_this_node==0)
       //printf("                          %i %i %i %i %i\n", c,
       //x[0], x[1], x[2], x[3]);

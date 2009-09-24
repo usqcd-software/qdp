@@ -33,11 +33,26 @@
    QDP_get_coords()    gives lattice coords from node & index
 */
 
-//#define MORTON
-
 #include <stdlib.h>
 #include <stdio.h>
 #include "qdp_internal.h"
+
+// prevent use of default lattice variables/functions
+#define QDP_sites_on_node ERROR
+#define QDP_ndim() ERROR
+#define QDP_coord_size(i) ERROR
+#define QDP_latsize(ls) ERROR
+#define QDP_volume() ERROR
+#define QDP_numsites(node) ERROR
+#define QDP_node_number(x) ERROR
+#define QDP_index(x) ERROR
+#define QDP_get_coords(x, node, index) ERROR
+#define QDP_all ERROR
+#define QDP_even_and_odd ERROR
+#define QDP_even ERROR
+#define QDP_odd ERROR
+#define QDP_neighbor ERROR
+////////////////////////////////////
 
 typedef struct {
   int *squaresize;   /* dimensions of hypercubes */
@@ -193,9 +208,11 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
 
   /* setup QMP logical topology */
   // *** fix to avoid QMP topology ***
+#if 0
   if(!QMP_logical_topology_is_declared()) {
     QMP_declare_logical_topology(nsquares, nd);
   }
+#endif
 
   int numsites = 1;
   for(int i=0; i<nd; ++i) {
@@ -244,7 +261,8 @@ layout_hyper_eo_node_number(QDP_Lattice *lat, const int x[])
   for(i=0; i<p->ndim; i++) {
     m[i] = x[i]/p->squaresize[i];
   }
-  return QMP_get_node_number_from(m);
+  //return QMP_get_node_number_from(m);
+  return get_lex_i(m, p->nsquares, p->ndim);
 }
 
 static int
@@ -272,10 +290,11 @@ layout_hyper_eo_get_coords(QDP_Lattice *lat, int x[], int node, int index)
   TRACE;
   params *p = (params *) QDP_get_lattice_params(lat);
   int i, s, l;
-  int *m, sx[p->ndim];
+  int m[p->ndim], sx[p->ndim];
 
   TRACE;
-  m = QMP_get_logical_coordinates_from(node);
+  //m = QMP_get_logical_coordinates_from(node);
+  get_lex_x(m, node, p->nsquares, p->ndim);
 
   TRACE;
   s = 0;
@@ -283,7 +302,7 @@ layout_hyper_eo_get_coords(QDP_Lattice *lat, int x[], int node, int index)
     x[i] = m[i] * p->squaresize[i];
     s += x[i];
   }
-  free(m);
+  //free(m);
 
   TRACE;
   if(s%2==0) {
@@ -297,7 +316,7 @@ layout_hyper_eo_get_coords(QDP_Lattice *lat, int x[], int node, int index)
   for(i=0; i<p->ndim; ++i) x[i] += sx[i];
 
   TRACE;
-  if(QDP_index(x)!=index) {
+  if(QDP_index_L(lat, x)!=index) {
     int k;
     if(s%2==0) k = p->l2ie[l];
     else k = p->l2io[l];

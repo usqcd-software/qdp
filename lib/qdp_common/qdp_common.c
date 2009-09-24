@@ -5,10 +5,7 @@
 #include <sys/times.h>
 #include <unistd.h>
 #include "qdp_common_internal.h"
-#include "qdp_layout.h"
-#include "qdp_string.h"
-#include "com_common.h"
-#include "com_specific.h"
+#include "qdp_internal.h"
 
 /*  Exported Globals  */
 
@@ -177,15 +174,23 @@ QDP_set_mem_flags(int flags)
 
 /* IO routines */
 
+static QDP_Lattice *iolat = NULL;
+
+void
+QDP_set_iolat(QDP_Lattice *lat)
+{
+  iolat = lat;
+}
+
+#if 0
 void
 QDP_IO_get_site(char *buf, const int coords[], void *field)
 {
-  if( QDP_node_number(coords) != QDP_this_node ) {
+  if( QDP_node_number_L(iolat, coords) != QDP_this_node ) {
     buf[0] = '\0';
   } else {
     struct QDP_IO_field *qf = field;
-    int i;
-    i = QDP_index(coords);
+    int i = QDP_index_L(iolat, coords);
     memcpy(buf, qf->data+i*qf->size, qf->size);
   }
 }
@@ -193,16 +198,47 @@ QDP_IO_get_site(char *buf, const int coords[], void *field)
 void
 QDP_IO_put_site(char *buf, const int coords[], void *field)
 {
-  if( QDP_node_number(coords) == QDP_this_node ) {
+  if( QDP_node_number_L(iolat, coords) == QDP_this_node ) {
     struct QDP_IO_field *qf = field;
-    int i;
-    i = QDP_index(coords);
+    int i = QDP_index_L(iolat, coords);
     memcpy(qf->data+i*qf->size, buf, qf->size);
   }
+}
+#endif
+
+static int
+node_number_io(const int x[])
+{
+  return QDP_node_number_L(iolat, x);
+}
+
+static int
+index_io(const int x[])
+{
+  return QDP_index_L(iolat, x);
+}
+
+static void
+get_coords_io(int x[], int node, int index)
+{
+  QDP_get_coords_L(iolat, x, node, index);
+}
+
+static int
+numsites_io(int node)
+{
+  return QDP_numsites_L(iolat, node);
 }
 
 QDP_Reader *
 QDP_open_read(QDP_String *md, char *filename)
+{
+  QDP_Lattice *lat = QDP_get_default_lattice();
+  return QDP_open_read_L(lat, md, filename);
+}
+
+QDP_Reader *
+QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
 {
   QDP_Reader *qdpr;
   QIO_Layout *layout;
@@ -217,15 +253,18 @@ QDP_open_read(QDP_String *md, char *filename)
     return NULL;
   }
 
-  layout->node_number = QDP_node_number;
-  layout->node_index = QDP_index;
-  layout->get_coords = QDP_get_coords;
-  layout->num_sites = QDP_numsites;
-  layout->latdim = QDP_ndim();
+  qdpr->lat = lat;
+  iolat = qdpr->lat;
+
+  layout->node_number = node_number_io;
+  layout->node_index = index_io;
+  layout->get_coords = get_coords_io;
+  layout->num_sites = numsites_io;
+  layout->latdim = QDP_ndim_L(lat);
   layout->latsize = (int *)malloc(layout->latdim*sizeof(int));
-  QDP_latsize(layout->latsize);
-  layout->volume = QDP_volume();
-  layout->sites_on_node = QDP_sites_on_node;
+  QDP_latsize_L(lat, layout->latsize);
+  layout->volume = QDP_volume_L(lat);
+  layout->sites_on_node = QDP_sites_on_node_L(lat);
   layout->this_node = QDP_this_node;
   layout->number_of_nodes = QDP_numnodes();
 
@@ -248,6 +287,13 @@ QDP_open_read(QDP_String *md, char *filename)
 QDP_Writer *
 QDP_open_write(QDP_String *md, char *filename, int volfmt)
 {
+  QDP_Lattice *lat = QDP_get_default_lattice();
+  return QDP_open_write_L(lat, md, filename, volfmt);
+}
+
+QDP_Writer *
+QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
+{
   QDP_Writer *qdpw;
   QIO_Layout *layout;
   QIO_String *qio_md;
@@ -261,15 +307,18 @@ QDP_open_write(QDP_String *md, char *filename, int volfmt)
     return NULL;
   }
 
-  layout->node_number = QDP_node_number;
-  layout->node_index = QDP_index;
-  layout->get_coords = QDP_get_coords;
-  layout->num_sites = QDP_numsites;
-  layout->latdim = QDP_ndim();
+  qdpw->lat = lat;
+  iolat = qdpw->lat;
+
+  layout->node_number = node_number_io;
+  layout->node_index = index_io;
+  layout->get_coords = get_coords_io;
+  layout->num_sites = numsites_io;
+  layout->latdim = QDP_ndim_L(lat);
   layout->latsize = (int *)malloc(layout->latdim*sizeof(int));
-  QDP_latsize(layout->latsize);
-  layout->volume = QDP_volume();
-  layout->sites_on_node = QDP_sites_on_node;
+  QDP_latsize_L(lat, layout->latsize);
+  layout->volume = QDP_volume_L(lat);
+  layout->sites_on_node = QDP_sites_on_node_L(lat);
   layout->this_node = QDP_this_node;
   layout->number_of_nodes = QDP_numnodes();
 
@@ -313,6 +362,8 @@ QDP_read_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md)
   int status;
   QIO_RecordInfo ri0, *record_info;
   QIO_String *qio_md = QIO_string_create(0);
+
+  iolat = qdpr->lat;
   record_info = &ri0;
   if(ri) record_info = ri;
   status = QIO_read_record_info(qdpr->qior, record_info, qio_md);
@@ -328,6 +379,8 @@ int
 QDP_next_record(QDP_Reader *qdpr)
 {
   int status;
+
+  iolat = qdpr->lat;
   status = QIO_next_record(qdpr->qior);
   return status;
 }
@@ -342,6 +395,7 @@ QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
   QIO_String *qio_md = QIO_string_create(0);
   int status;
 
+  iolat = qdpr->lat;
   rec_info = QIO_create_record_info(0, 0, 0, 0, "", "", 0, 0, 0, 0);
 
   status = QIO_read(qdpr->qior, rec_info, qio_md, put, qf->size*count,
@@ -368,6 +422,7 @@ QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
   int status;
   QIO_String *qio_md;
 
+  iolat = qdpw->lat;
   qio_md = QIO_string_create();
   QIO_string_set(qio_md, QDP_string_ptr(md));
 

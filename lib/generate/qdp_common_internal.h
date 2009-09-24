@@ -18,10 +18,12 @@ extern "C" {
 
 struct QDP_Reader_struct {
   QIO_Reader *qior;
+  QDP_Lattice *lat;
 };
 
 struct QDP_Writer_struct {
   QIO_Writer *qiow;
+  QDP_Lattice *lat;
 };
 
 struct QDP_IO_field {
@@ -71,7 +73,9 @@ typedef struct QDP_data_common_t {
   QDP_shift_src_t *shift_src;
   QDP_shift_dest_t *shift_dest;
   int nc;
+  QDP_Lattice *lat;
 } QDP_data_common_t;
+#define get_lat(x) ((x)->dc.lat)
 
 !ALLTYPES
 struct $QDPPCTYPE_struct {

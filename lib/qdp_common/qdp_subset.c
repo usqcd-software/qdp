@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "qdp_layout.h"
-#include "qdp_subset.h"
-#include "qdp_subset_internal.h"
-#include "qdp_shift.h"
+#include "qdp_internal.h"
 
 QDP_Subset *QDP_all_array = NULL;
 QDP_Subset QDP_all;
@@ -11,44 +8,86 @@ QDP_Subset *QDP_even_and_odd = NULL;
 QDP_Subset QDP_even;
 QDP_Subset QDP_odd;
 
-
 static int
-QDP_all_func(int x[], void *args)
+QDP_all_func(QDP_Lattice *lat, int x[], void *args)
 {
   return 0;
 }
 
 static int
-QDP_even_and_odd_func(int x[], void *args)
+QDP_even_and_odd_func(QDP_Lattice *lat, int x[], void *args)
 {
-  int i, r=0, nd=QDP_ndim();
+  int i, r=0, nd=QDP_ndim_L(lat);
   for(i=0; i<nd; ++i) r += x[i];
   return r&1;
 }
-
-void
-QDP_make_subsets(void)
-{
-  QDP_all_array = QDP_create_subset(QDP_all_func, NULL, 0, 1);
-  QDP_all = QDP_all_array[0];
-
-  QDP_even_and_odd = QDP_create_subset(QDP_even_and_odd_func, NULL, 0, 2);
-  QDP_even = QDP_even_and_odd[0];
-  QDP_odd = QDP_even_and_odd[1];
-}
-
 
 /*
  *  Subset functions
  */
 
+QDP_Subset
+QDP_all_L(QDP_Lattice *lat)
+{
+  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 1);
+  return lat->all[0];
+}
+
+QDP_Subset *
+QDP_even_and_odd_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+  return lat->eo;
+}
+
+QDP_Subset
+QDP_even_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+  return lat->eo[0];
+}
+
+QDP_Subset
+QDP_odd_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+  return lat->eo[1];
+}
+
+typedef struct {
+  int (*func)(int x[], void *args);
+  char args[];
+} func_dat;
+
+static int
+func_L(QDP_Lattice *lat, int x[], void *args)
+{
+  func_dat *fd = (func_dat *) args;
+  return fd->func(x, fd->args);
+}
+
 QDP_Subset *
 QDP_create_subset(int (*func)(int x[], void *args), void *args, int argsize, int n)
+{
+  QDP_Lattice *lat = QDP_get_default_lattice();
+  int fdsize = sizeof(func_dat) + argsize;
+  func_dat *fd = (func_dat *) malloc(fdsize);
+  fd->func = func;
+  memcpy(fd->args, args, argsize);
+  QDP_Subset *ret = QDP_create_subset_L(lat, func_L, fd, fdsize, n);
+  free(fd);
+  return ret;
+}
+
+QDP_Subset *
+QDP_create_subset_L(QDP_Lattice *lat,
+		    int (*func)(QDP_Lattice *lat, int x[], void *args),
+		    void *args, int argsize, int n)
 {
   int i, c, *x;
   QDP_Subset obj, *ptr;
 
-  x = (int *) malloc(QDP_ndim()*sizeof(int));
+  x = (int *) malloc(QDP_ndim_L(lat)*sizeof(int));
 
   obj = (QDP_Subset) malloc(n*sizeof(struct QDP_Subset_struct));
   ptr = (QDP_Subset *) malloc(n*sizeof(QDP_Subset));
@@ -68,11 +107,12 @@ QDP_create_subset(int (*func)(int x[], void *args), void *args, int argsize, int
     obj[i].offset = 0;
     obj[i].len = 0;
     obj[i].indexed = 0;
+    obj[i].lattice = lat;
   }
 
-  for(i=0; i<QDP_sites_on_node; ++i) {
-    QDP_get_coords(x, QDP_this_node, i);
-    c = func(x, args);
+  for(i=0; i<QDP_sites_on_node_L(lat); ++i) {
+    QDP_get_coords_L(lat, x, QDP_this_node, i);
+    c = func(lat, x, args);
     if((c>=0)&&(c<n)) {
       if(obj[c].len==0) {
 	obj[c].offset = i;
@@ -94,9 +134,9 @@ QDP_create_subset(int (*func)(int x[], void *args), void *args, int argsize, int
     }
   }
 
-  for(i=0; i<QDP_sites_on_node; ++i) {
-    QDP_get_coords(x, QDP_this_node, i);
-    c = func(x, args);
+  for(i=0; i<QDP_sites_on_node_L(lat); ++i) {
+    QDP_get_coords_L(lat, x, QDP_this_node, i);
+    c = func(lat, x, args);
     if((c>=0)&&(c<n)) {
       if(obj[c].indexed) {
 	obj[c].index[obj[c].len] = i;
@@ -130,4 +170,10 @@ int
 QDP_subset_len(QDP_Subset s)
 {
   return s->len;
+}
+
+QDP_Lattice *
+QDP_subset_lattice(QDP_Subset s)
+{
+  return s->lattice;
 }

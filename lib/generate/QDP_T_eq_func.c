@@ -16,20 +16,20 @@ QDP$PC_$ABBR_eq_func($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest))
 
   int i, j, *coords;
 
-  coords = (int *)malloc(QDP_ndim()*sizeof(int));
+  coords = (int *)malloc(QDP_ndim_L(get_lat(dest))*sizeof(int));
 
   QDP_prepare_dest(&dest->dc);
 
   if(subset->indexed) {
     for(i=0; i<subset->len; ++i) {
       j = subset->index[i];
-      QDP_get_coords(coords, QDP_this_node, j);
+      QDP_get_coords_L(get_lat(dest), coords, QDP_this_node, j);
       func($NCVAR QDP_offset_data(dest,j), coords );
     }
   } else {
     j = subset->offset + subset->len;
     for(i=subset->offset; i<j; ++i) {
-      QDP_get_coords(coords, QDP_this_node, i);
+      QDP_get_coords_L(get_lat(dest), coords, QDP_this_node, i);
       func($NCVAR QDP_offset_data(dest,i), coords );
     }
   }

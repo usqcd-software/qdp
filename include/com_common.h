@@ -20,18 +20,22 @@ extern void QDP_finalize_comm(void);
 extern void QDP_abort_comm(void);
 extern int QDP_comm_initialized(void);
 
-extern QDP_gather *QDP_make_gather_map(
-  void (*func)(int[], int[], QDP_ShiftDir, void *),
-         		/* function which defines sites to gather from */
+extern QDP_gather *QDP_make_gather_map_L(
+  QDP_Lattice *rlat, QDP_Lattice *slat,
+  void (*func)(QDP_Lattice *rlat, QDP_Lattice *slat,
+	       int rx[], int sx[], int *num,
+	       int idx, QDP_ShiftDir fb, void *args),
+  /* function which defines sites to gather from */
   void *args,		/* list of arguments, to be passed to function */
   int argsize,
   int inverse);		/* OWN_INVERSE, WANT_INVERSE, or NO_INVERSE */
 
-extern QDP_gather *QDP_make_gather_shift(
-  int disp[],           /* shift displacement */
+extern QDP_gather *QDP_make_gather_shift_L(
+  QDP_Lattice *lat,
+  int disp[],		/* displacement */
   int inverse);		/* OWN_INVERSE, WANT_INVERSE, or NO_INVERSE */
 
-extern QDP_msg_tag * QDP_declare_strided_gather(
+extern QDP_msg_tag *QDP_declare_strided_gather(
   char *src,            /* source array */
   int stride,           /* bytes between fields in source buffer */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/

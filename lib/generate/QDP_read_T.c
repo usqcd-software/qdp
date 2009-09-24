@@ -77,6 +77,7 @@ QDP$PC_vread_$ABBR(QDP_Reader *qdpr, QDP_String *md, $QDPPCTYPE *field[],
   qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
+  QDP_set_iolat(qdpr->lat);
   cmp_info = QIO_create_record_info(QIO_FIELD, 0, 0, 0,
 				    "$QDPPCTYPE", "$P", qf.nc,
 				    qf.ns, qf.size, nv);
@@ -115,6 +116,7 @@ QDP$PC_vread_$QLAABBR($NC QDP_Reader *qdpr, QDP_String *md,
   qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
   qf.word_size = WS;
 
+  QDP_set_iolat(qdpr->lat);
   cmp_info = QIO_create_record_info(QIO_GLOBAL, 0, 0, 0,
 				    "$QDPPCTYPE", "$P", qf.nc,
 				    qf.ns, qf.size, n);

@@ -10,7 +10,8 @@ extern "C" {
 
   struct QDP_Shift_struct {
     int *disp;
-    void (*func)(int sx[], int rx[], QDP_ShiftDir fb, void *args);
+    void (*func)(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
+		 int *num, int idx, QDP_ShiftDir fb, void *args);
     void *args;
     int argsize;
     QDP_gather *gather;

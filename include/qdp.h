@@ -53,6 +53,7 @@
 #include <qdp_types.h>
 
 /* Headers we always define */
+#include <qdp_common.h>
 #include <qdp_io.h>
 #include <qdp_int.h>
 #include <qdp_f.h>

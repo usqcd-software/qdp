@@ -1,11 +1,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include "qdp_common_internal.h"
-#include "qdp_layout.h"
-#include "qdp_shift.h"
-#include "qdp_shift_internal.h"
-#include "com_common.h"
-#include "com_common_internal.h"
+#include "qdp_internal.h"
+
+// prevent use of default lattice variables/functions
+#define QDP_sites_on_node ERROR
+#define QDP_ndim() ERROR
+#define QDP_coord_size(i) ERROR
+#define QDP_latsize(ls) ERROR
+#define QDP_volume() ERROR
+#define QDP_numsites(node) ERROR
+#define QDP_node_number(x) ERROR
+#define QDP_index(x) ERROR
+#define QDP_get_coords(x, node, index) ERROR
+#define QDP_all ERROR
+#define QDP_even_and_odd ERROR
+#define QDP_even ERROR
+#define QDP_odd ERROR
+#define QDP_neighbor ERROR
+////////////////////////////////////
 
 //#define DEBUG
 
@@ -156,7 +169,7 @@ QDP_copy_ptr_to_data(QDP_data_common_t *dc)
   ptr = *(dc->ptr);
   if(ptr!=NULL) {
     int i;
-    for(i=0; i<QDP_sites_on_node; i++) {
+    for(i=0; i<QDP_sites_on_node_L(dc->lat); i++) {
       if(ptr[i]) memcpy(&data[i*dc->size], ptr[i], dc->size);
     }
   }
@@ -246,7 +259,7 @@ QDP_switch_ptr_to_data(QDP_data_common_t *dc)
   ENTER;
   if(*(dc->data)==NULL) {
     //*(dc->data) = (char *) malloc(QDP_sites_on_node*dc->size);
-    dc->qmpmem = QMP_allocate_aligned_memory( QDP_sites_on_node*dc->size,
+    dc->qmpmem = QMP_allocate_aligned_memory( QDP_sites_on_node_L(dc->lat)*dc->size,
 					      QDP_mem_align, QDP_mem_flags );
     if(!dc->qmpmem) {
       QMP_error("QDP error: can't allocate memory\n");
@@ -455,20 +468,20 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
 
   /* prepare shift destination */
   if(*(dest_dc->ptr)==NULL) {
-    *(dest_dc->ptr) = (char **)malloc(QDP_sites_on_node*sizeof(char *));
+    *(dest_dc->ptr) = (char **)malloc(QDP_sites_on_node_L(dest_dc->lat)*sizeof(char *));
     if(*(dest_dc->data)!=NULL) { 
       char *data, **ptr;
       int i;
       data = *(dest_dc->data);
       ptr = *(dest_dc->ptr);
-      for(i=0; i<QDP_sites_on_node; ++i) {
+      for(i=0; i<QDP_sites_on_node_L(dest_dc->lat); ++i) {
 	ptr[i] = data + i*dest_dc->size;
       }
     } else {
       char **ptr;
       int i;
       ptr = *(dest_dc->ptr);
-      for(i=0; i<QDP_sites_on_node; ++i) {
+      for(i=0; i<QDP_sites_on_node_L(dest_dc->lat); ++i) {
 	ptr[i] = NULL;
       }
     }

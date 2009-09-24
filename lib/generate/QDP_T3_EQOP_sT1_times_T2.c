@@ -20,7 +20,7 @@ QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_$ABBR2$ADJ2(
   char **temp1;
   QDP_msg_tag *mtag;
 
-  temp1 = (char **)malloc(QDP_sites_on_node*sizeof(char *));
+  temp1 = (char **)malloc(QDP_sites_on_node_L(get_lat(dest))*sizeof(char *));
 
   if((fb!=QDP_forward)&&(fb!=QDP_backward)) {
     fprintf(stderr,"QDP: error: bad fb in QDP$PC_$ABBR_eq_s$ABBR\n");
