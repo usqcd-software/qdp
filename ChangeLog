@@ -1,3 +1,23 @@
+2009-09-24 18:07  osborn
+
+	* NEWS, aclocal.m4, configure, configure.ac, examples/Makefile.am,
+	  examples/qdp_test_L.c, examples/qdpio_test_L.c,
+	  include/com_common.h, include/com_common_internal.h,
+	  include/qdp.h, include/qdp_shift.h, include/qdp_shift_internal.h,
+	  include/qdp_subset.h, include/qdp_subset_internal.h,
+	  lib/generate/QDP_T3_EQOP_T1_times_sT2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_T2.c,
+	  lib/generate/QDP_T3_EQOP_sT1_times_sT2.c,
+	  lib/generate/QDP_T_eq_func.c, lib/generate/QDP_create_T.c,
+	  lib/generate/QDP_read_T.c, lib/generate/QDP_write_T.c,
+	  lib/generate/qdp_common_internal.h, lib/generate/qdp_io.h,
+	  lib/generate/qdp_pc.h, lib/generate/qdp_types.h,
+	  lib/qdp_common/com_common.c, lib/qdp_common/layout_hyper.c,
+	  lib/qdp_common/qdp_common.c, lib/qdp_common/qdp_internal.c,
+	  lib/qdp_common/qdp_layout.c, lib/qdp_common/qdp_shift.c,
+	  lib/qdp_common/qdp_subset.c: Preliminary multi-lattice support
+	  done.
+
 2009-09-10 22:56  tag qdp1-9-0-a2
 
 2009-09-10 22:56  osborn
