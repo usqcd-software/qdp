@@ -1,3 +1,21 @@
+2009-11-20 14:34  tag qdp1-9-0-a4
+
+2009-11-20 14:34  osborn
+
+	* NEWS, aclocal.m4, configure, configure.ac,
+	  include/qdp_config.h.in, include/qdp_layout.h,
+	  include/qdp_string.h, lib/make_qdp_dirs,
+	  lib/generate/QDP_expose_T.c, lib/generate/functions.pl,
+	  lib/generate/generate_qdp.pl, lib/generate/qdp_common_internal.h,
+	  lib/generate/qdp_io.h, lib/qdp_common/qdp_common.c,
+	  lib/qdp_d/Makefile.am, lib/qdp_d2/Makefile.am,
+	  lib/qdp_d3/Makefile.am, lib/qdp_dn/Makefile.am,
+	  lib/qdp_f/Makefile.am, lib/qdp_f2/Makefile.am,
+	  lib/qdp_f3/Makefile.am, lib/qdp_fn/Makefile.am,
+	  lib/qdp_int/Makefile.am: Fixed some code generation bugs.  Added
+	  "exposure counting" to exposed fields.  Fixed bug in parallel
+	  make.
+
 2009-09-24 18:07  tag qdp1-9-0-a3
 
 2009-09-24 18:07  osborn
