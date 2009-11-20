@@ -119,6 +119,8 @@ extern int QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
 extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
 	     void (*get)(char *buf, size_t index, int count, void *qfin),
 	     struct QDP_IO_field *qf, int count, QIO_RecordInfo *rec_info);
+extern void QDP_set_iolat(QDP_Lattice *lat);
+
 
 #define QDPIO_nc_S(x) 0
 #define QDPIO_ns_S(x) 0

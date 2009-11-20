@@ -148,8 +148,8 @@ sub qla_ext_type($) {
   my($dt) = @_;
   my($type) = $dt->{TYPE};
   my($tpc) = $dt->{PC};
-  $tpc =~ s/^_F/_D/ ||
-  $tpc =~ s/^_D/_Q/;
+  $tpc =~ s/^_F/_D/;# ||
+  #$tpc =~ s/^_D/_Q/;
   my($name);
   $name = "QLA".$tpc."_".$type;
   return $name;
@@ -211,8 +211,10 @@ sub global_sum($$) {
     ($epc = $tpc) =~ s/^_F/_D/;
     ($cpc = $tpc) =~ s/^_F/_FD/;
   } else {
-    ($epc = $tpc) =~ s/^_D/_Q/;
-    ($cpc = $tpc) =~ s/^_D/_DQ/;
+    $epc = $tpc;
+    $cpc = $tpc;
+    #($epc = $tpc) =~ s/^_D/_Q/;
+    #($cpc = $tpc) =~ s/^_D/_DQ/;
   }
   my($nc,$ncn) = ('','');
   my $st = "QLA".$epc."_".$dest->{TYPE};
@@ -308,8 +310,8 @@ sub qla_name($$$$$) {
   my($dest, $op, $src1, $func, $src2) = @_;
   my($tpc) = $pc;
   if($dest->{EXTENDED}) {
-    $tpc =~ s/^_F/_DF/ ||
-      $tpc =~ s/^_D/_QD/;
+    $tpc =~ s/^_F/_DF/;# ||
+    #$tpc =~ s/^_D/_QD/;
   }
   my($qla1, $qla2, $qla3, $qla4);
   $qla1 = "QLA".$tpc.$dest->{ABBR}."_";
@@ -329,11 +331,11 @@ sub get_nc_def($$$) {
     for my $tt (@_) {
       if($tt->{TYPE} && !$tt->{SCALAR} && !$datatypes{$tt->{TYPE}}{NO_COLOR}) { $t = $tt; last; }
     }
-    if($t->{VECT}) {
-      $s = "  int nc = QDP_get_nc(&".$t->{VAR}."[i]);\n";
-    } else {
+    #if($t->{VECT}) {
+    #  $s = "  int nc = QDP_get_nc(&".$t->{VAR}."[i]);\n";
+    #} else {
       $s = "  int nc = QDP_get_nc(".$t->{VAR}.");\n";
-    }
+    #}
     my ($d) = @_;
     if($d->{SCALAR} && !$datatypes{$d->{TYPE}}{NO_COLOR}) {
       $s .= "  ".type_name($d)."(nc, (*dest)) = destv;\n";

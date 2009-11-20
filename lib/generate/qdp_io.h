@@ -24,7 +24,8 @@ extern "C" {
   QDP_Reader *QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename);
   int QDP_close_read(QDP_Reader *qr);
 
-  int QDP_read_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md);
+  int QDP_read_record_info(QDP_Reader *qr, QDP_String *md);
+  int QDP_read_qio_record_info(QDP_Reader *qr, QIO_RecordInfo *ri, QDP_String *md);
   int QDP_next_record(QDP_Reader *qr);
 
   /* Read and write single field */

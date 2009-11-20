@@ -4,7 +4,7 @@ void *
 QDP$PC_expose_$ABBR($QDPPCTYPE *dest)
 {
   QDP_prepare_dest(&dest->dc);
-  dest->dc.exposed = 1;
+  dest->dc.exposed++;
   return dest->data;
 }
 
@@ -15,5 +15,5 @@ QDP$PC_reset_$ABBR($QDPPCTYPE *dest)
     fprintf(stderr,"error: trying to restore non-exposed data\n");
     QDP_abort(1);
   }
-  dest->dc.exposed = 0;
+  dest->dc.exposed--;
 }

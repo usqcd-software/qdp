@@ -711,7 +711,7 @@ comment2("r <eqop> a * b");
 make_functions(%{{
   (
    DEST_TYPES  => [ 'Int','Real','Complex','DiracPropagator' ],
-   EQ_OPS      => [ @eqops ],
+   EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],

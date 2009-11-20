@@ -1,6 +1,8 @@
 #ifndef _QDP_STRING
 #define _QDP_STRING
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -357,7 +357,22 @@ QDP_close_write(QDP_Writer *qdpw)
 }
 
 int
-QDP_read_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md)
+QDP_read_record_info(QDP_Reader *qdpr, QDP_String *md)
+{
+  int status;
+  QIO_RecordInfo record_info;  /* Private data ignored */
+  QIO_String *qio_md = QIO_string_create(0);
+
+  status = QIO_read_record_info(qdpr->qior, &record_info, qio_md);
+  QDP_string_set(md, QIO_string_ptr(qio_md));
+  QIO_string_destroy(qio_md);
+  //printf("QDP_read_record_info has datacount %d\n",
+  //record_info.datacount.value);
+  return status;
+}
+
+int
+QDP_read_qio_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md)
 {
   int status;
   QIO_RecordInfo ri0, *record_info;

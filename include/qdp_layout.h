@@ -1,6 +1,8 @@
 #ifndef _QDP_LAYOUT_H
 #define _QDP_LAYOUT_H
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -59,31 +61,6 @@ extern "C" {
   extern int QDP_node_number_L(QDP_Lattice *lat, const int x[]);
   extern int QDP_index_L(QDP_Lattice *lat, const int x[]);
   extern void QDP_get_coords_L(QDP_Lattice *lat, int x[], int node, int index);
-
-  // need to add e.g. QDP_Lattice *QDP_get_lattice_V(QDP_ColorVector *f);
-
-  /*
-  layout (nd, coords); <-> node, index;
-  mynode = node_number(lattice);
-
-  field {
-  lattice: layout;
-    data size;
-    alignment;
-  }
-
-  shift(X->1);
-  shift(1->X);
-  shift(X->X);
-
-  QDP_prepare_src(a, subset);
-  QDP_prepare_dest(d, subset);
-  QDP_site_loop(i, subset) {
-    QDP_get_dest_ptr(d, i);
-    QDP_get_src_ptr(a, i);
-    QLA_V_peq_V(d, a);
-  }
-  */
 
 #ifdef __cplusplus
 }
