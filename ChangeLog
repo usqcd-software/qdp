@@ -1,3 +1,21 @@
+2010-02-10 19:18  tag qdp1-9-0-a5
+
+2010-02-10 19:18  osborn
+
+	* lib/qdp_common/layout_hyper.c: fixed includes in layout_hyper.c
+
+2010-02-10 19:02  osborn
+
+	* NEWS, configure, configure.ac, lib/qdp_common/layout_hyper.c,
+	  lib/qdp_d/Makefile.am, lib/qdp_d2/Makefile.am,
+	  lib/qdp_d3/Makefile.am, lib/qdp_df/Makefile.am,
+	  lib/qdp_df2/Makefile.am, lib/qdp_df3/Makefile.am,
+	  lib/qdp_dfn/Makefile.am, lib/qdp_dn/Makefile.am,
+	  lib/qdp_f/Makefile.am, lib/qdp_f2/Makefile.am,
+	  lib/qdp_f3/Makefile.am, lib/qdp_fn/Makefile.am,
+	  lib/qdp_int/Makefile.am: Really fixed bug in parallel make.
+	  Improved even/odd hypercubic layout.
+
 2009-11-20 14:34  tag qdp1-9-0-a4
 
 2009-11-20 14:34  osborn
