@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <qdp.h>
-#include <qmp.h>
+#include "qdp_internal.h"
 
 // prevent use of default lattice variables/functions
 #define QDP_sites_on_node ERROR
