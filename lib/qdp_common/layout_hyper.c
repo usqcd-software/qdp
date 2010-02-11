@@ -1,41 +1,7 @@
-/******** layout_hyper.c *********/
-/* SciDAC QDP Data Parallel API */
-/* adapted from MILC version 6 by James Osborn */
-
-/* Comments from original MILC routine */
-/* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
-
-/* This version divides the lattice by factors of prime numbers in any of the
-   four directions.  It prefers to divide the longest dimensions,
-   which mimimizes the area of the surfaces.  Similarly, it prefers
-   to divide dimensions which have already been divided, thus not
-   introducing more off-node directions.
-
-        S. Gottlieb, May 18, 1999
-        The code will start trying to divide with the largest prime factor
-        and then work its way down to 2.  The current maximum prime is 53.
-        The array of primes on line 46 may be extended if necessary.
-
-   This requires that the lattice volume be divisible by the number
-   of nodes.  Each dimension must be divisible by a suitable factor
-   such that the product of the four factors is the number of nodes.
-
-   3/29/00 EVENFIRST is the rule now. CD.
-   12/10/00 Fixed so k = MAXPRIMES-1 DT
-*/
-/* End of comments from original MILC routine */
-
-/*
-   QDP_setup_layout()  sets up layout
-   QDP_numsites()      returns the number of sites on a node
-   QDP_node_number()   returns the node number on which a site lives
-   QDP_index()         returns the index of the site on the node
-   QDP_get_coords()    gives lattice coords from node & index
-*/
-
 #include <stdlib.h>
 #include <stdio.h>
-#include "qdp_internal.h"
+#include <qdp.h>
+#include <qmp.h>
 
 // prevent use of default lattice variables/functions
 #define QDP_sites_on_node ERROR
@@ -55,9 +21,8 @@
 ////////////////////////////////////
 
 typedef struct {
-  int *squaresize;   /* dimensions of hypercubes */
+  int *len;          /* lattice dimensions */
   int *nsquares;     /* number of hypercubes in each direction */
-  int *l2ie, *l2io, *i2le, *i2lo;
   int ndim;
   int numsites;
 } params;
@@ -68,65 +33,45 @@ static int prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53};
 static void
 get_lex_x(int *x, int l, int *s, int ndim)
 {
-  int i;
-  for(i=0; i<ndim; i++) {
+  //for(int i=0; i<ndim; i++) {
+  for(int i=ndim-1; i>=0; --i) {
     x[i] = l % s[i];
     l = l / s[i];
   }
 }
 
+#if 0
 static int
 get_lex_i(int *x, int *s, int ndim)
 {
-  int i, l;
-  l = 0;
-  for(i=ndim-1; i>=0; --i) {
+  int l = 0;
+  //for(int i=ndim-1; i>=0; --i) {
+  for(int i=0; i<ndim; i++) {
     if(x[i]>=s[i]) { l = -1; break; }
     l = l*s[i] + (x[i]%s[i]);
   }
   return l;
 }
-
-static int
-get_sum(int *x, int ndim)
-{
-  int i, p=0;
-  for(i=0; i<ndim; i++) p += x[i];
-  return p;
-}
+#endif
 
 static void
-setup_index_maps(params *p)
+node2coord(int *x, int n, params *p)
 {
-  int i, x[p->ndim], ie, io;
+  for(int i=0; i<p->ndim; i++) {
+    x[i] = n % p->nsquares[i];
+    n = n / p->nsquares[i];
+  }
+}
 
-  p->l2ie = (int *) malloc(p->numsites*sizeof(int));
-  p->l2io = (int *) malloc(p->numsites*sizeof(int));
-  p->i2le = (int *) malloc(p->numsites*sizeof(int));
-  p->i2lo = (int *) malloc(p->numsites*sizeof(int));
-
-  ie = io = 0;
-  for(i=0; i<p->numsites; i++) {
-    get_lex_x(x, i, p->squaresize, p->ndim);
-    int s = get_sum(x, p->ndim);
-    if((s&1)==0) {
-      p->l2ie[i] = ie;
-      p->i2le[ie] = i;
-      ie++;
-    } else {
-      p->l2io[i] = io;
-      p->i2lo[io] = i;
-      io++;
-    }
+static int
+coord2node(int *x, params *p)
+{
+  int l = 0;
+  for(int i=p->ndim-1; i>=0; --i) {
+    if(x[i]>=p->nsquares[i]) { l = -1; break; }
+    l = l*p->nsquares[i] + (x[i]%p->nsquares[i]);
   }
-  for(i=0; i<ie; i++) {
-    p->i2lo[i+io] = p->i2le[i];
-    p->l2io[p->i2le[i]] = i+io;
-  }
-  for(i=0; i<io; i++) {
-    p->i2le[i+ie] = p->i2lo[i];
-    p->l2ie[p->i2lo[i]] = i+ie;
-  }
+  return l;
 }
 
 static void
@@ -136,20 +81,13 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
   params *p = (params *) QDP_get_lattice_params(lat);
 
   int nd = QDP_ndim_L(lat);
-  int len[nd];
-  QDP_latsize_L(lat, len);
 
   p->ndim = nd;
-  p->squaresize = (int *) malloc(nd*sizeof(int));
+  p->len = (int *) malloc(nd*sizeof(int));
   p->nsquares = (int *) malloc(nd*sizeof(int));
-
-  int *squaresize = p->squaresize;
+  int *len = p->len;
   int *nsquares = p->nsquares;
-
-  for(int i=0; i<nd; ++i) {
-    squaresize[i] = len[i];
-    nsquares[i] = 1;
-  }
+  QDP_latsize_L(lat, len);
 
   if(QMP_get_msg_passing_type()!=QMP_SWITCH) {
     int nd2 = QMP_get_allocated_number_of_dimensions();
@@ -158,20 +96,23 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
       if(i<nd2) nsquares[i] = nsquares2[i];
       else nsquares[i] = 1;
     }
-    for(int i=0; i<nd; i++) {
-      if(len[i]%nsquares[i] != 0) {
-	printf("LATTICE SIZE DOESN'T FIT GRID\n");
-	QMP_abort(0);
-      }
-      squaresize[i] = len[i]/nsquares[i];
-    }
   } else { /* not QMP_GRID */
+    int *squaresize = (int *) malloc(nd*sizeof(int));
+    int *extrafactors = (int *) malloc(nd*sizeof(int));
+    for(int i=0; i<nd; ++i) {
+      squaresize[i] = len[i];
+      extrafactors[i] = 1;
+      nsquares[i] = 1;
+    }
+
     /* Figure out dimensions of rectangle */
-    int n = QDP_numnodes();   /* remaining number of nodes to be factored */
+    int n = QMP_get_number_of_nodes();   /* remaining number of nodes to be factored */
     int k = MAXPRIMES-1;
     while(n>1) {
       /* figure out which prime to divide by starting with largest */
-      while( (n%prime[k]!=0) && (k>0) ) --k;
+      /* if no factor found, assume n is prime */
+      while( (k>=0) && (n%prime[k]!=0) ) --k;
+      int pfac = (k>=0) ? prime[k] : n;
 
       /* figure out which direction to divide */
       /* find largest divisible dimension of h-cubes */
@@ -180,30 +121,36 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
 	 with largest dimension. */
       int j = -1;
       for(int i=0; i<nd; i++) {
-	if(squaresize[i]%prime[k]==0) {
-	  if( (j<0) || (squaresize[i]>squaresize[j]) ) {
+	if(squaresize[i]%pfac==0) {
+	  if( (j<0) || (extrafactors[j]*squaresize[i]>extrafactors[i]*squaresize[j]) ) {
 	    j = i;
-	  } else if(squaresize[i]==squaresize[j]) {
-	    //if((nsquares[j]==1)&&(nsquares[i]!=1))
-	    j = i;
+	  } else if(extrafactors[j]*squaresize[i]==extrafactors[i]*squaresize[j]) {
+	    if((nsquares[j]==1)||(nsquares[i]!=1)) j = i;
 	  }
 	}
       }
 
       /* This can fail if we run out of prime factors in the dimensions */
+      /* then just choose largest dimension */
       if(j<0) {
-	if(QDP_mynode()==0) {
-	  fprintf(stderr, "LAYOUT: Not enough prime factors in lattice dimensions\n");
+	for(int i=0; i<nd; i++) {
+	  if( (j<0) || (extrafactors[j]*squaresize[i]>extrafactors[i]*squaresize[j]) ) {
+	    j = i;
+	  } else if(extrafactors[j]*squaresize[i]==extrafactors[i]*squaresize[j]) {
+	    if((nsquares[j]==1)||(nsquares[i]!=1)) j = i;
+	  }
 	}
-	QDP_abort_comm();
-	exit(1);
+	n /= pfac;
+	extrafactors[j] *= pfac;
+	nsquares[j] *= pfac;
+      } else {
+	n /= pfac;
+	squaresize[j] /= pfac;
+	nsquares[j] *= pfac;
       }
-
-      /* do the surgery */
-      n /= prime[k];
-      squaresize[j] /= prime[k];
-      nsquares[j] *= prime[k];
     }
+    free(squaresize);
+    free(extrafactors);
   } /* not QMP_GRID */
 
   /* setup QMP logical topology */
@@ -215,24 +162,33 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
 #endif
 
   int numsites = 1;
+  int mcoord[nd];
+  node2coord(mcoord, QDP_this_node, p);
   for(int i=0; i<nd; ++i) {
-    numsites *= squaresize[i];
+    int x0 = (mcoord[i]*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+    int x1 = ((mcoord[i]+1)*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+    numsites *= x1-x0;
   }
   p->numsites = numsites;
 
-  setup_index_maps(p);
+  if(QDP_this_node==0) {
+    printf("ndim = %i\n", p->ndim);
+    printf("numsites = %i\n", p->numsites);
+    printf("len =");
+    for(int i=0; i<p->ndim; i++) printf(" %i", p->len[i]);
+    printf("\n");
+    printf("nsquares =");
+    for(int i=0; i<p->ndim; i++) printf(" %i", p->nsquares[i]);
+    printf("\n");
+  }
 }
 
 static void
 layout_hyper_eo_free(QDP_Lattice *lat)
 {
   params *p = (params *) QDP_get_lattice_params(lat);
-  free(p->squaresize);
+  free(p->len);
   free(p->nsquares);
-  free(p->l2ie);
-  free(p->l2io);
-  free(p->i2le);
-  free(p->i2lo);
 }
 
 
@@ -240,96 +196,111 @@ static int
 layout_hyper_eo_numsites(QDP_Lattice *lat, int node)
 {
   params *p = (params *) QDP_get_lattice_params(lat);
-  return p->numsites;
+  if(node==QDP_this_node) {
+    return p->numsites;
+  } else {
+    int numsites = 1;
+    int nd = p->ndim;
+    int mcoord[nd];
+    node2coord(mcoord, node, p);
+    for(int i=0; i<nd; ++i) {
+      int x0 = (mcoord[i]*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+      int x1 = ((mcoord[i]+1)*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+      numsites *= x1-x0;
+    }
+    return numsites;
+  }
 }
 
 // *** fix to avoid QMP topology ***
 static int
 layout_hyper_eo_node_number(QDP_Lattice *lat, const int x[])
 {
-#if 0
-  int i, r=0;
-
-  for(i=ndim-1; i>=0; --i) {
-    r = r*nsquares[i] + (x[i]/squaresize[i]);
-  }
-  return r;
-#endif
   params *p = (params *) QDP_get_lattice_params(lat);
   int i, m[p->ndim];
 
   for(i=0; i<p->ndim; i++) {
-    m[i] = x[i]/p->squaresize[i];
+    m[i] = (x[i]*p->nsquares[i])/p->len[i];
   }
   //return QMP_get_node_number_from(m);
-  return get_lex_i(m, p->nsquares, p->ndim);
+  return coord2node(m, p);
 }
 
 static int
 layout_hyper_eo_index(QDP_Lattice *lat, const int x[])
 {
   params *p = (params *) QDP_get_lattice_params(lat);
-  int i, s=0, l=0, r;
+  int s=0, l=0;
 
-  for(i=p->ndim-1; i>=0; --i) {
-    l = l*p->squaresize[i] + (x[i]%p->squaresize[i]);
-    s += (x[i]/p->squaresize[i])*p->squaresize[i];
+  //for(int i=p->ndim-1; i>=0; --i) {
+  for(int i=0; i<p->ndim; ++i) {
+    int m = (x[i]*p->nsquares[i])/p->len[i];
+    int x0 = (m*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+    int x1 = ((m+1)*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+    l = l*(x1-x0) + x[i]-x0;
+    s += x[i];
   }
 
-  if( s%2==0 ) { /* even node offset */
-    r = p->l2ie[l];
+  if( s%2==0 ) { /* even site */
+    l /= 2;
   } else {
-    r = p->l2io[l];
+    l = (l+p->numsites)/2;
   }
-  return r;
+  return l;
 }
 
 static void
 layout_hyper_eo_get_coords(QDP_Lattice *lat, int x[], int node, int index)
 {
-  TRACE;
   params *p = (params *) QDP_get_lattice_params(lat);
-  int i, s, l;
-  int m[p->ndim], sx[p->ndim];
+  int nd = p->ndim;
+  int m[nd], dx[nd], sx[nd];
 
-  TRACE;
   //m = QMP_get_logical_coordinates_from(node);
-  get_lex_x(m, node, p->nsquares, p->ndim);
+  node2coord(m, node, p);
 
-  TRACE;
-  s = 0;
-  for(i=0; i<p->ndim; ++i) {
-    x[i] = m[i] * p->squaresize[i];
-    s += x[i];
+  int s0 = 0;
+  int n0 = 1;
+  for(int i=0; i<nd; ++i) {
+    x[i] = (m[i]*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+    int x1 = ((m[i]+1)*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
+    dx[i] = x1 - x[i];
+    s0 += x[i];
+    n0 *= dx[i];
   }
-  //free(m);
 
-  TRACE;
-  if(s%2==0) {
-    l = p->i2le[index];
+  int neven = (n0 + 1 - (s0&1))/2;
+  //if(QDP_this_node==0) printf("neven = %i\n", neven);
+  if(index<neven) {
+    int l = 2*index;
+    get_lex_x(sx, l, dx, nd);
+    int s1 = s0;
+    for(int i=0; i<nd; ++i) s1 += sx[i];
+    if((s1&1)!=0) {
+      get_lex_x(sx, l+1, dx, nd);
+    }
   } else {
-    l = p->i2lo[index];
+    int l = 2*index - n0 + ((n0&1)*(s0&1));
+    get_lex_x(sx, l, dx, nd);
+    int s1 = s0;
+    for(int i=0; i<nd; ++i) s1 += sx[i];
+    //if(QDP_this_node==0) printf("index = %i  n0 = %i  s0 = %i  l = %i  s1 = %i\n",index,n0,s0,l,s1);
+    if((s1&1)==0) {
+      get_lex_x(sx, l+1, dx, nd);
+    }
   }
-  TRACE;
-  get_lex_x(sx, l, p->squaresize, p->ndim);
-  TRACE;
-  for(i=0; i<p->ndim; ++i) x[i] += sx[i];
+  for(int i=0; i<nd; ++i) x[i] += sx[i];
 
-  TRACE;
   if(QDP_index_L(lat, x)!=index) {
-    int k;
-    if(s%2==0) k = p->l2ie[l];
-    else k = p->l2io[l];
     if(QDP_this_node==0) {
       fprintf(stderr,"QDP: error in layout!\n");
-      fprintf(stderr,"%i %i -> ", node, index);
-      for(i=0; i<p->ndim; i++) fprintf(stderr," %i", x[i]);
-      fprintf(stderr," : %i %i %i\n",s,l,k);
+      fprintf(stderr,"%i %i  -> ", node, index);
+      for(int i=0; i<nd; i++) fprintf(stderr," %i", x[i]);
+      fprintf(stderr,"  ->  %i %i\n", QDP_node_number_L(lat,x), QDP_index_L(lat,x));
     }
-    QDP_abort_comm();
+    QDP_abort(1);
     exit(1);
   }
-  TRACE;
 }
 
 static QDP_Layout layout_hyper_eo = {

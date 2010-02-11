@@ -2092,7 +2092,7 @@ source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
 	$(BUILD_SCRIPT_H) f3 $(top_builddir)/include
 	@mv -f source-temp-h $@
 
-$(QDPSRC): source-stamp-c
+$(QDPSRC): $(QDPHDR) source-stamp-c
 	@if test -f $@; then :; else \
 	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
 	  if mkdir source-lock-c 2>/dev/null; then \

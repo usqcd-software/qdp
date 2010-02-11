@@ -1610,7 +1610,7 @@ source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
 	$(BUILD_SCRIPT_H) f2 $(top_builddir)/include
 	@mv -f source-temp-h $@
 
-$(QDPSRC): source-stamp-c
+$(QDPSRC): $(QDPHDR) source-stamp-c
 	## Recover from the removal of $@
 	@if test -f $@; then :; else \
 	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
@@ -1637,7 +1637,6 @@ $(QDPHDR): source-stamp-h
 	    test -f source-stamp-h; exit $$?; \
 	  fi; \
 	fi
-
 
 ../libqdp_f2.a: $(QDPHDR) $(QDPOBJ) ../optimized/Makefile
 	-rm -f ../libqdp_f2.a
