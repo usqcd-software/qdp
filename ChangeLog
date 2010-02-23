@@ -1,3 +1,10 @@
+2010-02-23 00:38  osborn
+
+	* NEWS, configure, configure.ac, include/com_common_internal.h,
+	  lib/generate/generate_qdp.pl, lib/qdp_common/com_common.c: Use
+	  native double (or float) types for all global sums.  Delay
+	  setting pointers for shifts until sends are started.
+
 2010-02-10 19:18  tag qdp1-9-0-a5
 
 2010-02-10 19:18  osborn
