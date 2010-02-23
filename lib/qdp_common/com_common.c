@@ -730,6 +730,7 @@ QDP_declare_strided_gather(
   /*  allocate the message tag */
   mtag = (QDP_msg_tag *)malloc(sizeof(QDP_msg_tag));
   mtag->prepared = 0;
+  mtag->pointers = 0;
 
   mtag->nrecvs = 0;
   rm = &mtag->recv_msgs;
@@ -756,28 +757,42 @@ QDP_declare_strided_gather(
 static void
 prepare_gather(QDP_msg_tag *mtag)
 {
-  int i, j;
-  recv_msg_t *rm;
-  send_msg_t *sm;
-  gmem_t *gmem;
-  char *tpt;
-
-  mtag->prepared = 1;
-
   mtag->mhrecv = QDP_alloc_mh(mtag->nrecvs);
-  rm = mtag->recv_msgs;
-  j = 0;
-  /* for each node which has neighbors of my sites */
+  recv_msg_t *rm = mtag->recv_msgs;
+  int j = 0;
   while(rm!=NULL) {
     if(do_checksum) rm->size += CRCBYTES;
     rm->mem = QMP_allocate_memory( rm->size );
     rm->buf = QMP_get_memory_pointer( rm->mem );
     QDP_prepare_recv(mtag->mhrecv, rm, j);
-    /* set pointers in sites to correct location */
-    gmem = rm->gmem;
-    tpt = rm->buf;
+    rm = rm->next;
+    ++j;
+  }
+  QDP_prepare_msgs(mtag->mhrecv);
+
+  mtag->mhsend = QDP_alloc_mh(mtag->nsends);
+  send_msg_t *sm = mtag->send_msgs;
+  j = 0;
+  while(sm!=NULL) {
+    QDP_prepare_send(mtag->mhsend, sm, j);
+    sm = sm->next;
+    ++j;
+  }
+  QDP_prepare_msgs(mtag->mhsend);
+
+  mtag->prepared = 1;
+}
+
+/* set pointers in sites to correct location */
+static void
+prepare_pointers(QDP_msg_tag *mtag)
+{
+  recv_msg_t *rm = mtag->recv_msgs;
+  while(rm!=NULL) {
+    gmem_t *gmem = rm->gmem;
+    char *tpt = rm->buf;
     do {
-      for(i=gmem->begin; i<gmem->end; ++i, tpt+=gmem->size) {
+      for(int i=gmem->begin; i<gmem->end; ++i, tpt+=gmem->size) {
 	if(gmem->otherlist[i]<0) {
 	  ((char **)gmem->mem)[gmem->sitelist[i]] = tpt + gmem->otherlist[i]*gmem->size;
 	  tpt -= gmem->size;
@@ -787,20 +802,8 @@ prepare_gather(QDP_msg_tag *mtag)
       }
     } while((gmem=gmem->next)!=NULL);
     rm = rm->next;
-    ++j;
   }
-  QDP_prepare_msgs(mtag->mhrecv);
-
-  mtag->mhsend = QDP_alloc_mh(mtag->nsends);
-  sm = mtag->send_msgs;
-  j = 0;
-  /* for each node whose neighbors I have */
-  while(sm!=NULL) {
-    QDP_prepare_send(mtag->mhsend, sm, j);
-    sm = sm->next;
-    ++j;
-  }
-  QDP_prepare_msgs(mtag->mhsend);
+  mtag->pointers = 1;
 }
 
 #define inline_copy(dest, src, type, count) \
@@ -818,13 +821,9 @@ prepare_gather(QDP_msg_tag *mtag)
 void
 QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 {
-  int i;	/* scratch */
-  char *tpt;	/* scratch pointer in buffers */
-  send_msg_t *sm;
-  gmem_t *gmem;
-
   if(!mtag->prepared) prepare_gather(mtag);
 
+  // start receives
   if(mtag->nrecvs>0) {
     if(do_checksum) {
       recv_msg_t *rm = mtag->recv_msgs;
@@ -836,30 +835,27 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
     QDP_start_recv(mtag, gather_number);
   }
 
-  sm = mtag->send_msgs;
-  /* for each node whose neighbors I have */
+  // copy data to buffers
+  send_msg_t *sm = mtag->send_msgs;
   while(sm!=NULL) {
-    /* gather data into the buffer */
-    tpt = sm->buf;
-    gmem = sm->gmem;
+    char *tpt = sm->buf;
+    gmem_t *gmem = sm->gmem;
     do {
-      if(gmem->sn==0) {
+      if(gmem->sn==0) { // not strided
 	if(gmem->size%sizeof(COPY_TYPE)!=0) {
-	  for(i=gmem->begin; i<gmem->end; ++i,tpt+=gmem->size) {
+	  for(int i=gmem->begin; i<gmem->end; ++i,tpt+=gmem->size) {
 	    memcpy(tpt, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size);
 	  }
 	} else {
-          char *pt;
-          int n;
-          pt = tpt - gmem->begin*gmem->size;
-          n = gmem->size / sizeof(COPY_TYPE);
-          for(i=gmem->begin; i<gmem->end; ) {
-            COPY_TYPE *dest, *src;
-            int j, nn, si = gmem->sitelist[i];
-            for(j=i+1; (j<gmem->end)&&(gmem->sitelist[j]==si+j-i); j++);
-            dest = (COPY_TYPE *) (pt+i*gmem->size);
-            src = (COPY_TYPE *) (gmem->mem + si*gmem->stride);
-            nn = n*(j-i);
+          char *pt = tpt - gmem->begin*gmem->size;
+          int n = gmem->size / sizeof(COPY_TYPE);
+          for(int i=gmem->begin; i<gmem->end; ) {
+            int si = gmem->sitelist[i];
+            int j = i+1;
+	    while( (j<gmem->end) && (gmem->sitelist[j]==si+j-i) ) j++;
+            COPY_TYPE *dest = (COPY_TYPE *) (pt + i*gmem->size);
+            COPY_TYPE *src = (COPY_TYPE *) (gmem->mem + si*gmem->stride);
+            int nn = n*(j-i);
             inline_copy(dest, src, COPY_TYPE, nn);
             i = j;
           }
@@ -873,7 +869,7 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 
       gmem = sm->gmem;
       do {
-	for(i=gmem->begin; i<gmem->end; ++i) {
+	for(int i=gmem->begin; i<gmem->end; ++i) {
 	  crc = crc32(crc, (unsigned char *)
 		      gmem->mem + gmem->sitelist[i]*gmem->stride, gmem->size);
 	}
@@ -882,8 +878,12 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
     }
     sm = sm->next;
   }
-  /* start the send */
+
+  // start sends
   if(mtag->nsends>0) QDP_start_send(mtag, gather_number);
+
+  if(!mtag->pointers) prepare_pointers(mtag);
+
   ++gather_number;
 }
 

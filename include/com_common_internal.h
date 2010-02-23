@@ -82,6 +82,7 @@ struct QDP_msg_tag_struct {
   send_msg_t *send_msgs;  /* array of messages to send */
   QDP_mh *mhrecv, *mhsend;
   int prepared;
+  int pointers;
 };
 
 #endif

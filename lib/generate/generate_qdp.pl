@@ -228,12 +228,24 @@ sub global_sum($$) {
     my $vvar = "nv";
     if($dest->{MULTI}) { $vvar = "ns"; }
     if($dest->{EXTENDED}) {
-      $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof($st), dtemp, $vvar);\n";
+      if( $epc =~ /^_F/) {
+	$r = "  QMP_sum_float_array((float *)dtemp, ($vvar)*(sizeof($st)/sizeof(float)));\n";
+      } elsif( $epc =~ /^_D/) {
+	$r = "  QMP_sum_double_array((double *)dtemp, ($vvar)*(sizeof($st)/sizeof(double)));\n";
+      } else {
+	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof($st), dtemp, $vvar);\n";
+      }
       $r .= "  QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, dtemp, $vvar);\n";
       $r .= "  free(dtemp);\n";
       $r .= "  free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     } else {
-      $r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
+      if( $tpc =~ /^_F/) {
+	$r = "  QMP_sum_float_array((float *)dest, ($vvar)*(sizeof($st)/sizeof(float)));\n";
+      } elsif( $tpc =~ /^_D/) {
+	$r = "  QMP_sum_double_array((double *)dest, ($vvar)*(sizeof($st)/sizeof(double)));\n";
+      } else {
+	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
+      }
     }
   } else {
     if($dest->{EXTENDED}) {
@@ -241,14 +253,26 @@ sub global_sum($$) {
 	$r = "  QMP_sum_double(&dtemp);\n";
 	$r .= "  *dest = dtemp;\n"
       } else {
-	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$epc.$uabbr."_peq".$uabbr.", sizeof($st), &dtemp);\n";
+	if( $epc =~ /^_F/) {
+	  $r = "  QMP_sum_float_array((float *)&dtemp, sizeof($st)/sizeof(float));\n";
+	} elsif( $epc =~ /^_D/) {
+	  $r = "  QMP_sum_double_array((double *)&dtemp, sizeof($st)/sizeof(double));\n";
+	} else {
+	  $r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$epc.$uabbr."_peq".$uabbr.", sizeof($st), &dtemp);\n";
+	}
 	$r .= "  QLA".$cpc.$uabbr."_eq".$uabbr."(".$nc."dest, &dtemp);\n";
       }
     } else {
       if( ($dest->{TYPE} eq 'Real') && ($tpc eq '_D') ) {
 	$r = "  QMP_sum_double(dest);\n";
       } else {
-	$r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$tpc.$uabbr."_peq".$uabbr.", sizeof($st), dest);\n";
+	if( $tpc =~ /^_F/) {
+	  $r = "  QMP_sum_float_array((float *)dest, sizeof($st)/sizeof(float));\n";
+	} elsif( $tpc =~ /^_D/) {
+	  $r = "  QMP_sum_double_array((double *)dest, sizeof($st)/sizeof(double));\n";
+	} else {
+	  $r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$tpc.$uabbr."_peq".$uabbr.", sizeof($st), dest);\n";
+	}
       }
     }
   }
