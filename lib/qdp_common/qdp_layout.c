@@ -98,7 +98,7 @@ QDP_index(const int x[])
 void
 QDP_get_coords(int x[], int node, int index)
 {
-  return def_lattice->layout->get_coords(def_lattice, x, node, index);
+  def_lattice->layout->get_coords(def_lattice, x, node, index);
 }
 
 QDP_Layout *
@@ -273,5 +273,5 @@ void
 QDP_get_coords_L(QDP_Lattice *lat, int x[], int node, int index)
 {
   QDP_assert(lat);
-  return lat->layout->get_coords(lat, x, node, index);
+  lat->layout->get_coords(lat, x, node, index);
 }

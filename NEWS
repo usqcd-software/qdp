@@ -1,6 +1,10 @@
+2010-02-24: James Osborn
+	Fixed bugs in vector reductions.
+
 2010-02-22: James Osborn
 	Use native double (or float) types for all global sums.
 	Delay setting pointers for shifts until sends are started.
+	Removed erroneous return statements.
 
 ===========================================================================
 2010-02-10      version 1.9.0-a5 (5th alpha version of 1.9.0)

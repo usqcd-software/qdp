@@ -144,6 +144,15 @@ sub is_double($) {
   return $var->{PC} =~ /^_D/;
 }
 
+sub qla_type($) {
+  my($dt) = @_;
+  my($type) = $dt->{TYPE};
+  my($tpc) = $dt->{PC};
+  my($name);
+  $name = "QLA".$tpc."_".$type;
+  return $name;
+}
+
 sub qla_ext_type($) {
   my($dt) = @_;
   my($type) = $dt->{TYPE};
@@ -246,6 +255,7 @@ sub global_sum($$) {
       } else {
 	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
       }
+      $r .= "  free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     }
   } else {
     if($dest->{EXTENDED}) {
@@ -348,8 +358,9 @@ sub qla_name($$$$$) {
   return ($qla1, $qla2, $qla3, $qla4);
 }
 
-sub get_nc_def($$$) {
+sub get_nc_def($$$$) {
   my $s = '';
+  my $sp = shift;
   if($color eq 'N') {
     my $t;
     for my $tt (@_) {
@@ -358,7 +369,7 @@ sub get_nc_def($$$) {
     #if($t->{VECT}) {
     #  $s = "  int nc = QDP_get_nc(&".$t->{VAR}."[i]);\n";
     #} else {
-      $s = "  int nc = QDP_get_nc(".$t->{VAR}.");\n";
+      $s = $sp . "int nc = QDP_get_nc(".$t->{VAR}.");\n";
     #}
     my ($d) = @_;
     if($d->{SCALAR} && !$datatypes{$d->{TYPE}}{NO_COLOR}) {
@@ -463,23 +474,23 @@ sub func_body($$$$$$$$) {
   my($botsum) = "";
   my($global_eqop) = "eq";
 
-  $def = get_nc_def($dest, $src1, $src2);
+  $def = get_nc_def("  ", $dest, $src1, $src2) if(!$dest->{VECT});
 
   if($dest->{VECT}) {
     if($dest->{MULTI}) {
       my($ssv) = "subset[i]";
       my($nvv) = "ns";
-      $def = "  int i;\n";
+      #$def = "  int i;\n";
       if($dest->{EXTENDED}) {
 	my($ext) = qla_ext_type($dest);
-	$def .= $sp.$ext." *dtemp;\n";
-	$def .= $sp."dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	#$def .= $sp.$ext." *dtemp;\n";
+	$def .= $sp.$ext." *dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
       }
-      $def .= "  for(i=0; i<ns; ++i) {\n";
+      $def .= "  for(int i=0; i<ns; ++i) {\n";
       $top  = "  }\n";
       $top .= "\n";
-      $top .= "  for(i=0; i<$nvv; ++i) {\n";
-      $top .= get_nc_def($dest, $src1, $src2);
+      $top .= "  for(int i=0; i<$nvv; ++i) {\n";
+      $top .= get_nc_def("  ", $dest, $src1, $src2);
       $bot  = "  }\n";
       $sp .= "  ";
     } else {
@@ -489,27 +500,36 @@ sub func_body($$$$$$$$) {
       #$voff .= "offset";
       $xarg = ", ".$subset."->index+offset, blen";
       $varg = ", blen";
-      $def  = "  int i, offset, blen;\n";
-      if($dest->{EXTENDED}) {
-	my($ext) = qla_ext_type($dest);
-	$def .= $sp.$ext." *dtemp, *dtemp1;\n";
-	$def .= $sp."dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
-	$def .= $sp."dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
+      #$def  = "  int i, offset, blen;\n";
+      if($dest->{SCALAR}) {
+	my($tvar,$ttype);
+	if($dest->{EXTENDED}) {
+	  my($ext) = qla_ext_type($dest);
+	  #$def .= $sp.$ext." *dtemp, *dtemp1;\n";
+	  $def .= $sp.$ext." *dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
+	  $def .= $sp.$ext." *dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
+	  $tvar = "dtemp";
+	  $ttype = $ext;
+	} else {
+	  $ttype = qla_type($dest);
+	  $def .= $sp.$ttype." *dtemp1 = ($ttype *) malloc(nv*sizeof($ttype));\n";
+	  $tvar = "dest";
+	}
 	($global_eqop = $op) =~ s/_.*//;
 	if(1) {
-	  my($dpc) = $ext;
+	  my($dpc) = $ttype;
 	  $dpc =~ s/_[^_]*$//;
 	  $dpc .= uc $dest->{ABBR};
-	  $def .= $sp.$dpc."_veq_zero(dtemp, $nvv);\n";
+	  $def .= $sp.$dpc."_veq_zero($tvar, $nvv);\n";
 	  $qla2 =~ s/_eqm_/_eq_/;
 	  $qla2 =~ s/_.eq_/_eq_/;
 	  $botsum = $dpc."_vpeq";
 	  $botsum .= uc $dest->{ABBR};
-	  $botsum .= "(dtemp, dtemp1, $nvv);\n";
+	  $botsum .= "($tvar, dtemp1, $nvv);\n";
 	} else {
 	  # need to strip _.* from $op
 	  if( ($op eq "eq") || ($op eq "eqm") ) {
-	    my($dpc) = $ext;
+	    my($dpc) = $ttype;
 	    $dpc =~ s/_[^_]*$//;
 	    $dpc .= uc $dest->{ABBR};
 	    $def .= $sp.$dpc."_veq_zero(dtemp, $nvv);\n";
@@ -530,20 +550,20 @@ sub func_body($$$$$$$$) {
 #      $top .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
 #      $top .= "    if( blen <= 0) break;\n";
 #      $top .= "    for(i=0; i<$nvv; ++i) {\n";
-      $def .= "  offset = 0;\n";
-      $def .= "  blen = QDP_block_size;\n";
+      $def .= "  int offset = 0;\n";
+      $def .= "  int blen = QDP_block_size;\n";
       $def .= "  while(1) {\n";
       $def .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
       $def .= "    if( blen <= 0) break;\n";
-      $def .= "    for(i=0; i<$nvv; ++i) {\n";
-      $def .= get_nc_def($dest, $src1, $src2);
+      $def .= "    for(int i=0; i<$nvv; ++i) {\n";
+      $def .= get_nc_def("    ", $dest, $src1, $src2);
       $def .= "      if(offset==0) {\n";
       $top  = "      }\n";
       $bot  = "    }\n";
       $bot .= "    ".$botsum if($botsum);
       $bot .= "    offset += blen;\n";
       $bot .= "  }\n";
-      $sp .= "  ";
+      $sp .= "    ";
     }
   }
 
@@ -570,7 +590,11 @@ sub func_body($$$$$$$$) {
 	  $vdv = $xdv = "&dtemp1[i]";
 	}
       } else {
-	$vdv = $xdv = $dest->{VAR};
+	if($dest->{MULTI}) {
+	  $vdv = $xdv = $dest->{VAR};
+	} else {
+	  $vdv = $xdv = "&dtemp1[i]";
+	}
       }
     } else {
       if($dest->{EXTENDED}) {
