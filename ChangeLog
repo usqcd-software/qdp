@@ -1,3 +1,8 @@
+2010-02-24 18:17  osborn
+
+	* NEWS, lib/generate/generate_qdp.pl, lib/qdp_common/qdp_layout.c:
+	  Fixed bugs in vector reductions.
+
 2010-02-23 00:38  osborn
 
 	* NEWS, configure, configure.ac, include/com_common_internal.h,
