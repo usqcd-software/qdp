@@ -1,3 +1,8 @@
+2010-02-25 01:55  osborn
+
+	* NEWS, lib/generate/generate_qdp.pl: Only malloc temporaries for
+	  reductions if >1k bytes.
+
 2010-02-24 18:17  osborn
 
 	* NEWS, lib/generate/generate_qdp.pl, lib/qdp_common/qdp_layout.c:
