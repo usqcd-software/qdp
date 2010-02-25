@@ -1,5 +1,6 @@
 2010-02-24: James Osborn
 	Fixed bugs in vector reductions.
+	Only malloc temporaries for reductions if >1k bytes.
 
 2010-02-22: James Osborn
 	Use native double (or float) types for all global sums.

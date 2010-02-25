@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use strict;
 
+my $maxnn = 1024;
+
 # First read arguments and choose library and output directory
 
 my $making_header_file = 0;
@@ -176,10 +178,19 @@ sub prepare_dest($$) {
 	if($dest->{MULTI}) {
 	  if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
 	    $r = $sp."typedef ".$ext."(nc,foo);\n";
-	    $r .= $sp."foo *dtemp = (foo *) malloc(ns*sizeof(foo));\n";
+	    #$r .= $sp."foo *dtemp = (foo *) malloc(ns*sizeof(foo));\n";
+	    $r .= $sp."foo *dtemp=NULL;";
+	    $r .= $sp."size_t nn = ns*sizeof(foo);\n";
+	    $r .= $sp."if(nn>$maxnn) { dtemp = (foo *) malloc(nn); nn = 0; }\n";
+	    $r .= $sp."foo dtempa[nn];\n";
+	    $r .= $sp."if(nn) dtemp = dtempa;\n";
 	  } else {
-	    $r = $sp.$ext." *dtemp;\n";
-	    $r .= $sp."dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	    $r = $sp.$ext." *dtemp=NULL;\n";
+	    #$r .= $sp."dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	    $r .= $sp."size_t nn = ns*sizeof($ext);\n";
+	    $r .= $sp."if(nn>$maxnn) { dtemp = ($ext *) malloc(nn); nn = 0; }\n";
+	    $r .= $sp."$ext dtempa[nn];\n";
+	    $r .= $sp."if(nn) dtemp = dtempa;\n";
 	  }
 	} else {
 	  if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
@@ -245,8 +256,8 @@ sub global_sum($$) {
 	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof($st), dtemp, $vvar);\n";
       }
       $r .= "  QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, dtemp, $vvar);\n";
-      $r .= "  free(dtemp);\n";
-      $r .= "  free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
+      $r .= "  if(nn==0) free(dtemp);\n";
+      $r .= "  if(nn==0) free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     } else {
       if( $tpc =~ /^_F/) {
 	$r = "  QMP_sum_float_array((float *)dest, ($vvar)*(sizeof($st)/sizeof(float)));\n";
@@ -255,7 +266,7 @@ sub global_sum($$) {
       } else {
 	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
       }
-      $r .= "  free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
+      $r .= "  if(nn==0) free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     }
   } else {
     if($dest->{EXTENDED}) {
@@ -483,8 +494,12 @@ sub func_body($$$$$$$$) {
       #$def = "  int i;\n";
       if($dest->{EXTENDED}) {
 	my($ext) = qla_ext_type($dest);
-	#$def .= $sp.$ext." *dtemp;\n";
-	$def .= $sp.$ext." *dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	$def .= $sp.$ext." *dtemp=NULL;\n";
+	#$def .= $sp.$ext." *dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
+	$def .= $sp."size_t nn = ns*sizeof($ext);\n";
+	$def .= $sp."if(nn>$maxnn) { dtemp = ($ext *) malloc(nn); nn = 0; }\n";
+	$def .= $sp."$ext dtempa[nn];\n";
+	$def .= $sp."if(nn) dtemp = dtempa;\n";
       }
       $def .= "  for(int i=0; i<ns; ++i) {\n";
       $top  = "  }\n";
@@ -505,14 +520,23 @@ sub func_body($$$$$$$$) {
 	my($tvar,$ttype);
 	if($dest->{EXTENDED}) {
 	  my($ext) = qla_ext_type($dest);
-	  #$def .= $sp.$ext." *dtemp, *dtemp1;\n";
-	  $def .= $sp.$ext." *dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
-	  $def .= $sp.$ext." *dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
+	  $def .= $sp.$ext." *dtemp=NULL, *dtemp1=NULL;\n";
+	  #$def .= $sp.$ext." *dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
+	  #$def .= $sp.$ext." *dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
+	  $def .= $sp."size_t nn = nv*sizeof($ext);\n";
+	  $def .= $sp."if(nn>$maxnn) { dtemp = ($ext *) malloc(nn); dtemp1 = ($ext *) malloc(nn); nn = 0; }\n";
+	  $def .= $sp."$ext dtempa[nn], dtemp1a[nn];\n";
+	  $def .= $sp."if(nn) { dtemp = dtempa; dtemp1 = dtemp1a; }\n";
 	  $tvar = "dtemp";
 	  $ttype = $ext;
 	} else {
 	  $ttype = qla_type($dest);
-	  $def .= $sp.$ttype." *dtemp1 = ($ttype *) malloc(nv*sizeof($ttype));\n";
+	  #$def .= $sp.$ttype." *dtemp1 = ($ttype *) malloc(nv*sizeof($ttype));\n";
+	  $def .= $sp.$ttype." *dtemp1=NULL;\n";
+	  $def .= $sp."size_t nn = nv*sizeof($ttype);\n";
+	  $def .= $sp."if(nn>$maxnn) { dtemp1 = ($ttype *) malloc(nn); nn = 0; }\n";
+	  $def .= $sp."$ttype dtemp1a[nn];\n";
+	  $def .= $sp."if(nn) { dtemp1 = dtemp1a; }\n";
 	  $tvar = "dest";
 	}
 	($global_eqop = $op) =~ s/_.*//;
@@ -578,8 +602,8 @@ sub func_body($$$$$$$$) {
       } else {
 	$vdv = $xdv = "&".$dest->{VAR}."[i]";
       }
-      $def .= "  int i;\n";
-      $top .= "  for(i=0; i<ns; i++) {\n";
+      #$def .= "  int i;\n";
+      $top .= "  for(int i=0; i<ns; i++) {\n";
       $bot = "  }\n";
       #$sp .= "  ";
     } elsif($dest->{VECT}) {
