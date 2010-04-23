@@ -53,6 +53,7 @@ QDP_I_vmeq_I_times_I.c \
 QDP_I_vpeq_I.c \
 QDP_I_vpeq_I_times_I.c \
 QDP_S_eq_S.c \
+QDP_S_eq_S_mask_I.c \
 QDP_S_eq_sS.c \
 QDP_S_eq_seed_i_I.c \
 QDP_S_veq_S.c \
@@ -123,6 +124,7 @@ QDP_I_vmeq_I_times_I.o \
 QDP_I_vpeq_I.o \
 QDP_I_vpeq_I_times_I.o \
 QDP_S_eq_S.o \
+QDP_S_eq_S_mask_I.o \
 QDP_S_eq_sS.o \
 QDP_S_eq_seed_i_I.o \
 QDP_S_veq_S.o \

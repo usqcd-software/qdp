@@ -1,3 +1,11 @@
+===========================================================================
+2010-04-22      version 1.9.0-a6 (6th alpha version of 1.9.0)
+===========================================================================
+2010-04-22: James Osborn
+	Added QDP_S_eq_S_mask_I(), more times functions.
+	Removed C_eqop_conj_C.
+	Added QDP_empty subset and QDP_all_and_empty[].
+
 2010-02-24: James Osborn
 	Fixed bugs in vector reductions.
 	Only malloc temporaries for reductions if >1k bytes.

@@ -2,11 +2,12 @@
 #include <string.h>
 #include "qdp_internal.h"
 
-QDP_Subset *QDP_all_array = NULL;
 QDP_Subset QDP_all;
-QDP_Subset *QDP_even_and_odd = NULL;
+QDP_Subset QDP_empty;
+QDP_Subset *QDP_all_and_empty = NULL;
 QDP_Subset QDP_even;
 QDP_Subset QDP_odd;
+QDP_Subset *QDP_even_and_odd = NULL;
 
 static int
 QDP_all_func(QDP_Lattice *lat, int x[], void *args)
@@ -29,15 +30,22 @@ QDP_even_and_odd_func(QDP_Lattice *lat, int x[], void *args)
 QDP_Subset
 QDP_all_L(QDP_Lattice *lat)
 {
-  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 1);
+  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
   return lat->all[0];
 }
 
-QDP_Subset *
-QDP_even_and_odd_L(QDP_Lattice *lat)
+QDP_Subset
+QDP_empty_L(QDP_Lattice *lat)
 {
-  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
-  return lat->eo;
+  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
+  return lat->all[1];
+}
+
+QDP_Subset *
+QDP_all_and_empty_L(QDP_Lattice *lat)
+{
+  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
+  return lat->all;
 }
 
 QDP_Subset
@@ -52,6 +60,13 @@ QDP_odd_L(QDP_Lattice *lat)
 {
   if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
   return lat->eo[1];
+}
+
+QDP_Subset *
+QDP_even_and_odd_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+  return lat->eo;
 }
 
 typedef struct {

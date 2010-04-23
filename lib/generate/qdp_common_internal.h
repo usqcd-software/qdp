@@ -47,7 +47,7 @@ typedef struct QDP_shift_tag_t {
   QDP_msg_tag *msgtag;
 } QDP_shift_tag_t;
 
-typedef struct QDP_shift_src_t {
+struct QDP_shift_src_t {
   QDP_Shift shift;
   QDP_ShiftDir fb;
   QDP_Subset subset;
@@ -56,41 +56,12 @@ typedef struct QDP_shift_src_t {
   QDP_shift_list_t *sl;
   struct QDP_data_common_t *dc;
   struct QDP_shift_src_t *next;
-} QDP_shift_src_t;
-
-typedef struct QDP_shift_dest_t {
-  struct QDP_data_common_t *dc;
-  struct QDP_shift_dest_t *next;
-} QDP_shift_dest_t;
-
-typedef struct QDP_data_common_t {
-  char **data;
-  char ***ptr;
-  QMP_mem_t *qmpmem;
-  size_t size;
-  int discarded;
-  int exposed;
-  QDP_shift_src_t *shift_src;
-  QDP_shift_dest_t *shift_dest;
-  int nc;
-  QDP_Lattice *lat;
-} QDP_data_common_t;
-#define get_lat(x) ((x)->dc.lat)
-
-!ALLTYPES
-struct $QDPPCTYPE_struct {
-  //  $QLAPCTYPE *data;
-  //$QLAPCTYPE **ptr;
-  void *data;
-  void **ptr;
-  QDP_data_common_t dc;
 };
 
-!END
-
-#define QDP_offset_ptr(f,o) ((void *)(((void **)((f)->ptr))+(o)))
-#define QDP_offset_data(f,o) ((void *)(((char *)((f)->data))+(o)*((f)->dc.size)))
-#define QDP_get_nc(x) ((x)->dc.nc)
+struct QDP_shift_dest_t {
+  struct QDP_data_common_t *dc;
+  struct QDP_shift_dest_t *next;
+};
 
 extern int QDP_suspended;
 extern int QDP_block_size;
@@ -108,8 +79,6 @@ extern struct QDP_shift_tag_t *QDP_alloc_shift_tag(int nv);
 extern void QDP_remove_shift_tag_reference(struct QDP_shift_tag_t *st);
 extern void QDP_clear_shift_list(void);
 extern void QDP_prepare_destroy(QDP_data_common_t *dc);
-extern void QDP_prepare_dest(QDP_data_common_t *dc);
-extern void QDP_prepare_src(QDP_data_common_t *dc);
 extern int QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
 extern void QDP_switch_ptr_to_data(QDP_data_common_t *dc);
 

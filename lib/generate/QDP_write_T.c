@@ -84,6 +84,9 @@ QDP$PC_vwrite_$ABBR(QDP_Writer *qdpw, QDP_String *md, $QDPPCTYPE *field[],
 
   status = QDP_write_check(qdpw, md, QIO_FIELD, QDP$PC_vget_$ABBR, &qf, nv,
 			   rec_info);
+
+  QIO_destroy_record_info(rec_info);
+
   return status;
 }
 
@@ -103,6 +106,7 @@ QDP$PC_vwrite_$QLAABBR($NC QDP_Writer *qdpw, QDP_String *md,
 {
   struct QDP_IO_field qf;
   QIO_RecordInfo *rec_info;
+  int status;
 
   qf.data = (char *) array;
   qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
@@ -115,6 +119,10 @@ QDP$PC_vwrite_$QLAABBR($NC QDP_Writer *qdpw, QDP_String *md,
 				    "$QDPPCTYPE", "$P", qf.nc,
 				    qf.ns, qf.size, count);
 
-  return QDP_write_check(qdpw, md, QIO_GLOBAL, QDP$PC_vget_$QLAABBR,
-			 &qf, count, rec_info);
+  status = QDP_write_check(qdpw, md, QIO_GLOBAL, QDP$PC_vget_$QLAABBR,
+			   &qf, count, rec_info);
+
+  QIO_destroy_record_info(rec_info);
+
+  return status;
 }

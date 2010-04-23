@@ -137,7 +137,7 @@ main(int argc, char *argv[])
     if(QMP_logical_topology_is_declared()) {
       int i, ld, *lt;
       ld = QMP_get_logical_number_of_dimensions();
-      lt = QMP_get_logical_dimensions();
+      lt = (int *)QMP_get_logical_dimensions();
       printf("logical topology =");
       for(i=0; i<ld; i++) printf(" %i", lt[i]);
       printf("\n");

@@ -2,11 +2,14 @@
 #define _QDP_INTERNAL_H
 
 #include <qmp.h>
+#include "qdp_config.h"
 #include "qdp_common.h"
+#include "qdp_common_internal.h"
 #include "qdp_layout_internal.h"
 #include "qdp_subset_internal.h"
 #include "qdp_shift_internal.h"
 #include "com_common.h"
+#include "com_common_internal.h"
 #include "com_specific.h"
 
 #ifdef __cplusplus

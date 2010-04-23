@@ -18,6 +18,21 @@ int QDP_mem_flags = QDP_MEM_FAST | QDP_MEM_COMMS;
 
 static int qdp_initialized=0;
 static QDP_prof *prof_list=NULL, **prof_last;
+static const char *vs = VERSION;
+
+const char *
+QDP_version_str(void)
+{
+  return vs;
+}
+
+int
+QDP_version_int(void)
+{
+  int maj, min, bug;
+  sscanf(vs, "%i.%i.%i", &maj, &min, &bug);
+  return ((maj*1000)+min)*1000 + bug;
+}
 
 int
 QDP_profcontrol(int new)

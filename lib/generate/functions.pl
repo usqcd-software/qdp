@@ -169,7 +169,7 @@ comment2("r <eqop> conjugate(a)");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @complex_types ],
+   DEST_TYPES  => [ @color_types ],
    EQ_OPS      => [ @eqops ],
    FUNCS       => [ 'conj' ],
    SRC2_TYPES  => [ 'DEST' ],
@@ -478,6 +478,61 @@ make_functions(%{{
    SRC2_TYPES  => [ 'ColorMatrix' ],
   )}});
 
+comment1("Determinant of color matrix");
+comment2("r = det(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Complex' ],
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'det' ],
+   SRC2_TYPES  => [ 'ColorMatrix' ],
+  )}});
+
+comment1("Inverse of color matrix");
+comment2("r = a^-1");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'ColorMatrix' ],
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'inverse' ],
+   SRC2_TYPES  => [ 'ColorMatrix' ],
+  )}});
+
+comment1("Exponential of color matrix");
+comment2("r = exp(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'ColorMatrix' ],
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'exp' ],
+   SRC2_TYPES  => [ 'ColorMatrix' ],
+  )}});
+
+comment1("Square root of color matrix");
+comment2("r = sqrt(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'ColorMatrix' ],
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'sqrt' ],
+   SRC2_TYPES  => [ 'ColorMatrix' ],
+  )}});
+
+comment1("Logarithm of color matrix");
+comment2("r = exp(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'ColorMatrix' ],
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'log' ],
+   SRC2_TYPES  => [ 'ColorMatrix' ],
+  )}});
+
 comment1("Spin trace of Dirac propagator");
 comment2("r[ic, jc] = Sum_is a[ic, is, jc, is]");
 
@@ -705,18 +760,6 @@ make_functions(%{{
    SRC2_TYPES  => [ 'DEST' ],
   )}});
 
-comment1("Multiplication: uniform types");
-comment2("r <eqop> a * b");
-
-make_functions(%{{
-  (
-   DEST_TYPES  => [ 'Int','Real','Complex','DiracPropagator' ],
-   EQ_OPS      => [ @eqops, @veqops ],
-   SRC1_TYPES  => [ 'DEST' ],
-   FUNCS       => [ 'times' ],
-   SRC2_TYPES  => [ 'DEST' ],
-  )}});
-
 comment1("Division of integer, real, and complex fields");
 comment2("r = a / b");
 
@@ -729,32 +772,84 @@ make_functions(%{{
    SRC2_TYPES  => [ 'DEST' ],
   )}});
 
-comment1("Left multiplication by color matrix");
+comment1("Multiplication by integer field");
+comment2("r <eqop> a * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Int' ],
+   EQ_OPS      => [ @eqops, @veqops ],
+   SRC1_TYPES  => [ 'DEST' ],
+   FUNCS       => [ 'times' ],
+   SRC2_TYPES  => [ 'DEST' ],
+  )}});
+
+comment1("Multiplication by real field");
+comment2("r <eqop> a * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ @float_types ],
+   EQ_OPS      => [ @eqops, @veqops ],
+   SRC1_TYPES  => [ 'Real' ],
+   FUNCS       => [ 'times' ],
+   SRC2_TYPES  => [ 'DEST' ],
+  )}});
+
+comment1("Multiplication: uniform complex types");
+comment2("r <eqop> a * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Complex','ColorMatrix','DiracPropagator' ],
+   EQ_OPS      => [ @eqops, @veqops ],
+   SRC1_TYPES  => [ 'DEST' ],
+   SRC1_DO_ADJ => 1,
+   FUNCS       => [ 'times' ],
+   SRC2_TYPES  => [ 'DEST' ],
+   SRC2_DO_ADJ => 1,
+  )}});
+
+comment1("Multiplication by complex field");
 comment2("r <eqop> a * b");
 
 make_functions(%{{
   (
    DEST_TYPES  => [ @color_types ],
    EQ_OPS      => [ @eqops, @veqops ],
-   SRC1_TYPES  => [ 'ColorMatrix' ],
+   SRC1_TYPES  => [ 'Complex' ],
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
   )}});
 
-comment1("Left multiplication by adjoint of color matrix");
-comment2("r <eqop> adjoint(a) * b");
+comment1("Color matrix field times vector field");
+comment2("r <eqop> a * b");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @color_types ],
+   DEST_TYPES  => [ 'ColorVector','HalfFermion','DiracFermion' ],
    EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
-   SRC1_ADJ    => 1,
+   SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
   )}});
 
-comment1("Right multiplication by color matrix");
+comment1("Color matrix field times propagator field");
+comment2("r <eqop> a * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'DiracPropagator' ],
+   EQ_OPS      => [ @eqops ],
+   SRC1_TYPES  => [ 'ColorMatrix' ],
+   SRC1_DO_ADJ => 1,
+   FUNCS       => [ 'times' ],
+   SRC2_TYPES  => [ 'DEST' ],
+   SRC2_DO_ADJ => 1,
+  )}});
+
+comment1("Propagator field times color matrix field");
 comment2("r <eqop> a * b");
 
 make_functions(%{{
@@ -762,35 +857,10 @@ make_functions(%{{
    DEST_TYPES  => [ 'DiracPropagator' ],
    EQ_OPS      => [ @eqops ],
    SRC1_TYPES  => [ 'DEST' ],
+   SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'ColorMatrix' ],
-  )}});
-
-comment1("Right multiplication by adjoint of color matrix");
-comment2("r <eqop> a * adjoint(b)");
-
-make_functions(%{{
-  (
-   DEST_TYPES  => [ 'ColorMatrix','DiracPropagator' ],
-   EQ_OPS      => [ @eqops ],
-   SRC1_TYPES  => [ 'DEST' ],
-   FUNCS       => [ 'times' ],
-   SRC2_TYPES  => [ 'ColorMatrix' ],
-   SRC2_ADJ    => 1,
-  )}});
-
-comment1("Adjoint of color matrix times adjoint of color matrix");
-comment2("r <eqop> adjoint(a) * adjoint(b)");
-
-make_functions(%{{
-  (
-   DEST_TYPES  => [ 'ColorMatrix' ],
-   EQ_OPS      => [ @eqops ],
-   SRC1_TYPES  => [ 'DEST' ],
-   SRC1_ADJ    => 1,
-   FUNCS       => [ 'times' ],
-   SRC2_TYPES  => [ 'DEST' ],
-   SRC2_ADJ    => 1,
+   SRC2_DO_ADJ => 1,
   )}});
 
 comment1("Local inner product");
@@ -891,7 +961,7 @@ comment2("r = a (if b is not 0)");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @arith_types ],
+   DEST_TYPES  => [ @all_types ],
    EQ_OPS      => [ 'eq' ],
    SRC1_TYPES  => [ 'DEST' ],
    FUNCS       => [ 'mask' ],

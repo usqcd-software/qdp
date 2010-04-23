@@ -33,7 +33,7 @@ sub get_name_args($) {
   $args = substr($prot,$i+1,$j-$i-1);
   $prot = substr($prot,0,$i);
   $name = $prot;
-  $name =~ s/.*[\s]+([^\s]+)[\s]*/$1/;
+  $name =~ s/.*[\s]+[*]*([^\s]+)[\s]*/$1/;
   return($name,$args);
 }
 
@@ -97,7 +97,7 @@ sub get_arg_lists($$) {
 while(<INFILE>) {
 
   chomp;
-  /\*\// && do {
+  /\*\// && do { # possible end comment
     if($in_comment) {
       $in_comment = 0;
       s/^.*\*\///;
@@ -106,7 +106,7 @@ while(<INFILE>) {
     }
   };
   next if $in_comment;
-  /\/\*/ && do {
+  /\/\*/ && do { # possible begin comment
     $in_comment = 1;
     s/\/\*.*$//;
   };
