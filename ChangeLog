@@ -1,3 +1,22 @@
+2010-04-22 22:25  tag qdp1-9-0-a6
+
+2010-04-22 22:25  osborn
+
+	* NEWS, examples/sample_ks.c, include/qdp_common.h,
+	  include/qdp_internal.h, include/qdp_subset.h,
+	  lib/generate/QDP_T_eq_func.c, lib/generate/QDP_T_eq_funci.c,
+	  lib/generate/QDP_write_T.c, lib/generate/functions.pl,
+	  lib/generate/generic.pl, lib/generate/qdp_common_internal.h,
+	  lib/generate/qdp_internal.h, lib/generate/qdp_pc.h,
+	  lib/generate/qdp_types.h, lib/qdp_common/qdp_common.c,
+	  lib/qdp_common/qdp_subset.c, lib/qdp_d/Makefile.am,
+	  lib/qdp_d2/Makefile.am, lib/qdp_d3/Makefile.am,
+	  lib/qdp_dn/Makefile.am, lib/qdp_f/Makefile.am,
+	  lib/qdp_f2/Makefile.am, lib/qdp_f3/Makefile.am,
+	  lib/qdp_fn/Makefile.am, lib/qdp_int/Makefile.am: Added
+	  QDP_S_eq_S_mask_I(), more times functions.  Removed
+	  C_eqop_conj_C.  Added QDP_empty subset and QDP_all_and_empty[].
+
 2010-02-25 01:55  osborn
 
 	* NEWS, lib/generate/generate_qdp.pl: Only malloc temporaries for
