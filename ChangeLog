@@ -1,3 +1,12 @@
+2010-10-25 12:06  osborn
+
+	* NEWS, aclocal.m4, configure, configure.ac,
+	  include/qdp_config.h.in, include/qdp_subset.h,
+	  include/qdp_subset_internal.h, lib/generate/QDP_expose_T.c,
+	  lib/generate/qdp_common_internal.h,
+	  lib/qdp_common/qdp_internal.c: Made subset struct public so
+	  siteloop macro can work.  Fix exposure counting.
+
 2010-04-22 22:25  tag qdp1-9-0-a6
 
 2010-04-22 22:25  osborn
