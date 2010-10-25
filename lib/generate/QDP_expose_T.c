@@ -3,7 +3,7 @@
 void *
 QDP$PC_expose_$ABBR($QDPPCTYPE *dest)
 {
-  QDP_prepare_dest(&dest->dc);
+  QDP_prepare_expose(&dest->dc);
   dest->dc.exposed++;
   return dest->data;
 }

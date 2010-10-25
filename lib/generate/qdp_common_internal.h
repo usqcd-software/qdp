@@ -78,6 +78,7 @@ extern void QDP_N_binary_reduce_multi(int nc, void func(), int size, void *data,
 extern struct QDP_shift_tag_t *QDP_alloc_shift_tag(int nv);
 extern void QDP_remove_shift_tag_reference(struct QDP_shift_tag_t *st);
 extern void QDP_clear_shift_list(void);
+extern void QDP_prepare_expose(QDP_data_common_t *dc);
 extern void QDP_prepare_destroy(QDP_data_common_t *dc);
 extern int QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
 extern void QDP_switch_ptr_to_data(QDP_data_common_t *dc);

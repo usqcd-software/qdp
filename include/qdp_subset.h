@@ -5,6 +5,19 @@
 extern "C" {
 #endif
 
+struct QDP_Subset_struct {
+  int indexed;
+  int offset;
+  int *index;
+  int len;
+  int (*func)(QDP_Lattice *lat, int x[], void *args);
+  void *args;
+  int colors;
+  int coloring;
+  QDP_Lattice *lattice;
+  struct QDP_Subset_struct *first;
+};
+
   typedef struct QDP_Subset_struct * QDP_Subset;
 
   extern QDP_Subset QDP_all;

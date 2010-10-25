@@ -357,6 +357,16 @@ QDP_prepare_dest(QDP_data_common_t *dc)
   LEAVE;
 }
 
+/* prepare data array of field for exposing */
+void
+QDP_prepare_expose(QDP_data_common_t *dc)
+{
+  ENTER;
+  dc->discarded = 0;
+  QDP_switch_ptr_to_data(dc);
+  LEAVE;
+}
+
 /* prepare field as source field */
 void
 QDP_prepare_src(QDP_data_common_t *dc)
