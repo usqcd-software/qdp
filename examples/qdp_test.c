@@ -60,6 +60,30 @@ print_df(QLA_DiracFermion *df, int coords[])
   }
 }
 
+void
+siteloop(QDP_ColorMatrix *m, QDP_DiracFermion *d, QDP_Subset s)
+{
+  int i;
+  QDP_loop_sites(i, s, {
+      QLA_ColorMatrix *mi = QDP_site_ptr_readwrite_M(m, i);
+      QLA_DiracFermion *di = QDP_site_ptr_readonly_D(d, i);
+      QLA_c_eq_r_times_c(QLA_elem_M(*mi,0,0), 2., QLA_elem_D(*di,1,2));
+    });
+}
+
+void
+siteloop2(QDP_ColorMatrix *m, QDP_DiracFermion *d, QDP_Subset s)
+{
+  int i;
+  QDP_site_ptr_readwrite_prep_M(m);
+  QDP_site_ptr_readonly_prep_D(d);
+  QDP_loop_sites(i, s, {
+      QLA_ColorMatrix *mi = QDP_site_ptr_readwrite_prepped_M(m, i);
+      QLA_DiracFermion *di = QDP_site_ptr_readonly_prepped_D(d, i);
+      QLA_c_eq_r_times_c(QLA_elem_M(*mi,0,0), 2., QLA_elem_D(*di,1,2));
+    });
+}
+
 int
 timeslices(int x[], void *args)
 {
@@ -147,6 +171,16 @@ run_tests(void)
   printf0("Calling QDP_D_eq_M_times_D... ");
   fflush(stdout);
   QDP_D_eq_M_times_D(d3, m, d2, QDP_all);
+  printf0("done\n");
+
+  printf0("Testing siteloop macro... ");
+  fflush(stdout);
+  siteloop(m, d2, ts[1]);
+  printf0("done\n");
+
+  printf0("Testing prepped siteloop macro... ");
+  fflush(stdout);
+  siteloop2(m, d2, ts[1]);
   printf0("done\n");
 
   printf0("Calling QDP_D_eq_zero... ");
@@ -255,7 +289,7 @@ main(int argc, char *argv[])
 
   run_tests();
 
-  printf0("Finished tests, now closing QDP... ");
+  printf0("Finished tests, now closing QDP...\n");
   fflush(stdout);
   QDP_finalize();
   printf0("done\n");

@@ -38,5 +38,9 @@ QDP$PC_$ABBR_eq_s$ABBR($QDPPCTYPE *dest, $QDPPCTYPE *src, QDP_Shift shift, QDP_S
 
   dest->dc.shift_src->st->shift_pending = 1;
   QDP_do_gather(dest->dc.shift_src->st->msgtag);
+  //src->dc.srcprep = 1;
+  src->dc.destprep = 0;
+  dest->dc.srcprep = 0;
+  dest->dc.destprep = 0;
 }
 !END

@@ -1,4 +1,4 @@
-ALL_CFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include -I$(QLADIR)/include -I$(QIODIR)/include $(QMP_CFLAGS)
+ALL_CFLAGS = $(CFLAGS) -I$(top_srcdir)/include -I$(top_builddir)/include -I$(QLADIR)/include -I$(QIODIR)/include $(QMP_CFLAGS) -DQDP_PROFILE
 ALL_LDADD = -L$(top_builddir)/lib -L$(QLADIR)/lib -L$(QIODIR)/lib $(QMP_LDFLAGS) -lqdp_common -lqdp_int -lqla_int -lqla_random -lqio -llime $(QMP_LIBS) -lm
 
 F3_CFLAGS = -DQDP_Precision=1 -DQDP_Nc=3 $(ALL_CFLAGS)

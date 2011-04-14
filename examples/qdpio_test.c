@@ -128,21 +128,26 @@ main(int argc, char *argv[])
 
   QDP_close_write(qw);
 
+  QDP_set_read_group_size(1);
   qr = QDP_open_read(md, fn);
+  printf0("file metadata: %s\n", QDP_string_ptr(md));
 
   QDP_read_D(qr, md, d1in);
+  printf0("record metadata: %s\n", QDP_string_ptr(md));
   QDP_r_eq_norm2_D(&x, d1in, QDP_all);
   QDP_D_meq_D(d1out, d1in, QDP_all);
   QDP_r_eq_norm2_D(&y, d1out, QDP_all);
   printf0("read field,   norm = %g  error = %g\n", x, y);
 
   QDP_read_D(qr, md, d2in);
+  printf0("record metadata: %s\n", QDP_string_ptr(md));
   QDP_r_eq_norm2_D(&x, d2in, QDP_all);
   QDP_D_meq_D(d2out, d2in, QDP_all);
   QDP_r_eq_norm2_D(&y, d2out, QDP_all);
   printf0("read field,   norm = %g  error = %g\n", x, y);
 
   QDP_vread_M(qr, md, min, 2);
+  printf0("record metadata: %s\n", QDP_string_ptr(md));
   QDP_r_eq_norm2_M(&x, min[0], QDP_all);
   QDP_M_meq_M(mout[0], min[0], QDP_all);
   QDP_r_eq_norm2_M(&y, mout[0], QDP_all);

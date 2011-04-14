@@ -44,12 +44,12 @@ struct QDP_Subset_struct {
 					 void *args, int argsize, int n);
   extern QDP_Lattice *QDP_subset_lattice(QDP_Subset s);
 
-#define QDP_loop_sites(i, s, expr) {				     \
-    QDP_Subset QDPs = (s);					     \
-    for(int QDPi=0; QDPi<QDPs->len; QDPi++) {			     \
-      (i) = QDPs->indexed ? QDPs->index[QDPi] : QDPs->offset + QDPi; \
-      expr;							     \
-    }								     \
+#define QDP_loop_sites(i, s, expr) {					\
+    QDP_Subset QDPs = (s);						\
+    for(int QDPi=0; QDPi<QDPs->len; QDPi++) {				\
+      (i) = QDPs->indexed ? QDPs->index[QDPi] : QDPs->offset + QDPi;	\
+      expr;								\
+    }									\
   }
 
 #ifdef __cplusplus

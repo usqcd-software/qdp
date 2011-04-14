@@ -27,6 +27,8 @@ QDP$PC_create_$ABBR_L($NC QDP_Lattice *lat)
     m->dc.size = sizeof(foo);
     m->dc.discarded = 1;
     m->dc.exposed = 0;
+    m->dc.srcprep = 0;
+    m->dc.destprep = 0;
     m->dc.shift_src = NULL;
     m->dc.shift_dest = NULL;
     m->dc.nc = NC;

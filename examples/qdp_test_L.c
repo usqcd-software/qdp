@@ -274,7 +274,7 @@ main(int argc, char *argv[])
 
   run_tests();
 
-  printf0("Finished tests, now closing QDP... ");
+  printf0("Finished tests, now closing QDP...\n");
   fflush(stdout);
   QDP_finalize();
   printf0("done\n");

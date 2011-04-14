@@ -29,6 +29,8 @@ extern "C" {
     size_t size;
     int discarded;
     int exposed;
+    int srcprep;
+    int destprep;
     QDP_shift_src_t *shift_src;
     QDP_shift_dest_t *shift_dest;
     int nc;
@@ -57,20 +59,54 @@ extern void QDP_prepare_src(QDP_data_common_t *dc);
 /* site access */
 
 !ALLTYPES
+static inline void
+QDP$PC_site_ptr_readonly_prep_$ABBR($QDPPCTYPE *src) {
+  if(!src->dc.srcprep) {
+    QDP_prepare_src(&src->dc);
+  }
+  src->dc.srcprep = 1;
+}
+!END
+
+!ALLTYPES
+static inline void *
+QDP$PC_site_ptr_readonly_prepped_$ABBR($QDPPCTYPE *src, int i) {
+  return src->ptr==NULL ? ((void *)(((char *)(src->data))+i*(src->dc.size))) : (src->ptr[i]);
+}
+!END
+
+!ALLTYPES
 static inline void *
 QDP$PC_site_ptr_readonly_$ABBR($QDPPCTYPE *src, int i) {
-  QDP_prepare_src(&src->dc);
-  return src->ptr==NULL ? ((void *)(((char *)(src->data))+i*(src->dc.size))) : (src->ptr[i]);
-} 
+  QDP$PC_site_ptr_readonly_prep_$ABBR(src);
+  return QDP$PC_site_ptr_readonly_prepped_$ABBR(src, i);
+}
+!END
+
+!ALLTYPES
+static inline void
+QDP$PC_site_ptr_readwrite_prep_$ABBR($QDPPCTYPE *src) {
+  if(!src->dc.destprep) {
+    QDP_prepare_dest(&src->dc);
+  }
+  src->dc.destprep = 1;
+}
+!END
+
+!ALLTYPES
+static inline void *
+QDP$PC_site_ptr_readwrite_prepped_$ABBR($QDPPCTYPE *src, int i) {
+  //return src->ptr==NULL ? ((void *)(((char *)(src->data))+i*(src->dc.size))) : (src->ptr[i]);
+  return ((void *)(((char *)(src->data))+i*(src->dc.size)));
+}
 !END
 
 !ALLTYPES
 static inline void *
 QDP$PC_site_ptr_readwrite_$ABBR($QDPPCTYPE *src, int i) {
-  QDP_prepare_dest(&src->dc);
-  //return src->ptr==NULL ? ((void *)(((char *)(src->data))+i*(src->dc.size))) : (src->ptr[i]);
-  return ((void *)(((char *)(src->data))+i*(src->dc.size)));
-} 
+  QDP$PC_site_ptr_readwrite_prep_$ABBR(src);
+  return QDP$PC_site_ptr_readwrite_prepped_$ABBR(src, i);
+}
 !END
 
 #ifdef __cplusplus

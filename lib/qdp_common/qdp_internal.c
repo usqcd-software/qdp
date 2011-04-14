@@ -353,6 +353,8 @@ QDP_prepare_dest(QDP_data_common_t *dc)
     QDP_abort(1);
   }
   dc->discarded = 0;
+  dc->srcprep = 1;
+  dc->destprep = 1;
   QDP_switch_ptr_to_data(dc);
   LEAVE;
 }
@@ -363,6 +365,8 @@ QDP_prepare_expose(QDP_data_common_t *dc)
 {
   ENTER;
   dc->discarded = 0;
+  dc->srcprep = 0;
+  dc->destprep = 0;
   QDP_switch_ptr_to_data(dc);
   LEAVE;
 }
@@ -380,6 +384,7 @@ QDP_prepare_src(QDP_data_common_t *dc)
     fprintf(stderr,"error: attempt to use exposed field\n");
     QDP_abort(1);
   }
+  dc->srcprep = 1;
   QDP_finish_shifts(dc);
   LEAVE;
 }

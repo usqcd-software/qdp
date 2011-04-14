@@ -28,6 +28,9 @@ extern "C" {
   int QDP_read_qio_record_info(QDP_Reader *qr, QIO_RecordInfo *ri, QDP_String *md);
   int QDP_next_record(QDP_Reader *qr);
 
+  int QDP_set_read_group_size(int nodes);
+  int QDP_set_write_group_size(int nodes);
+
   /* Read and write single field */
 
 !ALLTYPES

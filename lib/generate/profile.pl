@@ -93,7 +93,7 @@ sub def_prof($$) {
     $nsites = get_nsites($func, "qp[QDP_restart]");
 
     $def = <<"  EOF;";
-#define $func$args { \\
+#define $func$args do { \\
   if(QDP_prof_level>0) { \\
     static QDP_prof qp[2]; \\
     static int first_time=1; \\
@@ -134,7 +134,7 @@ sub def_prof($$) {
   } else { \\
     $func$args; \\
   } \\
-}
+} while(0)
   EOF;
 
   } elsif( $func =~ /eq/ ) {
@@ -142,7 +142,7 @@ sub def_prof($$) {
     $nsites = get_nsites($func, "qp");
 
     $def = <<"  EOF;";
-#define $func$args { \\
+#define $func$args do { \\
   if(QDP_prof_level>0) { \\
     static QDP_prof qp; \\
     static int first_time=1; \\
@@ -172,7 +172,7 @@ sub def_prof($$) {
   } else { \\
     $func$args; \\
   } \\
-}
+} while(0)
   EOF;
 
   }

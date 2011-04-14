@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <sys/times.h>
 #include <unistd.h>
+#include <limits.h>
 #include "qdp_common_internal.h"
 #include "qdp_internal.h"
 
@@ -245,6 +246,28 @@ numsites_io(int node)
   return QDP_numsites_L(iolat, node);
 }
 
+static int readnodes = INT_MAX;
+
+int
+QDP_set_read_group_size(int nodes)
+{
+  int oldnodes = readnodes;
+  readnodes = nodes;
+  return oldnodes;
+}
+
+static int
+io_node(const int node)
+{
+  return node/readnodes;
+}
+
+static int
+master_io_node(void)
+{
+  return 0;
+}
+
 QDP_Reader *
 QDP_open_read(QDP_String *md, char *filename)
 {
@@ -256,40 +279,42 @@ QDP_Reader *
 QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
 {
   QDP_Reader *qdpr;
-  QIO_Layout *layout;
+  QIO_Layout layout;
+  QIO_Filesystem fs;
+  QIO_Iflag iflag;
   QIO_String *qio_md = QIO_string_create(0);
 
   qdpr = (QDP_Reader *)malloc(sizeof(struct QDP_Reader_struct));
   if(qdpr == NULL) return NULL;
 
-  layout = (QIO_Layout *)malloc(sizeof(QIO_Layout));
-  if(layout == NULL) {
-    free(qdpr);
-    return NULL;
-  }
-
   qdpr->lat = lat;
   iolat = qdpr->lat;
 
-  layout->node_number = node_number_io;
-  layout->node_index = index_io;
-  layout->get_coords = get_coords_io;
-  layout->num_sites = numsites_io;
-  layout->latdim = QDP_ndim_L(lat);
-  layout->latsize = (int *)malloc(layout->latdim*sizeof(int));
-  QDP_latsize_L(lat, layout->latsize);
-  layout->volume = QDP_volume_L(lat);
-  layout->sites_on_node = QDP_sites_on_node_L(lat);
-  layout->this_node = QDP_this_node;
-  layout->number_of_nodes = QDP_numnodes();
+  layout.node_number = node_number_io;
+  layout.node_index = index_io;
+  layout.get_coords = get_coords_io;
+  layout.num_sites = numsites_io;
+  layout.latdim = QDP_ndim_L(lat);
+  layout.latsize = (int *)malloc(layout.latdim*sizeof(int));
+  QDP_latsize_L(lat, layout.latsize);
+  layout.volume = QDP_volume_L(lat);
+  layout.sites_on_node = QDP_sites_on_node_L(lat);
+  layout.this_node = QDP_this_node;
+  layout.number_of_nodes = QDP_numnodes();
 
-  qdpr->qior = QIO_open_read(qio_md, filename, layout, 0, 0);
+  fs.my_io_node = io_node;
+  fs.master_io_node = master_io_node;
+
+  iflag.serpar = QIO_PARALLEL;
+  //iflag.serpar = QIO_SERIAL;
+  iflag.volfmt = QIO_SINGLEFILE;
+
+  qdpr->qior = QIO_open_read(qio_md, filename, &layout, &fs, &iflag);
 
   QDP_string_set(md, QIO_string_ptr(qio_md));
   QIO_string_destroy(qio_md);
 
-  free(layout->latsize);
-  free(layout);
+  free(layout.latsize);
 
   if(!qdpr->qior) {
     free(qdpr);

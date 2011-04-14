@@ -40,7 +40,11 @@ extern "C" {
 /* site access */
 
 !PCTYPES
+static inline void QDP$PC_site_ptr_readonly_prep_$ABBR($QDPPCTYPE *src);
+static inline void *QDP$PC_site_ptr_readonly_prepped_$ABBR($QDPPCTYPE *src, int i);
 static inline void *QDP$PC_site_ptr_readonly_$ABBR($QDPPCTYPE *src, int i);
+static inline void QDP$PC_site_ptr_readwrite_prep_$ABBR($QDPPCTYPE *src);
+static inline void *QDP$PC_site_ptr_readwrite_prepped_$ABBR($QDPPCTYPE *src, int i);
 static inline void *QDP$PC_site_ptr_readwrite_$ABBR($QDPPCTYPE *src, int i);
 !END
 
