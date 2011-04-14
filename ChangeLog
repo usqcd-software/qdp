@@ -1,3 +1,15 @@
+2011-04-14 14:41  osborn
+
+	* NEWS, aclocal.m4, configure, examples/Makefile.am,
+	  examples/qdp_test.c, examples/qdp_test_L.c,
+	  examples/qdpio_test.c, examples/qdpio_test_L.c,
+	  include/qdp_config.h.in, include/qdp_subset.h,
+	  lib/generate/QDP_T_eq_sT.c, lib/generate/QDP_create_T.c,
+	  lib/generate/QDP_discard_T.c, lib/generate/profile.pl,
+	  lib/generate/qdp_io.h, lib/generate/qdp_pc.h,
+	  lib/generate/qdp_types.h, lib/qdp_common/qdp_common.c,
+	  lib/qdp_common/qdp_internal.c: enabled parallel reads
+
 2010-10-25 12:06  tag qdp1-9-0-a7
 
 2010-10-25 12:06  osborn
