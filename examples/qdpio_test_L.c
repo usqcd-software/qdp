@@ -74,7 +74,7 @@ test(QDP_Lattice *lat)
 
   QDP_close_write(qw);
 
-  QDP_set_read_group_size(1);
+  QDP_set_read_group_size(2);
   qr = QDP_open_read_L(lat, md, fn);
   printf0("file metadata: %s\n", QDP_string_ptr(md));
 

@@ -259,7 +259,7 @@ QDP_set_read_group_size(int nodes)
 static int
 io_node(const int node)
 {
-  return node/readnodes;
+  return readnodes*(node/readnodes);
 }
 
 static int
