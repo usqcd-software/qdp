@@ -1,3 +1,8 @@
+2011-04-14 21:49  osborn
+
+	* examples/qdpio_test.c, examples/qdpio_test_L.c,
+	  lib/qdp_common/qdp_common.c: fixed bug in parallel io setting
+
 2011-04-14 14:41  osborn
 
 	* NEWS, aclocal.m4, configure, examples/Makefile.am,
