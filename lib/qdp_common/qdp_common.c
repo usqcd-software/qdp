@@ -20,6 +20,8 @@ int QDP_mem_flags = QDP_MEM_FAST | QDP_MEM_COMMS;
 static int qdp_initialized=0;
 static QDP_prof *prof_list=NULL, **prof_last;
 static const char *vs = VERSION;
+static int readnodes = INT_MAX;
+static int writenodes = INT_MAX;
 
 const char *
 QDP_version_str(void)
@@ -198,30 +200,6 @@ QDP_set_iolat(QDP_Lattice *lat)
   iolat = lat;
 }
 
-#if 0
-void
-QDP_IO_get_site(char *buf, const int coords[], void *field)
-{
-  if( QDP_node_number_L(iolat, coords) != QDP_this_node ) {
-    buf[0] = '\0';
-  } else {
-    struct QDP_IO_field *qf = field;
-    int i = QDP_index_L(iolat, coords);
-    memcpy(buf, qf->data+i*qf->size, qf->size);
-  }
-}
-
-void
-QDP_IO_put_site(char *buf, const int coords[], void *field)
-{
-  if( QDP_node_number_L(iolat, coords) == QDP_this_node ) {
-    struct QDP_IO_field *qf = field;
-    int i = QDP_index_L(iolat, coords);
-    memcpy(qf->data+i*qf->size, buf, qf->size);
-  }
-}
-#endif
-
 static int
 node_number_io(const int x[])
 {
@@ -246,8 +224,6 @@ numsites_io(int node)
   return QDP_numsites_L(iolat, node);
 }
 
-static int readnodes = INT_MAX;
-
 int
 QDP_set_read_group_size(int nodes)
 {
@@ -256,10 +232,24 @@ QDP_set_read_group_size(int nodes)
   return oldnodes;
 }
 
+int
+QDP_set_write_group_size(int nodes)
+{
+  int oldnodes = writenodes;
+  writenodes = nodes;
+  return oldnodes;
+}
+
 static int
-io_node(const int node)
+read_io_node(const int node)
 {
   return readnodes*(node/readnodes);
+}
+
+static int
+write_io_node(const int node)
+{
+  return writenodes*(node/writenodes);
 }
 
 static int
@@ -302,12 +292,13 @@ QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
   layout.this_node = QDP_this_node;
   layout.number_of_nodes = QDP_numnodes();
 
-  fs.my_io_node = io_node;
+  fs.my_io_node = read_io_node;
   fs.master_io_node = master_io_node;
 
   iflag.serpar = QIO_PARALLEL;
   //iflag.serpar = QIO_SERIAL;
   iflag.volfmt = QIO_SINGLEFILE;
+  //iflag.volfmt = QIO_UNKNOWN;
 
   qdpr->qior = QIO_open_read(qio_md, filename, &layout, &fs, &iflag);
 
@@ -337,6 +328,8 @@ QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
   QDP_Writer *qdpw;
   QIO_Layout *layout;
   QIO_String *qio_md;
+  QIO_Filesystem fs;
+  QIO_Oflag oflag;
 
   qdpw = (QDP_Writer *)malloc(sizeof(struct QDP_Writer_struct));
   if(qdpw == NULL) return NULL;
@@ -362,9 +355,18 @@ QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
   layout->this_node = QDP_this_node;
   layout->number_of_nodes = QDP_numnodes();
 
+  fs.my_io_node = write_io_node;
+  fs.master_io_node = master_io_node;
+
+  oflag.serpar = QIO_PARALLEL;
+  //oflag.serpar = QIO_SERIAL;
+  oflag.mode = QIO_TRUNC;
+  oflag.ildgstyle = QIO_ILDGLAT;                                           
+  oflag.ildgLFN = NULL;                                                    
+
   qio_md = QIO_string_create();
   QIO_string_set(qio_md, QDP_string_ptr(md));
-  qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, layout, 0, 0);
+  qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, layout, &fs, &oflag);
   QIO_string_destroy(qio_md);
 
   free(layout->latsize);

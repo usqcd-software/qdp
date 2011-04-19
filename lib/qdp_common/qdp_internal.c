@@ -224,6 +224,7 @@ QDP_alloc_shift_src_t(QDP_data_common_t *dc, QDP_Shift shift, QDP_ShiftDir fb, Q
   ss->shift = shift;
   ss->fb = fb;
   ss->subset = subset;
+  ss->st = NULL;
   LEAVE;
   return ss;
 }
