@@ -1,3 +1,8 @@
+2011-04-18 21:54  osborn
+
+	* lib/qdp_common/: qdp_common.c, qdp_internal.c: enabled parallel
+	  writes
+
 2011-04-14 21:49  osborn
 
 	* examples/qdpio_test.c, examples/qdpio_test_L.c,
