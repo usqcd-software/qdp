@@ -1,3 +1,12 @@
+===========================================================================
+2011-09-16      version 1.9.0-a8 (8th alpha version of 1.9.0)
+===========================================================================
+2011-08-16: James Osborn
+	Changed default alignment to 64 bytes.
+
+2011-04-18: James Osborn
+	Enabled parallel reads and writes.
+
 2011-01-19: James Osborn
 	Added "do { } while(0)" around profiled functions.
 

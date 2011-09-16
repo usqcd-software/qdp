@@ -843,23 +843,35 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
     do {
       if(gmem->sn==0) { // not strided
 	if(gmem->size%sizeof(COPY_TYPE)!=0) {
-	  for(int i=gmem->begin; i<gmem->end; ++i,tpt+=gmem->size) {
+#pragma omp parallel for
+	  for(int i=gmem->begin; i<gmem->end; i++) {
 	    memcpy(tpt, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size);
+	    tpt += gmem->size;
 	  }
 	} else {
-          char *pt = tpt - gmem->begin*gmem->size;
-          int n = gmem->size / sizeof(COPY_TYPE);
-          for(int i=gmem->begin; i<gmem->end; ) {
-            int si = gmem->sitelist[i];
-            int j = i+1;
+	  char *pt = tpt - gmem->begin*gmem->size;
+	  int n = gmem->size / sizeof(COPY_TYPE);
+#ifdef _OPENMPPP
+#pragma omp parallel for
+	  for(int i=gmem->begin; i<gmem->end; i++) {
+	    int si = gmem->sitelist[i];
+	    COPY_TYPE *dest = (COPY_TYPE *) (pt + i*gmem->size);
+	    COPY_TYPE *src = (COPY_TYPE *) (gmem->mem + si*gmem->stride);
+	    inline_copy(dest, src, COPY_TYPE, n);
+	  }
+#else
+	  for(int i=gmem->begin; i<gmem->end; ) {
+	    int si = gmem->sitelist[i];
+	    int j = i+1;
 	    while( (j<gmem->end) && (gmem->sitelist[j]==si+j-i) ) j++;
-            COPY_TYPE *dest = (COPY_TYPE *) (pt + i*gmem->size);
-            COPY_TYPE *src = (COPY_TYPE *) (gmem->mem + si*gmem->stride);
-            int nn = n*(j-i);
-            inline_copy(dest, src, COPY_TYPE, nn);
-            i = j;
-          }
-          tpt += (gmem->end-gmem->begin)*gmem->size;
+	    COPY_TYPE *dest = (COPY_TYPE *) (pt + i*gmem->size);
+	    COPY_TYPE *src = (COPY_TYPE *) (gmem->mem + si*gmem->stride);
+	    int nn = n*(j-i);
+	    inline_copy(dest, src, COPY_TYPE, nn);
+	    i = j;
+	  }
+#endif
+	  tpt += (gmem->end-gmem->begin)*gmem->size;
 	}
       }
     } while((gmem=gmem->next)!=NULL);

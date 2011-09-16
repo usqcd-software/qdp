@@ -12,7 +12,7 @@
 
 int QDP_suspended = 0;
 int QDP_block_size = 256;
-int QDP_mem_align = 16;
+int QDP_mem_align = 64;
 int QDP_mem_flags = QDP_MEM_FAST | QDP_MEM_COMMS;
 
 /* Private Globals */
