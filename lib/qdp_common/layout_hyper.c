@@ -24,6 +24,8 @@ typedef struct {
   int *nsquares;     /* number of hypercubes in each direction */
   int ndim;
   int numsites;
+  QMP_comm_t comm;
+  int use_qmp_topology;
 } params;
 
 static int prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53};
@@ -56,15 +58,22 @@ get_lex_i(int *x, int *s, int ndim)
 static void
 node2coord(int *x, int n, params *p)
 {
-  for(int i=0; i<p->ndim; i++) {
-    x[i] = n % p->nsquares[i];
-    n = n / p->nsquares[i];
+  if(p->use_qmp_topology) {
+    QMP_comm_get_logical_coordinates_from2(p->comm, x, n);
+  } else {
+    for(int i=0; i<p->ndim; i++) {
+      x[i] = n % p->nsquares[i];
+      n = n / p->nsquares[i];
+    }
   }
 }
 
 static int
 coord2node(int *x, params *p)
 {
+  if(p->use_qmp_topology) {
+    return QMP_comm_get_node_number_from(p->comm, x);
+  }
   int l = 0;
   for(int i=p->ndim-1; i>=0; --i) {
     if(x[i]>=p->nsquares[i]) { l = -1; break; }
@@ -84,18 +93,52 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
   p->ndim = nd;
   p->len = (int *) malloc(nd*sizeof(int));
   p->nsquares = (int *) malloc(nd*sizeof(int));
+  p->comm = NULL;
+  p->use_qmp_topology = 0;
   int *len = p->len;
   int *nsquares = p->nsquares;
   QDP_latsize_L(lat, len);
 
-  if(QMP_get_msg_passing_type()!=QMP_SWITCH) {
-    int nd2 = QMP_get_allocated_number_of_dimensions();
-    const int *nsquares2 = QMP_get_allocated_dimensions();
-    for(int i=0; i<nd; i++) {
-      if(i<nd2) nsquares[i] = nsquares2[i];
-      else nsquares[i] = 1;
+  if(p->use_qmp_topology==0) {
+    int nd2 = QMP_get_logical_number_of_dimensions();
+    if(nd2>0) {
+      const int *nsquares2 = QMP_get_logical_dimensions();
+      for(int i=0; i<nd; i++) {
+	if(i<nd2) nsquares[i] = nsquares2[i];
+	else nsquares[i] = 1;
+      }
+      p->comm = QMP_comm_get_default();
+      p->use_qmp_topology = 1;
     }
-  } else { /* not QMP_GRID */
+  }
+
+  if(p->use_qmp_topology==0) {
+    int nd2 = QMP_get_number_of_job_geometry_dimensions();
+    if(nd2>0) {
+      const int *nsquares2 = QMP_get_job_geometry();
+      for(int i=0; i<nd; i++) {
+	if(i<nd2) nsquares[i] = nsquares2[i];
+	else nsquares[i] = 1;
+      }
+      p->comm = QMP_comm_get_job();
+      p->use_qmp_topology = 1;
+    }
+  }
+
+  if(p->use_qmp_topology==0) {
+    int nd2 = QMP_get_allocated_number_of_dimensions();
+    if(nd2>0) {
+      const int *nsquares2 = QMP_get_allocated_dimensions();
+      for(int i=0; i<nd; i++) {
+	if(i<nd2) nsquares[i] = nsquares2[i];
+	else nsquares[i] = 1;
+      }
+      p->comm = QMP_comm_get_allocated();
+      p->use_qmp_topology = 1;
+    }
+  }
+
+  if(p->use_qmp_topology==0) {
     int *squaresize = (int *) malloc(nd*sizeof(int));
     int *extrafactors = (int *) malloc(nd*sizeof(int));
     for(int i=0; i<nd; ++i) {
@@ -211,7 +254,6 @@ layout_hyper_eo_numsites(QDP_Lattice *lat, int node)
   }
 }
 
-// *** fix to avoid QMP topology ***
 static int
 layout_hyper_eo_node_number(QDP_Lattice *lat, const int x[])
 {
@@ -221,7 +263,6 @@ layout_hyper_eo_node_number(QDP_Lattice *lat, const int x[])
   for(i=0; i<p->ndim; i++) {
     m[i] = (x[i]*p->nsquares[i])/p->len[i];
   }
-  //return QMP_get_node_number_from(m);
   return coord2node(m, p);
 }
 
@@ -255,7 +296,6 @@ layout_hyper_eo_get_coords(QDP_Lattice *lat, int x[], int node, int index)
   int nd = p->ndim;
   int m[nd], dx[nd], sx[nd];
 
-  //m = QMP_get_logical_coordinates_from(node);
   node2coord(m, node, p);
 
   int s0 = 0;
