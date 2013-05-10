@@ -1,6 +1,6 @@
-SUBDIRS = doc other_libs include lib bin examples
+SUBDIRS = . doc other_libs include lib bin examples .
 
 DISTCHECK_CONFIGURE_FLAGS = @DISTCHECK_CONFIGURE_FLAGS@
 
 all-local:
-	@-echo "build started: `date`"
+	@-echo "timestamp: `date`"

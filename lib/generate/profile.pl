@@ -94,7 +94,7 @@ sub def_prof($$) {
 
     $def = <<"  EOF;";
 #define $func$args do { \\
-  if(QDP_prof_level>0) { \\
+  if(QDP_prof_level>0&&QDP_thread_num()==0) { \\
     static QDP_prof qp[2]; \\
     static int first_time=1; \\
     double _time; \\
@@ -143,7 +143,7 @@ sub def_prof($$) {
 
     $def = <<"  EOF;";
 #define $func$args do { \\
-  if(QDP_prof_level>0) { \\
+  if(QDP_prof_level>0&&QDP_thread_num()==0) { \\
     static QDP_prof qp; \\
     static int first_time=1; \\
     if(first_time) { \\

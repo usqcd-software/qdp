@@ -17,23 +17,32 @@ QDP$PC_create_$ABBR_L($NC QDP_Lattice *lat)
   typedef $QLAPCTYPE($NCVAR foo);
   $QDPPCTYPE *m;
 
-  m = ($QDPPCTYPE *) malloc(sizeof($QDPPCTYPE));
-  if(m!=NULL) {
-    m->data = NULL;
-    m->ptr = NULL;
-    m->dc.data = (char **) (void *) &(m->data); /* extra void * is just to */
-    m->dc.ptr = (char ***) (void *) &(m->ptr);  /* avoid a compiler warning */
-    m->dc.qmpmem = NULL;
-    m->dc.size = sizeof(foo);
-    m->dc.discarded = 1;
-    m->dc.exposed = 0;
-    m->dc.srcprep = 0;
-    m->dc.destprep = 0;
-    m->dc.shift_src = NULL;
-    m->dc.shift_dest = NULL;
-    m->dc.nc = NC;
-    m->dc.lat = lat;
+  TGET;
+  ONE {
+    m = ($QDPPCTYPE *) malloc(sizeof($QDPPCTYPE));
+    if(m!=NULL) {
+      m->data = NULL;
+      m->ptr = NULL;
+      m->dc.data = (char **) (void *) &(m->data); /* extra void * is just to */
+      m->dc.ptr = (char ***) (void *) &(m->ptr);  /* avoid a compiler warning */
+      m->dc.qmpmem = NULL;
+      m->dc.size = sizeof(foo);
+      m->dc.discarded = 1;
+      m->dc.exposed = 0;
+      m->dc.srcprep = 0;
+      m->dc.destprep = 0;
+      m->dc.shift_src = NULL;
+      m->dc.shift_dest = NULL;
+      m->dc.nc = NC;
+      m->dc.lat = lat;
+    }
+    SHARE_SET(m);
+    TBARRIER;
+  } else {
+    TBARRIER;
+    SHARE_GET(m);
   }
+  TBARRIER;
 
   return m;
 }
@@ -41,10 +50,13 @@ QDP$PC_create_$ABBR_L($NC QDP_Lattice *lat)
 void
 QDP$PC_destroy_$ABBR($QDPPCTYPE *field)
 {
-  QDP_prepare_destroy(&field->dc);
-  if(field->dc.qmpmem) QMP_free_memory(field->dc.qmpmem);
-  free((void*)field->ptr);
-  free(field);
+  TGET;
+  ONE {
+    QDP_prepare_destroy(&field->dc);
+    if(field->dc.qmpmem) QMP_free_memory(field->dc.qmpmem);
+    free((void*)field->ptr);
+    free(field);
+  }
 }
 
 QDP_Lattice *

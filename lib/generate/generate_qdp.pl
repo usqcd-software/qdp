@@ -167,14 +167,18 @@ sub qla_ext_type($) {
 }
 
 sub prepare_dest($$) {
-  my($sp, $dest) = @_;
+  my($sp0, $dest) = @_;
   my($abbr) = $dest->{ABBR};
   my($tpc) = $dest->{PC};
   my($r) = '';
   if($dest->{SCALAR}) {
-    if($dest->{EXTENDED}) {
+    my $sp = $sp0;
+    if($dest->{TEMP}) {
       if(!$dest->{VECT}) {
-	my($ext) = qla_ext_type($dest);
+	my($ext) = qla_type($dest);
+	if($dest->{EXTENDED}) {
+	  $ext = qla_ext_type($dest);
+	}
 	if($dest->{MULTI}) {
 	  if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
 	    $r = $sp."typedef ".$ext."(nc,foo);\n";
@@ -199,13 +203,15 @@ sub prepare_dest($$) {
 	    $r = $sp.$ext." dtemp;\n";
 	  }
 	}
+	$r .= $sp."ONE {\n";
       }
     }
   } else {
+    my $sp = $sp0 . "  ";
     if($dest->{VECT}) {
-      $r = $sp."QDP_prepare_dest(&dest[i]->dc);\n";
+      $r .= $sp."QDP_prepare_dest(&dest[i]->dc);\n";
     } else {
-      $r = $sp."QDP_prepare_dest(&dest->dc);\n";
+      $r .= $sp."QDP_prepare_dest(&dest->dc);\n";
     }
   }
   return $r;
@@ -213,12 +219,22 @@ sub prepare_dest($$) {
 
 sub prepare_src($$$) {
   my($sp, $src, $v) = @_;
+  $sp .= "  ";
   my($abbr) = $src->{ABBR};
   my($tpc) = $src->{PC};
   my($r) = '';
   if($abbr=~/^_[A-Z]/) { $r = $sp."QDP_prepare_src(&$v->dc);\n"; }
   return $r;
 }
+
+#sub prepare_fields($$$) {
+#  my($dest, $src) = @_;
+#  my($abbr) = $src->{ABBR};
+#  my($tpc) = $src->{PC};
+#  my($r) = '';
+#  if($abbr=~/^_[A-Z]/) { $r = $sp."QDP_prepare_src(&$v->dc);\n"; }
+#  return $r;
+#}
 
 sub global_sum($$) {
   my($dest, $eqop) = @_;
@@ -227,7 +243,7 @@ sub global_sum($$) {
   my($uabbr) = uc $abbr;
   my($tpc) = $dest->{PC};
   my($epc,$cpc) = {'',''};
-  if($tpc =~ /^_F/) {
+  if(($tpc =~ /^_F/)&&$dest->{EXTENDED}) {
     ($epc = $tpc) =~ s/^_F/_D/;
     ($cpc = $tpc) =~ s/^_F/_FD/;
   } else {
@@ -238,54 +254,77 @@ sub global_sum($$) {
   }
   my($nc,$ncn) = ('','');
   my $st = "QLA".$epc."_".$dest->{TYPE};
+  my $stp = "$st *";
   if(($color eq 'N')&&(!$datatypes{$dest->{TYPE}}{NO_COLOR})) {
     $nc = 'nc, ';
     $ncn = '_N';
+    $stp = "$st(nc,(*))";
     $st .= "(nc,)";
   }
+  my($rvar, $rexp, $rcp);
   if(!$eqop) { $eqop = "eq"; }
   if(($dest->{MULTI})||($dest->{VECT})) {
     my $vvar = "nv";
     if($dest->{MULTI}) { $vvar = "ns"; }
-    if($dest->{EXTENDED}) {
+    if($dest->{TEMP}) {
+      $rvar = "dtemp";
+      $rexp = "QLA".$epc.$uabbr."_vp".$eqop.$uabbr."(".$nc.$rvar.", ($stp)REDUCE_GET(i), $vvar);";
+      $rcp  = "QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, ($stp)REDUCE_GET(0), $vvar);";
       if( $epc =~ /^_F/) {
-	$r = "  QMP_sum_float_array((float *)dtemp, ($vvar)*(sizeof($st)/sizeof(float)));\n";
+	$r = "    QMP_sum_float_array((float *)dtemp, ($vvar)*(sizeof($st)/sizeof(float)));\n";
       } elsif( $epc =~ /^_D/) {
-	$r = "  QMP_sum_double_array((double *)dtemp, ($vvar)*(sizeof($st)/sizeof(double)));\n";
+	$r = "    QMP_sum_double_array((double *)dtemp, ($vvar)*(sizeof($st)/sizeof(double)));\n";
       } else {
-	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof($st), dtemp, $vvar);\n";
+	$r = "    QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$epc.$uabbr."_vpeq".$uabbr.", sizeof($st), dtemp, $vvar);\n";
       }
-      $r .= "  QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, dtemp, $vvar);\n";
-      $r .= "  if(nn==0) free(dtemp);\n";
-      $r .= "  if(nn==0) free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
+      $r .= "    TBARRIER;\n";
+      $r .= "    QLA".$cpc.$uabbr."_v".$eqop.$uabbr."(".$nc."dest, dtemp, $vvar);\n";
+      $r .= "    TBARRIER;\n";
+      $r .= "    if(nn==0) free(dtemp);\n";
+      $r .= "    if(nn==0) free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     } else {
+      # shouldn't use this now
+      $rvar = "dest";
+      $rexp = "QLA".$epc.$uabbr."_vp".$eqop.$uabbr."(".$nc.$rvar.", ($stp)REDUCE_GET(i), $vvar);";
       if( $tpc =~ /^_F/) {
-	$r = "  QMP_sum_float_array((float *)dest, ($vvar)*(sizeof($st)/sizeof(float)));\n";
+	$r = "    QMP_sum_float_array((float *)dest, ($vvar)*(sizeof($st)/sizeof(float)));\n";
       } elsif( $tpc =~ /^_D/) {
-	$r = "  QMP_sum_double_array((double *)dest, ($vvar)*(sizeof($st)/sizeof(double)));\n";
+	$r = "    QMP_sum_double_array((double *)dest, ($vvar)*(sizeof($st)/sizeof(double)));\n";
       } else {
-	$r = "  QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
+	$r = "    QDP".$ncn."_binary_reduce_multi(".$nc."QLA".$tpc.$uabbr."_vpeq".$uabbr.", sizeof($st), dest, $vvar);\n";
       }
-      $r .= "  if(nn==0) free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
+      $r .= "    if(nn==0) free(dtemp1);\n" if(($dest->{VECT})&&(!$dest->{MULTI}));
     }
   } else {
-    if($dest->{EXTENDED}) {
+    if($dest->{TEMP}) {
+      $rvar = "&dtemp";
       if( ($dest->{TYPE} eq 'Real') && ($epc eq '_D') ) {
-	$r = "  QMP_sum_double(&dtemp);\n";
-	$r .= "  *dest = dtemp;\n"
+	$rexp = "dtemp += *($st *)REDUCE_GET(i);";
+	$rcp  = "*dest = *($st *)REDUCE_GET(0);";
+	$r  = "    QMP_sum_double(&dtemp);\n";
+	$r .= "    TBARRIER;\n";
+	$r .= "    *dest = dtemp;\n";
+	$r .= "    TBARRIER;\n";
       } else {
+	$rexp = "QLA".$epc.$uabbr."_p".$eqop.$uabbr."(".$nc.$rvar.", ($stp)REDUCE_GET(i));";
+	$rcp  = "QLA".$cpc.$uabbr."_".$eqop.$uabbr."(".$nc."dest, ($stp)REDUCE_GET(0));";
 	if( $epc =~ /^_F/) {
-	  $r = "  QMP_sum_float_array((float *)&dtemp, sizeof($st)/sizeof(float));\n";
+	  $r = "    QMP_sum_float_array((float *)&dtemp, sizeof($st)/sizeof(float));\n";
 	} elsif( $epc =~ /^_D/) {
-	  $r = "  QMP_sum_double_array((double *)&dtemp, sizeof($st)/sizeof(double));\n";
+	  $r = "    QMP_sum_double_array((double *)&dtemp, sizeof($st)/sizeof(double));\n";
 	} else {
-	  $r = "  QDP".$ncn."_binary_reduce(".$nc."QLA".$epc.$uabbr."_peq".$uabbr.", sizeof($st), &dtemp);\n";
+	  $r = "    QDP".$ncn."_binary_reduce(".$nc."QLA".$epc.$uabbr."_peq".$uabbr.", sizeof($st), &dtemp);\n";
 	}
-	$r .= "  QLA".$cpc.$uabbr."_eq".$uabbr."(".$nc."dest, &dtemp);\n";
+	$r .= "    TBARRIER;\n";
+	$r .= "    QLA".$cpc.$uabbr."_eq".$uabbr."(".$nc."dest, &dtemp);\n";
+	$r .= "    TBARRIER;\n";
       }
     } else {
+      # shouldn't use this now
+      $rvar = "dest";
+      $rexp = "QLA".$epc.$uabbr."_p".$eqop.$uabbr."(".$nc.$rvar.", ($stp)REDUCE_GET(i));";
       if( ($dest->{TYPE} eq 'Real') && ($tpc eq '_D') ) {
-	$r = "  QMP_sum_double(dest);\n";
+	$r = "    QMP_sum_double(dest);\n";
       } else {
 	if( $tpc =~ /^_F/) {
 	  $r = "  QMP_sum_float_array((float *)dest, sizeof($st)/sizeof(float));\n";
@@ -298,7 +337,27 @@ sub global_sum($$) {
     }
   }
 
-  return $r;
+  if(!($eqop=~/^eq$/)) {
+    die "unsupported eqop $eqop in reduction!\n";
+  }
+  #if($rvar=~/^dest$/) {
+  #  die "unsupported rvar $rvar in reduction!\n";
+  #}
+  my $t1 = "";
+  my $t2 = "";
+  $t1 .= "  REDUCE_SET($rvar);\n";
+  $t1 .= "  TBARRIER;\n";
+  $t1 .= "  ONE {\n";
+  $t1 .= "    for(int i=1; i<TSIZE; i++) {\n";
+  $t1 .= "      $rexp\n";
+  $t1 .= "    }\n";
+  $t2 .= "  } else {\n";
+  $t2 .= "    TBARRIER;\n";
+  $t2 .= "    $rcp\n";
+  $t2 .= "    TBARRIER;\n";
+  $t2 .= "  }\n";
+
+  return $t1.$r.$t2;
 }
 
 sub bod0($$$$$$$) {
@@ -390,21 +449,21 @@ sub get_nc_def($$$$) {
   return $s;
 }
 
-# construct body of function
-sub func_body($$$$$$$$) {
+# dest is scalar
+sub func_body_scalar($$$$$$$$) {
   my($dest, $op, $src1, $func, $src2, $x1, $x2, $x3) = @_;
 
   my($dt) = $dest->{TYPE};
   my($s1t) = $src1->{TYPE};
   my($s2t) = $src2->{TYPE};
 
-  if( ($dest->{SCALAR}) &&
-      ((!$s1t)||(!$datatypes{$s1t}{NO_PRECISION})) &&
+  if( ((!$s1t)||(!$datatypes{$s1t}{NO_PRECISION})) &&
       ((!$s2t)||(!$datatypes{$s2t}{NO_PRECISION})) ) {
     if(!is_double($dest)) {
       $dest->{EXTENDED} = 1;
     }
   }
+  $dest->{TEMP} = 1;
 
   my($qla1, $qla2, $qla3, $qla4) = qla_name($dest, $op, $src1, $func, $src2);
 
@@ -474,26 +533,33 @@ sub func_body($$$$$$$$) {
 
   #my($voff) = "+".$subset."->offset";
   #my($xoff) = "";
-  my($voff) = $subset."->offset";
   my($xoff) = "0";
-  my($xarg) = ", ".$subset."->index, ".$subset."->len";
-  my($varg) = ", ".$subset."->len";
+  #my($xarg) = ", ".$subset."->index, ".$subset."->len";
+  my($xarg) = ", ".$subset."->index+toff, tlen";
+  #my($voff) = $subset."->offset";
+  my($voff) = $subset."->offset+toff";
+  #my($varg) = ", ".$subset."->len";
+  my($varg) = ", tlen";
   my($sp) = "  ";
   my($def) = "";
-  my($top) = "\n";
+  my($top) = "";
   my($bot) = "";
   my($botsum) = "";
   my($global_eqop) = "eq";
 
-  $def = get_nc_def("  ", $dest, $src1, $src2) if(!$dest->{VECT});
+  $def .= "  TGET;\n";
+  $def .= get_nc_def("  ", $dest, $src1, $src2) if(!$dest->{VECT});
 
   if($dest->{VECT}) {
     if($dest->{MULTI}) {
       my($ssv) = "subset[i]";
       my($nvv) = "ns";
       #$def = "  int i;\n";
-      if($dest->{EXTENDED}) {
-	my($ext) = qla_ext_type($dest);
+      if($dest->{TEMP}) {
+	my($ext) = qla_type($dest);
+	if($dest->{EXTENDED}) {
+	  $ext = qla_ext_type($dest);
+	}
 	$def .= $sp.$ext." *dtemp=NULL;\n";
 	#$def .= $sp.$ext." *dtemp = ($ext *) malloc(ns*sizeof($ext));\n";
 	$def .= $sp."size_t nn = ns*sizeof($ext);\n";
@@ -501,8 +567,11 @@ sub func_body($$$$$$$$) {
 	$def .= $sp."$ext dtempa[nn];\n";
 	$def .= $sp."if(nn) dtemp = dtempa;\n";
       }
-      $def .= "  for(int i=0; i<ns; ++i) {\n";
-      $top  = "  }\n";
+      $def .= "  ONE {\n";
+      $def .= "    for(int i=0; i<ns; ++i) {\n";
+      $top .= "    }\n";
+      $top .= "  }\n";
+      $top .= "  TBARRIER;\n";
       $top .= "\n";
       $top .= "  for(int i=0; i<$nvv; ++i) {\n";
       $top .= get_nc_def("  ", $dest, $src1, $src2);
@@ -511,125 +580,119 @@ sub func_body($$$$$$$$) {
     } else {
       my($ssv) = "subset";
       my($nvv) = "nv";
-      $voff .= "+offset";
-      #$voff .= "offset";
-      $xarg = ", ".$subset."->index+offset, blen";
-      $varg = ", blen";
-      #$def  = "  int i, offset, blen;\n";
-      if($dest->{SCALAR}) {
-	my($tvar,$ttype);
+      my($tvar,$ttype);
+      if($dest->{TEMP}) {
+	my($ext) = qla_type($dest);
 	if($dest->{EXTENDED}) {
-	  my($ext) = qla_ext_type($dest);
-	  $def .= $sp.$ext." *dtemp=NULL, *dtemp1=NULL;\n";
-	  #$def .= $sp.$ext." *dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
-	  #$def .= $sp.$ext." *dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
-	  $def .= $sp."size_t nn = nv*sizeof($ext);\n";
-	  $def .= $sp."if(nn>$maxnn) { dtemp = ($ext *) malloc(nn); dtemp1 = ($ext *) malloc(nn); nn = 0; }\n";
-	  $def .= $sp."$ext dtempa[nn], dtemp1a[nn];\n";
-	  $def .= $sp."if(nn) { dtemp = dtempa; dtemp1 = dtemp1a; }\n";
-	  $tvar = "dtemp";
-	  $ttype = $ext;
-	} else {
-	  $ttype = qla_type($dest);
-	  #$def .= $sp.$ttype." *dtemp1 = ($ttype *) malloc(nv*sizeof($ttype));\n";
-	  $def .= $sp.$ttype." *dtemp1=NULL;\n";
-	  $def .= $sp."size_t nn = nv*sizeof($ttype);\n";
-	  $def .= $sp."if(nn>$maxnn) { dtemp1 = ($ttype *) malloc(nn); nn = 0; }\n";
-	  $def .= $sp."$ttype dtemp1a[nn];\n";
-	  $def .= $sp."if(nn) { dtemp1 = dtemp1a; }\n";
-	  $tvar = "dest";
+	  $ext = qla_ext_type($dest);
 	}
-	($global_eqop = $op) =~ s/_.*//;
-	if(1) {
+	$def .= $sp.$ext." *dtemp=NULL, *dtemp1=NULL;\n";
+	#$def .= $sp.$ext." *dtemp = ($ext *) malloc(nv*sizeof($ext));\n";
+	#$def .= $sp.$ext." *dtemp1 = ($ext *) malloc(nv*sizeof($ext));\n";
+	$def .= $sp."size_t nn = nv*sizeof($ext);\n";
+	$def .= $sp."if(nn>$maxnn) { dtemp = ($ext *) malloc(nn); dtemp1 = ($ext *) malloc(nn); nn = 0; }\n";
+	$def .= $sp."$ext dtempa[nn], dtemp1a[nn];\n";
+	$def .= $sp."if(nn) { dtemp = dtempa; dtemp1 = dtemp1a; }\n";
+	$tvar = "dtemp";
+	$ttype = $ext;
+      } else {
+	$ttype = qla_type($dest);
+	#$def .= $sp.$ttype." *dtemp1 = ($ttype *) malloc(nv*sizeof($ttype));\n";
+	$def .= $sp.$ttype." *dtemp1=NULL;\n";
+	$def .= $sp."size_t nn = nv*sizeof($ttype);\n";
+	$def .= $sp."if(nn>$maxnn) { dtemp1 = ($ttype *) malloc(nn); nn = 0; }\n";
+	$def .= $sp."$ttype dtemp1a[nn];\n";
+	$def .= $sp."if(nn) { dtemp1 = dtemp1a; }\n";
+	$tvar = "dest";
+      }
+      ($global_eqop = $op) =~ s/_.*//;
+      if(1) {
+	my($dpc) = $ttype;
+	$dpc =~ s/_[^_]*$//;
+	$dpc .= uc $dest->{ABBR};
+	$def .= $sp.$dpc."_veq_zero($tvar, $nvv);\n";
+	$qla2 =~ s/_eqm_/_eq_/;
+	$qla2 =~ s/_.eq_/_eq_/;
+	$botsum = $dpc."_vpeq";
+	$botsum .= uc $dest->{ABBR};
+	$botsum .= "($tvar, dtemp1, $nvv);\n";
+      } else {
+	# need to strip _.* from $op
+	if( ($op eq "eq") || ($op eq "eqm") ) {
 	  my($dpc) = $ttype;
 	  $dpc =~ s/_[^_]*$//;
 	  $dpc .= uc $dest->{ABBR};
-	  $def .= $sp.$dpc."_veq_zero($tvar, $nvv);\n";
-	  $qla2 =~ s/_eqm_/_eq_/;
-	  $qla2 =~ s/_.eq_/_eq_/;
-	  $botsum = $dpc."_vpeq";
-	  $botsum .= uc $dest->{ABBR};
-	  $botsum .= "($tvar, dtemp1, $nvv);\n";
-	} else {
-	  # need to strip _.* from $op
-	  if( ($op eq "eq") || ($op eq "eqm") ) {
-	    my($dpc) = $ttype;
-	    $dpc =~ s/_[^_]*$//;
-	    $dpc .= uc $dest->{ABBR};
-	    $def .= $sp.$dpc."_veq_zero(dtemp, $nvv);\n";
-	    if($op eq "eq") {
-	      $qla2 =~ s/eq/peq/;
-	    } else {
-	      $qla2 =~ s/eq/meq/;
-	    }
+	  $def .= $sp.$dpc."_veq_zero(dtemp, $nvv);\n";
+	  if($op eq "eq") {
+	    $qla2 =~ s/eq/peq/;
+	  } else {
+	    $qla2 =~ s/eq/meq/;
 	  }
 	}
       }
-#      $def .= "  for(i=0; i<nv; ++i) {\n";
-#      $top  = "  }\n";
-#      $top .= "\n";
-#      $top .= "  offset = 0;\n";
-#      $top .= "  blen = QDP_block_size;\n";
-#      $top .= "  while(1) {\n";
-#      $top .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
-#      $top .= "    if( blen <= 0) break;\n";
-#      $top .= "    for(i=0; i<$nvv; ++i) {\n";
+      $def .= "  if(subset->len==0) for(int i=0; i<$nvv; ++i) {\n";
+      $def .= prepare_dest("  ", $dest);
+      $def .= "  }\n";
       $def .= "  int offset = 0;\n";
       $def .= "  int blen = QDP_block_size;\n";
       $def .= "  while(1) {\n";
       $def .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
       $def .= "    if( blen <= 0) break;\n";
+      $def .= "    int toff, toff1; TSPLIT(toff, toff1, blen); int tlen = toff1-toff; toff += offset;\n";
       $def .= "    for(int i=0; i<$nvv; ++i) {\n";
       $def .= get_nc_def("    ", $dest, $src1, $src2);
       $def .= "      if(offset==0) {\n";
-      $top  = "      }\n";
+      $def .= "        ONE {\n";
+      $top .= "        }\n";
+      $top .= "        TBARRIER;\n";
+      $top .= "      }\n";
       $bot  = "    }\n";
       $bot .= "    ".$botsum if($botsum);
       $bot .= "    offset += blen;\n";
       $bot .= "  }\n";
       $sp .= "    ";
     }
+  } else { # not VECT
+    if(!$dest->{TEMP}) { $def .= "  ONE {\n"; }
+    $top .= "  }\n";
+    $top .= "  TBARRIER;\n\n";
   }
 
-  #my($vdv) = $dest->{VAR}."->data".$voff;
-  #my($xdv) = $dest->{VAR}."->data".$xoff;
   my($vdv) = "QDP_offset_data(".$dest->{VAR}.",".$voff.")";
   my($xdv) = "QDP_offset_data(".$dest->{VAR}.",".$xoff.")";
-  if($dest->{SCALAR}) {
-    if(($dest->{MULTI})&&(!$dest->{VECT})) {
-      if($dest->{EXTENDED}) {
-	$vdv = $xdv = "&dtemp[i]";
-      } else {
-	$vdv = $xdv = "&".$dest->{VAR}."[i]";
-      }
-      #$def .= "  int i;\n";
-      $top .= "  for(int i=0; i<ns; i++) {\n";
-      $bot = "  }\n";
-      #$sp .= "  ";
-    } elsif($dest->{VECT}) {
-      if($dest->{EXTENDED}) {
-	if($dest->{MULTI}) {
-	  $vdv = $xdv = "&dtemp[i]";
-	} else {
-	  $vdv = $xdv = "&dtemp1[i]";
-	}
-      } else {
-	if($dest->{MULTI}) {
-	  $vdv = $xdv = $dest->{VAR};
-	} else {
-	  $vdv = $xdv = "&dtemp1[i]";
-	}
-      }
+  if(($dest->{MULTI})&&(!$dest->{VECT})) {
+    if($dest->{TEMP}) {
+      $vdv = $xdv = "&dtemp[i]";
     } else {
-      if($dest->{EXTENDED}) {
-	$vdv = $xdv = "&dtemp";
+      $vdv = $xdv = "&".$dest->{VAR}."[i]";
+    }
+    #$def .= "  int i;\n";
+    $top .= "  for(int i=0; i<ns; i++) {\n";
+    $bot = "  }\n";
+    #$sp .= "  ";
+  } elsif($dest->{VECT}) {
+    if($dest->{MULTI}) {
+      if($dest->{TEMP}) {
+	$vdv = $xdv = "&dtemp[i]";
       } else {
 	$vdv = $xdv = $dest->{VAR};
       }
+    } else {
+      $vdv = $xdv = "&dtemp1[i]";
     }
-    $bot .= global_sum($dest, $global_eqop);
+  } else {
+    if($dest->{TEMP}) {
+      $vdv = $xdv = "&dtemp";
+    } else {
+      $vdv = $xdv = $dest->{VAR};
+    }
   }
+  $bot .= global_sum($dest, $global_eqop);
   my($sp2) = $sp."  ";
+
+  if(!$dest->{VECT} || $dest->{MULTI}) {
+    $top .= "  int toff, toff1; TSPLIT(toff, toff1, ".$subset."->len); int tlen = toff1-toff;\n";
+  }
 
   my($body);
   if($nsrc==0) {
@@ -644,7 +707,6 @@ sub func_body($$$$$$$$) {
     $body .= $sp."}\n";
     $body .= $bot;
     $body .= "}\n";
-    #$body = body0($qla1, $qla2, $y0, $dest, $y1);
   } elsif($nsrc==1) {
     if($datatypes{$src->{TYPE}}{NO_SHIFT}) {
       my($xt) = $y1.", ".$src->{VAR}."->data".$xoff.$y2;
@@ -661,7 +723,6 @@ sub func_body($$$$$$$$) {
       $body .= $sp."}\n";
       $body .= $bot;
       $body .= "}\n";
-      #$body = body1ns($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $srcvar, $y2);
     } else {
       $body = "{\n";
       $body .= $def;
@@ -675,7 +736,6 @@ sub func_body($$$$$$$$) {
       $body .= $sp."}\n";
       $body .= $bot;
       $body .= "}\n";
-      #$body = body1($qla1, $qla2, $qla3, $y0, $dest, $y1, $src, $srcvar, $y2);
     }
   } else {
     $body = "{\n";
@@ -691,10 +751,207 @@ sub func_body($$$$$$$$) {
     $body .= $sp."}\n";
     $body .= $bot;
     $body .= "}\n";
-    #$body = body2($qla1, $qla2, $qla3, $qla4, $y0, $dest,
-	#	  $y1, $src1, $src1->{VAR}, $y2, $src2, $src2->{VAR}, $y3);
   }
   return $body;
+}
+
+# dest is field
+sub func_body_field($$$$$$$$) {
+  my($dest, $op, $src1, $func, $src2, $x1, $x2, $x3) = @_;
+
+  my($dt) = $dest->{TYPE};
+  my($s1t) = $src1->{TYPE};
+  my($s2t) = $src2->{TYPE};
+
+  my($qla1, $qla2, $qla3, $qla4) = qla_name($dest, $op, $src1, $func, $src2);
+
+  if($dest->{VECT}) {
+    $x1 =~ s/(QLA_\S*\s+)[*]/$1&/g;
+    $x2 =~ s/(QLA_\S*\s+)[*]/$1&/g;
+    $x3 =~ s/(QLA_\S*\s+)[*]/$1&/g;
+  }
+
+  my($y0) = ('');
+  if($color eq 'N') { $y0 = 'nc, '; }
+  my($y1) = $x1;
+  $y1 =~ s/[^, ]*[ *]+([^, *]+),/$1,/g;
+  my($y2) = $x2;
+  if($func eq '_func') {
+    $y2 =~ s/\([^()]*\)([^()]*)$/$1/;
+    $y2 =~ s/[()]*//g;
+  }
+  $y2 =~ s/[^, ]*[ *]+([^, *]+),/$1,/g;
+  my($y3) = $x3;
+  $y3 =~ s/[^, ]*[ *]+([^, *]+),/$1,/g;
+
+  if($dest->{VECT}) {
+    $dest->{VAR} .= "[i]";
+    if($dest->{SCALAR}) { $dest->{VAR} = "\&".$dest->{VAR}; }
+    $src1->{VAR} .= "[i]";
+    if($src1->{SCALAR}) { $src1->{VAR} = "\&".$src1->{VAR}; }
+    $src2->{VAR} .= "[i]";
+    if($src2->{SCALAR}) { $src2->{VAR} = "\&".$src2->{VAR}; }
+    $y1 =~ s/,/[i],/g;
+    $y2 =~ s/,/[i],/g;
+    $y3 =~ s/,/[i],/g;
+  }
+
+  if($y1) { $y1 = ", ".$y1; $y1 =~ s/[, ]*$//; }
+  if($y2) { $y2 = ", ".$y2; $y2 =~ s/[, ]*$//; }
+  if($y3) { $y3 = ", ".$y3; $y3 =~ s/[, ]*$//; }
+
+  my($nsrc, $src);
+  $nsrc = 2;
+  if(!$s2t) {
+    $nsrc--;
+    $qla3 .= $qla4;
+    $qla4 = "";
+    $y2 .= $y3;
+    $y3 = "";
+    $src = $src1;
+  }
+  if(!$s1t) {
+    $nsrc--;
+    $qla2 .= $qla3;
+    $qla3 = $qla4;
+    $y1 .= $y2;
+    $y2 = $y3;
+    $src = $src2;
+  } elsif($src1->{SCALAR}) {
+    $nsrc--;
+    $qla2 .= $qla3;
+    $qla3 = $qla4;
+    $y1 .= ", ".$src1->{VAR}.$y2;
+    $y2 = $y3;
+    $src = $src2;
+  }
+
+  my($subset) = "subset";
+
+  my($xoff) = "0";
+  my($xarg) = ", ".$subset."->index+toff, tlen";
+  my($voff) = $subset."->offset+toff";
+  my($varg) = ", tlen";
+  my($sp) = "  ";
+  my($def) = "";
+  my($top) = "";
+  my($bot) = "";
+  my($botsum) = "";
+  my($global_eqop) = "eq";
+
+  $def .= "  TGET;\n";
+  $def .= get_nc_def("  ", $dest, $src1, $src2) if(!$dest->{VECT});
+
+  if($dest->{VECT}) {
+    my($ssv) = "subset";
+    my($nvv) = "nv";
+    $def .= "  if(subset->len==0) for(int i=0; i<$nvv; ++i) {\n";
+    $def .= prepare_dest("  ", $dest);
+    $def .= "  }\n";
+    $def .= "  int offset = 0;\n";
+    $def .= "  int blen = QDP_block_size;\n";
+    $def .= "  while(1) {\n";
+    $def .= "    if( blen > $ssv->len - offset ) blen = $ssv->len - offset;\n";
+    $def .= "    if( blen <= 0) break;\n";
+    $def .= "    int toff, toff1; TSPLIT(toff, toff1, blen); int tlen = toff1-toff; toff += offset;\n";
+    $def .= "    for(int i=0; i<$nvv; ++i) {\n";
+    $def .= get_nc_def("    ", $dest, $src1, $src2);
+    $def .= "      if(offset==0) {\n";
+    $def .= "        ONE {\n";
+    $top .= "        }\n";
+    $top .= "        TBARRIER;\n";
+    $top .= "      }\n";
+    $bot  = "    }\n";
+    $bot .= "    ".$botsum if($botsum);
+    $bot .= "    offset += blen;\n";
+    $bot .= "  }\n";
+    $sp .= "    ";
+  } else { # not VECT
+    if(!$dest->{TEMP}) { $def .= "  ONE {\n"; }
+    $top .= "  }\n";
+    $top .= "  TBARRIER;\n\n";
+  }
+
+  #my($vdv) = $dest->{VAR}."->data".$voff;
+  #my($xdv) = $dest->{VAR}."->data".$xoff;
+  my($vdv) = "QDP_offset_data(".$dest->{VAR}.",".$voff.")";
+  my($xdv) = "QDP_offset_data(".$dest->{VAR}.",".$xoff.")";
+  my($sp2) = $sp."  ";
+
+  if(!$dest->{VECT}) {
+    $top .= "  int toff, toff1; TSPLIT(toff, toff1, ".$subset."->len); int tlen = toff1-toff;\n";
+  }
+
+  my($body);
+  if($nsrc==0) {
+    $body = "{\n";
+    $body .= $def;
+    $body .= prepare_dest($sp, $dest);
+    $body .= $top;
+    $body .= $sp."if( $subset->indexed ) {\n";
+    $body .= bod0($sp2, $qla1."x".$qla2, $y0, $xdv, $y1, $xoff, $xarg);
+    $body .= $sp."} else {\n";
+    $body .= bod0($sp2, $qla1."v".$qla2, $y0, $vdv, $y1, $voff, $varg);
+    $body .= $sp."}\n";
+    $body .= $bot;
+    $body .= "}\n";
+  } elsif($nsrc==1) {
+    if($datatypes{$src->{TYPE}}{NO_SHIFT}) {
+      my($xt) = $y1.", ".$src->{VAR}."->data".$xoff.$y2;
+      my($vt) = $y1.", ".$src->{VAR}."->data".$voff.$y2;
+      $body = "{\n";
+      $body .= $def;
+      $body .= prepare_dest($sp, $dest);
+      $body .= prepare_src($sp, $src, $src->{VAR});
+      $body .= $top;
+      $body .= $sp."if( $subset->indexed ) {\n";
+      $body .= bod0($sp2, $qla1."x".$qla2.$qla3, $y0, $xdv, $xt, $xoff, $xarg);
+      $body .= $sp."} else {\n";
+      $body .= bod0($sp2, $qla1."v".$qla2.$qla3, $y0, $vdv, $vt, $voff, $varg);
+      $body .= $sp."}\n";
+      $body .= $bot;
+      $body .= "}\n";
+    } else {
+      $body = "{\n";
+      $body .= $def;
+      $body .= prepare_dest($sp, $dest);
+      $body .= prepare_src($sp, $src, $src->{VAR});
+      $body .= $top;
+      $body .= $sp."if( $subset->indexed ) {\n";
+      $body .= bod1($sp2, $qla1."x".$qla2, $qla3, $y0, $xdv, $y1, $src, $y2, $xoff, $xarg);
+      $body .= $sp."} else {\n";
+      $body .= bod1($sp2, $qla1."v".$qla2, $qla3, $y0, $vdv, $y1, $src, $y2, $voff, $varg);
+      $body .= $sp."}\n";
+      $body .= $bot;
+      $body .= "}\n";
+    }
+  } else {
+    $body = "{\n";
+    $body .= $def;
+    $body .= prepare_dest($sp, $dest);
+    $body .= prepare_src($sp, $src1, $src1->{VAR});
+    $body .= prepare_src($sp, $src2, $src2->{VAR});
+    $body .= $top;
+    $body .= $sp."if( $subset->indexed ) {\n";
+    $body .= bod2($sp2, $qla1."x".$qla2, $qla3, $qla4, $y0, $xdv, $y1, $src1, $y2, $src2, $y3, $xoff, $xarg);
+    $body .= $sp."} else {\n";
+    $body .= bod2($sp2, $qla1."v".$qla2, $qla3, $qla4, $y0, $vdv, $y1, $src1, $y2, $src2, $y3, $voff, $varg);
+    $body .= $sp."}\n";
+    $body .= $bot;
+    $body .= "}\n";
+  }
+  return $body;
+}
+
+# construct body of function
+sub func_body($$$$$$$$) {
+  my($dest, $op, $src1, $func, $src2, $x1, $x2, $x3) = @_;
+
+  if($dest->{SCALAR}) {
+    return func_body_scalar($dest, $op, $src1, $func, $src2, $x1, $x2, $x3);
+  } else {
+    return func_body_field($dest, $op, $src1, $func, $src2, $x1, $x2, $x3);
+  }
 }
 
 # get full name for type

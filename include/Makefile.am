@@ -9,7 +9,8 @@ include_HEADERS = qdp.h \
 	qdp_layout.h \
 	qdp_subset.h \
 	qdp_shift.h \
-	qdp_string.h
+	qdp_string.h \
+	qdp_thread.h
 
 BUILT_SOURCES = qdp_types.h qdp_io.h
 

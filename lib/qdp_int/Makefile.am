@@ -3,8 +3,22 @@
 AUTOMAKE_OPTIONS = no-dependencies
 
 QDPSRC1 = \
-QDP_I_eq_I.c \
+QDP_create_I.c \
+QDP_create_S.c \
+QDP_discard_I.c \
+QDP_discard_S.c \
+QDP_expose_I.c \
+QDP_expose_S.c \
+QDP_extract_I.c \
+QDP_extract_packed_I.c \
+QDP_extract_packed_S.c \
+QDP_extract_S.c \
+QDP_I_eq_func.c \
+QDP_I_eq_funci.c \
+QDP_I_eq_i1.c \
+QDP_I_eq_i1_times_I.c \
 QDP_I_eq_I_and_I.c \
+QDP_I_eq_I.c \
 QDP_I_eq_I_divide_I.c \
 QDP_I_eq_I_eq_I.c \
 QDP_I_eq_I_ge_I.c \
@@ -22,60 +36,60 @@ QDP_I_eq_I_or_I.c \
 QDP_I_eq_I_plus_I.c \
 QDP_I_eq_I_rshift_I.c \
 QDP_I_eq_I_times_I.c \
-QDP_I_eq_I_xor_I.c \
-QDP_I_eq_func.c \
-QDP_I_eq_funci.c \
-QDP_I_eq_i1.c \
-QDP_I_eq_i1_times_I.c \
 QDP_I_eq_i_times_I_minus_I.c \
 QDP_I_eq_i_times_I_plus_I.c \
+QDP_I_eq_I_xor_I.c \
+QDP_I_eqm_i1_times_I.c \
+QDP_I_eqm_I.c \
+QDP_I_eqm_I_times_I.c \
 QDP_I_eq_not_I.c \
 QDP_I_eq_sI.c \
 QDP_I_eq_zero.c \
-QDP_I_eqm_I.c \
-QDP_I_eqm_I_times_I.c \
-QDP_I_eqm_i1_times_I.c \
+QDP_I_meq_i1_times_I.c \
 QDP_I_meq_I.c \
 QDP_I_meq_I_times_I.c \
-QDP_I_meq_i1_times_I.c \
+QDP_I_peq_i1_times_I.c \
 QDP_I_peq_I.c \
 QDP_I_peq_I_times_I.c \
-QDP_I_peq_i1_times_I.c \
 QDP_I_veq_I.c \
 QDP_I_veq_I_minus_I.c \
 QDP_I_veq_I_plus_I.c \
 QDP_I_veq_I_times_I.c \
-QDP_I_veq_sI.c \
 QDP_I_veqm_I.c \
 QDP_I_veqm_I_times_I.c \
+QDP_I_veq_sI.c \
 QDP_I_vmeq_I.c \
 QDP_I_vmeq_I_times_I.c \
 QDP_I_vpeq_I.c \
 QDP_I_vpeq_I_times_I.c \
-QDP_S_eq_S.c \
-QDP_S_eq_S_mask_I.c \
-QDP_S_eq_sS.c \
-QDP_S_eq_seed_i_I.c \
-QDP_S_veq_S.c \
-QDP_S_veq_sS.c \
-QDP_create_I.c \
-QDP_create_S.c \
-QDP_discard_I.c \
-QDP_discard_S.c \
-QDP_expose_I.c \
-QDP_expose_S.c \
-QDP_extract_I.c \
-QDP_extract_S.c \
-QDP_extract_packed_I.c \
-QDP_extract_packed_S.c \
 QDP_read_I.c \
 QDP_read_S.c \
+QDP_S_eq_S.c \
+QDP_S_eq_seed_i_I.c \
+QDP_S_eq_S_mask_I.c \
+QDP_S_eq_sS.c \
+QDP_S_veq_S.c \
+QDP_S_veq_sS.c \
 QDP_write_I.c \
 QDP_write_S.c
 
 QDPOBJ1 = \
-QDP_I_eq_I.o \
+QDP_create_I.o \
+QDP_create_S.o \
+QDP_discard_I.o \
+QDP_discard_S.o \
+QDP_expose_I.o \
+QDP_expose_S.o \
+QDP_extract_I.o \
+QDP_extract_packed_I.o \
+QDP_extract_packed_S.o \
+QDP_extract_S.o \
+QDP_I_eq_func.o \
+QDP_I_eq_funci.o \
+QDP_I_eq_i1.o \
+QDP_I_eq_i1_times_I.o \
 QDP_I_eq_I_and_I.o \
+QDP_I_eq_I.o \
 QDP_I_eq_I_divide_I.o \
 QDP_I_eq_I_eq_I.o \
 QDP_I_eq_I_ge_I.o \
@@ -93,54 +107,40 @@ QDP_I_eq_I_or_I.o \
 QDP_I_eq_I_plus_I.o \
 QDP_I_eq_I_rshift_I.o \
 QDP_I_eq_I_times_I.o \
-QDP_I_eq_I_xor_I.o \
-QDP_I_eq_func.o \
-QDP_I_eq_funci.o \
-QDP_I_eq_i1.o \
-QDP_I_eq_i1_times_I.o \
 QDP_I_eq_i_times_I_minus_I.o \
 QDP_I_eq_i_times_I_plus_I.o \
+QDP_I_eq_I_xor_I.o \
+QDP_I_eqm_i1_times_I.o \
+QDP_I_eqm_I.o \
+QDP_I_eqm_I_times_I.o \
 QDP_I_eq_not_I.o \
 QDP_I_eq_sI.o \
 QDP_I_eq_zero.o \
-QDP_I_eqm_I.o \
-QDP_I_eqm_I_times_I.o \
-QDP_I_eqm_i1_times_I.o \
+QDP_I_meq_i1_times_I.o \
 QDP_I_meq_I.o \
 QDP_I_meq_I_times_I.o \
-QDP_I_meq_i1_times_I.o \
+QDP_I_peq_i1_times_I.o \
 QDP_I_peq_I.o \
 QDP_I_peq_I_times_I.o \
-QDP_I_peq_i1_times_I.o \
 QDP_I_veq_I.o \
 QDP_I_veq_I_minus_I.o \
 QDP_I_veq_I_plus_I.o \
 QDP_I_veq_I_times_I.o \
-QDP_I_veq_sI.o \
 QDP_I_veqm_I.o \
 QDP_I_veqm_I_times_I.o \
+QDP_I_veq_sI.o \
 QDP_I_vmeq_I.o \
 QDP_I_vmeq_I_times_I.o \
 QDP_I_vpeq_I.o \
 QDP_I_vpeq_I_times_I.o \
-QDP_S_eq_S.o \
-QDP_S_eq_S_mask_I.o \
-QDP_S_eq_sS.o \
-QDP_S_eq_seed_i_I.o \
-QDP_S_veq_S.o \
-QDP_S_veq_sS.o \
-QDP_create_I.o \
-QDP_create_S.o \
-QDP_discard_I.o \
-QDP_discard_S.o \
-QDP_expose_I.o \
-QDP_expose_S.o \
-QDP_extract_I.o \
-QDP_extract_S.o \
-QDP_extract_packed_I.o \
-QDP_extract_packed_S.o \
 QDP_read_I.o \
 QDP_read_S.o \
+QDP_S_eq_S.o \
+QDP_S_eq_seed_i_I.o \
+QDP_S_eq_S_mask_I.o \
+QDP_S_eq_sS.o \
+QDP_S_veq_S.o \
+QDP_S_veq_sS.o \
 QDP_write_I.o \
 QDP_write_S.o
 
@@ -166,7 +166,7 @@ lib_LIBRARIES = ../libqdp_int.a
 AM_CFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include -I$(QLADIR)/include -I$(QIODIR)/include -I$(QMPDIR)/include
 
 # this is just to force automake to include the .c.o rule
-nodist____libqdp_int_a_SOURCES = QDP_I_eq_I.c
+nodist____libqdp_int_a_SOURCES = QDP_create_I.c
 
 nodist_include_HEADERS = $(QDPHDR)
 

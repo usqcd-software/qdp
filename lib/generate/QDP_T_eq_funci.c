@@ -13,19 +13,23 @@ QDP$PC_$ABBR_eq_funci($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)
 #if ($C+0) == -1
   int nc = QDP_get_nc(dest);
 #endif
-  int i, j;
+  TGET;
+  ONE {
+    QDP_prepare_dest(&dest->dc);
+  }
+  TBARRIER;
 
-  QDP_prepare_dest(&dest->dc);
-
+  int i0, i1;
+  TSPLIT(i0, i1, subset->len);
   if(subset->indexed) {
-    for(i=0; i<subset->len; ++i) {
-      j = subset->index[i];
-      func($NCVAR QDP_offset_data(dest,j), j );
+    for(int i=i0; i<i1; ++i) {
+      int j = subset->index[i];
+      func($NCVAR QDP_offset_data(dest,j), j);
     }
   } else {
-    j = subset->offset + subset->len;
-    for(i=subset->offset; i<j; ++i) {
-      func($NCVAR QDP_offset_data(dest,i), i );
+    for(int i=i0; i<i1; ++i) {
+      int j = subset->offset + i;
+      func($NCVAR QDP_offset_data(dest,j), j);
     }
   }
 }
@@ -41,19 +45,23 @@ QDP$PC_$ABBR_eq_funcia($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest
 #if ($C+0) == -1
   int nc = QDP_get_nc(dest);
 #endif
-  int i, j;
+  TGET;
+  ONE {
+    QDP_prepare_dest(&dest->dc);
+  }
+  TBARRIER;
 
-  QDP_prepare_dest(&dest->dc);
-
+  int i0, i1;
+  TSPLIT(i0, i1, subset->len);
   if(subset->indexed) {
-    for(i=0; i<subset->len; ++i) {
-      j = subset->index[i];
+    for(int i=i0; i<i1; ++i) {
+      int j = subset->index[i];
       func($NCVAR QDP_offset_data(dest,j), j, args);
     }
   } else {
-    j = subset->offset + subset->len;
-    for(i=subset->offset; i<j; ++i) {
-      func($NCVAR QDP_offset_data(dest,i), i, args);
+    for(int i=i0; i<i1; ++i) {
+      int j = subset->offset + i;
+      func($NCVAR QDP_offset_data(dest,j), j, args);
     }
   }
 }

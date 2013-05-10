@@ -4,6 +4,9 @@
 #include "congrad_ks.h"
 
 #define dclock QDP_time
+#define TINFO  QDP_ThreadInfo *tinfo = QDP_thread_info()
+#define TZERO  if(QDP_thread_num_info(tinfo)==0)
+#define MASTER if(QDP_this_node==0&&QDP_thread_num_info(tinfo)==0)
 
 int
 congrad(QDP_ColorVector  *result,
@@ -19,6 +22,7 @@ congrad(QDP_ColorVector  *result,
   QDP_Subset sv[2];
   int i, dscount=0, cgcount=0;
   double dstime=0, cgtime=0;
+  TINFO;
 
   prepare_dslash();
 
@@ -38,11 +42,11 @@ congrad(QDP_ColorVector  *result,
   QDP_r_eq_norm2_V(&rhs_norm, rhs, QDP_even);
   eps = rhs_norm * epsilon;
 
-  if(QDP_this_node==0) printf("norm=%g  eps=%g\n",rhs_norm,eps);
+  MASTER printf("norm=%g  eps=%g\n",rhs_norm,eps);
 
   do {
     QDP_r_eq_norm2_V(&a,result,QDP_even);
-    if(QDP_this_node==0) printf("result norm=%g\n",a);
+    MASTER printf("result norm=%g\n",a);
     //dstime -= dclock();
     dslash(p, gauge, result, QDP_odd);
     dslash(r, gauge, p, QDP_even);
@@ -53,17 +57,17 @@ congrad(QDP_ColorVector  *result,
     QDP_V_eq_V(p, r, QDP_even);
     QDP_r_eq_norm2_V(&rn, r, QDP_even);
 
-    cgtime -= dclock();
+    TZERO cgtime -= dclock();
     for (i = 0; i < max_iter; i++) {
       //rnold = rn;
       //QDP_r_eq_norm2_V(&rn, r, QDP_even);
-      if(QDP_this_node==0) printf("%6i c=%g\n",i,rn);
+      //MASTER printf("%6i c=%g\n",i,rn);
       if (rn < eps) break;
 
-      dstime -= dclock();
+      TZERO dstime -= dclock();
       dslash(Mr, gauge, r, QDP_odd);
       dslash(MMr, gauge, Mr, QDP_even);
-      dstime += dclock();
+      TZERO dstime += dclock();
       dscount += 2;
       QDP_V_meq_r_times_V(MMr, &mass2, r, QDP_even);
 
@@ -93,7 +97,7 @@ congrad(QDP_ColorVector  *result,
       QDP_V_peq_r_times_V(r, &a, MMp, QDP_even);  /* r += a*MMp */
       cgcount++;
     }
-    cgtime += dclock();
+    TZERO cgtime += dclock();
   } while(rn>eps);
 
   QDP_destroy_V(r);
@@ -107,7 +111,7 @@ congrad(QDP_ColorVector  *result,
   cleanup_dslash();
 
   //fprintf(stderr,"done cleanup\n");
-  if(QDP_this_node==0) {
+  MASTER {
     double dsmflop, cgmflop;
     dsmflop = 0.000570*QDP_sites_on_node/2;
     cgmflop = 2*dsmflop + 0.000072*QDP_sites_on_node;

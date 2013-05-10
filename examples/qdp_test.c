@@ -138,6 +138,16 @@ run_tests(void)
   p = QDP_create_P();
   printf0("done\n");
 
+  printf0("testing destroying unused fields... ");
+  fflush(stdout);
+  QDP_destroy_S(rs);
+  rs = QDP_create_S();
+  QDP_destroy_R(r);
+  r = QDP_create_R();
+  QDP_destroy_M(m);
+  m = QDP_create_M();
+  printf0("done\n");
+
   printf0("setting test fields... ");
   fflush(stdout);
   QDP_I_eq_func(li, initial_li, QDP_all);
@@ -273,14 +283,13 @@ main(int argc, char *argv[])
 {
   int lattice_size[4] = { 8,8,8,8 };
 
-  printf0("Initializing lattice... ");
-  fflush(stdout);
   QDP_initialize(&argc, &argv);
-  printf0("done\n");
+
   printf0("Setting lattice size... ");
   fflush(stdout);
   QDP_set_latsize(4, lattice_size);
   printf0("done\n");
+
   printf0("Creating layout... ");
   fflush(stdout);
   QDP_create_layout();

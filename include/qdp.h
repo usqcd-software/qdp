@@ -55,6 +55,7 @@
 /* Headers we always define */
 #include <qdp_common.h>
 #include <qdp_io.h>
+#include <qdp_thread.h>
 #include <qdp_int.h>
 #include <qdp_f.h>
 #include <qdp_d.h>

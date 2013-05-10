@@ -18,6 +18,8 @@
 extern "C" {
 #endif
 
+#define QDP_time() QMP_time()
+
   extern int QDP_restart;
   extern int QDP_prof_level;
   extern int QDP_keep_time;
@@ -34,7 +36,7 @@ extern "C" {
 
   extern int QDP_check_comm(int newval);
   extern int QDP_profcontrol(int newval);
-  extern double QDP_time(void);
+  //extern double QDP_time(void);
   extern void QDP_register_prof(QDP_prof *qp);
 
   extern void QDP_suspend_comm(void);

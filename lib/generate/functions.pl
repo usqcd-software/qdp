@@ -489,6 +489,17 @@ make_functions(%{{
    SRC2_TYPES  => [ 'ColorMatrix' ],
   )}});
 
+comment1("Eigenvalues of color matrix");
+comment2("r = eigenvals(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'ColorVector' ],
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'eigenvals','eigenvalsH' ],
+   SRC2_TYPES  => [ 'ColorMatrix' ],
+  )}});
+
 comment1("Inverse of color matrix");
 comment2("r = a^-1");
 
@@ -507,7 +518,7 @@ make_functions(%{{
   (
    DEST_TYPES  => [ 'ColorMatrix' ],
    EQ_OPS      => [ 'eq' ],
-   FUNCS       => [ 'exp' ],
+   FUNCS       => [ 'exp','expA','expTA' ],
    SRC2_TYPES  => [ 'ColorMatrix' ],
   )}});
 
@@ -518,12 +529,12 @@ make_functions(%{{
   (
    DEST_TYPES  => [ 'ColorMatrix' ],
    EQ_OPS      => [ 'eq' ],
-   FUNCS       => [ 'sqrt' ],
+   FUNCS       => [ 'sqrt','sqrtPH','invsqrt','invsqrtPH' ],
    SRC2_TYPES  => [ 'ColorMatrix' ],
   )}});
 
 comment1("Logarithm of color matrix");
-comment2("r = exp(a)");
+comment2("r = log(a)");
 
 make_functions(%{{
   (

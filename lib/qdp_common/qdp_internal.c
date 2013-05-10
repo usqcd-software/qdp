@@ -1,7 +1,11 @@
+//#define DO_TRACE
 #include <stdlib.h>
 #include <string.h>
 #include "qdp_common_internal.h"
 #include "qdp_internal.h"
+
+//#undef TRACE
+//#define TRACE printf("%i: %s %s %i\n", QDP_this_node, __FILE__, __func__, __LINE__)
 
 // prevent use of default lattice variables/functions
 #define QDP_sites_on_node ERROR
@@ -390,6 +394,22 @@ QDP_prepare_src(QDP_data_common_t *dc)
   LEAVE;
 }
 
+void
+QDP_prepare_fields_threaded(QDP_data_common_t *d[], int nd,
+			    QDP_data_common_t *s[], int ns
+			    TDECL)
+{
+  if(TNUM==0) {
+    for(int i=0; i<nd; i++) {
+      QDP_prepare_dest(d[i]);
+    }
+    for(int i=0; i<ns; i++) {
+      QDP_prepare_src(s[i]);
+    }
+  }
+  TBARRIER;
+}
+
 /* prepare pair of fields for shift */
 /* return value tells whether restart is possible */
 int
@@ -401,18 +421,22 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
 
   ENTER;
 
+  TRACE;
   if(src_dc->discarded) {
     fprintf(stderr,"error: attempt to use discarded data\n");
     QDP_abort(1);
   }
+  TRACE;
   if(src_dc->exposed) {
     fprintf(stderr,"error: attempt to use exposed field\n");
     QDP_abort(1);
   }
+  TRACE;
   if(dest_dc->exposed) {
     fprintf(stderr,"error: attempt to use exposed field\n");
     QDP_abort(1);
   }
+  TRACE;
 
   /* prepare shift source */
   if(*(src_dc->ptr)==NULL) {
@@ -423,6 +447,7 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
   } else {
     QDP_switch_ptr_to_data(src_dc);
   }
+  TRACE;
 
   /* check if this shift has been done before */
   pss = &dest_dc->shift_src;
@@ -445,7 +470,7 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
 	restart = 1;
       } else {
 	*pss = ss->next;
-	QDP_clear_shift_src(dest_dc); // don't save old shifts
+	//QDP_clear_shift_src(dest_dc); // don't save old shifts
 	ss->next = dest_dc->shift_src;
 	dest_dc->shift_src = ss;
 	QDP_remove_shift_tag_reference(ss->st);

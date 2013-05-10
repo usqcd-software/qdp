@@ -534,6 +534,7 @@ make_recv_msg(recv_msg_t ***pprm, recvlist_t *rl, QDP_Subset subset,
   if(subset->indexed) {
     int i, j=0, len=0;
 
+    // order dependent
     for(i=0; i<subset->len; ++i) {
       while((j<rl->nsites)&&(rl->sitelist[j]<subset->index[i])) ++j;
       if(j>=rl->nsites) break;
@@ -751,6 +752,38 @@ QDP_declare_strided_gather(
   return mtag;
 }
 
+static void
+resort(gmem_t *gmem, int issend)
+{
+  while(gmem!=NULL) {
+    if(gmem->sitelist_allocated==0) {
+      int n = gmem->end - gmem->begin;
+
+      int *sl = (int *) malloc(n*sizeof(int));
+      for(int i=0; i<n; i++) sl[i] = gmem->sitelist[gmem->begin+i];
+      gmem->sitelist = sl;
+      gmem->sitelist_allocated = 1;
+
+      int *ol = (int *) malloc(n*sizeof(int));
+      for(int i=0; i<n; i++) ol[i] = gmem->otherlist[gmem->begin+i];
+      gmem->otherlist = ol;
+      gmem->otherlist_allocated = 1;
+
+      gmem->begin = 0;
+      gmem->end = n;
+    }
+    // assume now that gmem->begin=0
+
+    if(issend) {
+      sort_sendlist(gmem->otherlist, gmem->sitelist, gmem->end);
+    } else {
+      sort_sendlist(gmem->sitelist, gmem->otherlist, gmem->end);
+    }
+
+    gmem = gmem->next;
+  }
+}
+
 /*
 **  allocate buffers for gather
 */
@@ -761,6 +794,7 @@ prepare_gather(QDP_msg_tag *mtag)
   recv_msg_t *rm = mtag->recv_msgs;
   int j = 0;
   while(rm!=NULL) {
+    //resort(rm->gmem, 0);
     if(do_checksum) rm->size += CRCBYTES;
     rm->mem = QMP_allocate_memory( rm->size );
     rm->buf = QMP_get_memory_pointer( rm->mem );
@@ -774,6 +808,7 @@ prepare_gather(QDP_msg_tag *mtag)
   send_msg_t *sm = mtag->send_msgs;
   j = 0;
   while(sm!=NULL) {
+    //resort(sm->gmem, 1);
     QDP_prepare_send(mtag->mhsend, sm, j);
     sm = sm->next;
     ++j;
@@ -843,7 +878,10 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
     do {
       if(gmem->sn==0) { // not strided
 	if(gmem->size%sizeof(COPY_TYPE)!=0) {
+
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
 	  for(int i=gmem->begin; i<gmem->end; i++) {
 	    memcpy(tpt, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size);
 	    tpt += gmem->size;
@@ -851,7 +889,7 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 	} else {
 	  char *pt = tpt - gmem->begin*gmem->size;
 	  int n = gmem->size / sizeof(COPY_TYPE);
-#ifdef _OPENMPPP
+#ifdef _OPENMP
 #pragma omp parallel for
 	  for(int i=gmem->begin; i<gmem->end; i++) {
 	    int si = gmem->sitelist[i];
@@ -928,7 +966,6 @@ dump_messages(QDP_msg_tag *mtag)
   f = fopen(fn, "w");
   if(f) {
     int i, n;
-    char *tpt;
     send_msg_t *sm;
     recv_msg_t *rm;
     gmem_t *gmem;
@@ -937,7 +974,6 @@ dump_messages(QDP_msg_tag *mtag)
     sm = mtag->send_msgs;
     while(sm!=NULL) {
       int p = 0;
-      tpt = sm->buf;
       gmem = sm->gmem;
       fprintf(f, "send %i: node %i to node %i of %i bytes from buffer %p\n",
 	      n, QDP_this_node, sm->node, sm->size, sm->buf);
@@ -1048,7 +1084,7 @@ QDP_cleanup_gather(QDP_msg_tag *mtag)
     free(rml);
   }
 
-  /*  free all send buffers */
+  /* free all send buffers */
   if(mtag->prepared) QDP_free_mh( mtag->mhsend );
   sm = mtag->send_msgs;
   while(sm!=NULL) {

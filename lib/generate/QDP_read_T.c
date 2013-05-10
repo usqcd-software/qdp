@@ -67,27 +67,39 @@ int
 QDP$PC_vread_$ABBR(QDP_Reader *qdpr, QDP_String *md, $QDPPCTYPE *field[],
 		   int nv)
 {
-  struct QDP_IO_field qf;
-  int i, status;
-  QIO_RecordInfo *cmp_info;
+  int status;
+  TGET;
+  ONE {
+    struct QDP_IO_field qf;
+    QIO_RecordInfo *cmp_info;
 
-  qf.data = (char *) field;
-  qf.size = QDPIO_size_$ABBR($P, QDP_get_nc(field[0]), QLA_Ns);
-  qf.nc = QDPIO_nc_$ABBR(QDP_get_nc(field[0]));
-  qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
-  qf.word_size = WS;
+    qf.data = (char *) field;
+    qf.size = QDPIO_size_$ABBR($P, QDP_get_nc(field[0]), QLA_Ns);
+    qf.nc = QDPIO_nc_$ABBR(QDP_get_nc(field[0]));
+    qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
+    qf.word_size = WS;
 
-  QDP_set_iolat(qdpr->lat);
-  cmp_info = QIO_create_record_info(QIO_FIELD, 0, 0, 0,
-				    "$QDPPCTYPE", "$P", qf.nc,
-				    qf.ns, qf.size, nv);
+    QDP_set_iolat(qdpr->lat);
+    cmp_info = QIO_create_record_info(QIO_FIELD, 0, 0, 0,
+				      "$QDPPCTYPE", "$P", qf.nc,
+				      qf.ns, qf.size, nv);
 
-  for(i=0; i<nv; i++) QDP_prepare_dest( &field[i]->dc );
+    for(int i=0; i<nv; i++) QDP_prepare_dest( &field[i]->dc );
 
-  status = QDP_read_check(qdpr, md, QIO_FIELD, QDP$PC_vput_$ABBR, &qf,
-			  nv, cmp_info);
+    status = QDP_read_check(qdpr, md, QIO_FIELD, QDP$PC_vput_$ABBR, &qf,
+			    nv, cmp_info);
 
-  QIO_destroy_record_info(cmp_info);
+    QIO_destroy_record_info(cmp_info);
+
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
 
   return status;
 }
@@ -106,25 +118,37 @@ int
 QDP$PC_vread_$QLAABBR($NC QDP_Reader *qdpr, QDP_String *md,
 		      $QLAPCTYPE($NCVAR(*array)), int n)
 {
-  struct QDP_IO_field qf;
   int status;
-  QIO_RecordInfo *cmp_info;
+  TGET;
+  ONE {
+    struct QDP_IO_field qf;
+    QIO_RecordInfo *cmp_info;
 
-  qf.data = (char *) array;
-  qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
-  qf.nc = QDPIO_nc_$ABBR($QDP_NC);
-  qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
-  qf.word_size = WS;
+    qf.data = (char *) array;
+    qf.size = QDPIO_size_$ABBR($P, $QDP_NC, QLA_Ns);
+    qf.nc = QDPIO_nc_$ABBR($QDP_NC);
+    qf.ns = QDPIO_ns_$ABBR(QLA_Ns);
+    qf.word_size = WS;
 
-  QDP_set_iolat(qdpr->lat);
-  cmp_info = QIO_create_record_info(QIO_GLOBAL, 0, 0, 0,
-				    "$QDPPCTYPE", "$P", qf.nc,
-				    qf.ns, qf.size, n);
+    QDP_set_iolat(qdpr->lat);
+    cmp_info = QIO_create_record_info(QIO_GLOBAL, 0, 0, 0,
+				      "$QDPPCTYPE", "$P", qf.nc,
+				      qf.ns, qf.size, n);
 
-  status = QDP_read_check(qdpr, md, QIO_GLOBAL, QDP$PC_vput_$QLAABBR, &qf,
-			  n, cmp_info);
+    status = QDP_read_check(qdpr, md, QIO_GLOBAL, QDP$PC_vput_$QLAABBR, &qf,
+			    n, cmp_info);
 
-  QIO_destroy_record_info(cmp_info);
+    QIO_destroy_record_info(cmp_info);
+
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
 
   return status;
 }

@@ -1,3 +1,4 @@
+//#define DO_TRACE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,36 +17,41 @@ static int def_ndim = -1;
 static int *def_latsize = NULL;
 
 void
-QDP_set_latsize(int nd, const int size[])
+QDP_init_layout(void)
+{
+  //def_layout = QDP_layout_hyper_eo;
+  def_layout = QDP_layout_shiftopt;
+}
+
+void
+QDP1_set_latsize(int nd, const int size[])
 {
   QDP_assert(nd>0);
   QDP_assert(size!=NULL);
-
   QDP_free(def_latsize);
   def_ndim = nd;
   QDP_malloc(def_latsize, int, nd);
   memcpy(def_latsize, size, nd*sizeof(int));
 }
 
+void
+QDP_set_latsize(int nd, const int size[])
+{
+  TGET;
+  ONE {
+    QDP1_set_latsize(nd, size);
+  }
+  TBARRIER;
+}
+
 int
 QDP_create_layout(void)
 {
   QDP_assert(def_latsize!=NULL);
-
-  if(!def_layout) {
-    TRACE;
-    QDP_set_default_layout(QDP_layout_hyper_eo);
-    TRACE;
-  }
-
-  TRACE;
+  QDP_assert(def_layout!=NULL);
   QDP_Lattice *lat = QDP_create_lattice(def_layout, NULL, def_ndim, def_latsize);
-  TRACE;
   QDP_assert(lat!=NULL);
-  TRACE;
   QDP_set_default_lattice(lat);
-  TRACE;
-
   return 0;
 }
 
@@ -108,9 +114,20 @@ QDP_get_default_layout(void)
 }
 
 void
+QDP1_set_default_layout(QDP_Layout *layout)
+{
+  QDP_assert(layout!=NULL);
+  def_layout = layout;
+}
+
+void
 QDP_set_default_layout(QDP_Layout *layout)
 {
-  def_layout = layout;
+  TGET;
+  ONE {
+    QDP1_set_default_layout(layout);
+  }
+  TBARRIER;
 }
 
 QDP_Lattice *
@@ -120,29 +137,40 @@ QDP_get_default_lattice(void)
 }
 
 void
-QDP_set_default_lattice(QDP_Lattice *lat)
+QDP1_set_default_lattice(QDP_Lattice *lat)
 {
+  QDP_assert(lat!=NULL);
   def_lattice = lat;
   QDP_sites_on_node = QDP_sites_on_node_L(lat);
   ndim = QDP_ndim_L(lat);
   latsize = lat->dims;
   vol = lat->vol;
-
-  TRACE;
   QDP_neighbor = QDP_neighbor_L(lat);
-  TRACE;
   QDP_all = QDP_all_L(lat);
   QDP_even_and_odd = QDP_even_and_odd_L(lat);
   QDP_even = QDP_even_L(lat);
   QDP_odd = QDP_odd_L(lat);
-  TRACE;
+}
+
+void
+QDP_set_default_lattice(QDP_Lattice *lat)
+{
+  TGET;
+  ONE {
+    QDP1_set_default_lattice(lat);
+  }
+  TBARRIER;
 }
 
 QDP_Lattice *
-QDP_create_lattice(QDP_Layout *layout, void *args, int nd, int size[])
+QDP1_create_lattice(QDP_Layout *layout, void *args, int nd, int size[])
 {
   QDP_Lattice *lat;
   QDP_malloc(lat, QDP_Lattice, 1);
+  if(layout==NULL) {
+    QDP_assert(def_layout!=NULL);
+    layout = def_layout;
+  }
   lat->layout = layout;
   lat->ndim = nd;
   QDP_malloc(lat->dims, int, nd);
@@ -157,8 +185,28 @@ QDP_create_lattice(QDP_Layout *layout, void *args, int nd, int size[])
   lat->eo = NULL;
   lat->neighbor = NULL;
   lat->refcount = 1;
+  TRACE;
   layout->setup(lat, args);
+  TRACE;
   lat->sites_on_node = QDP_numsites_L(lat, QDP_this_node);
+  TRACE;
+  return lat;
+}
+
+QDP_Lattice *
+QDP_create_lattice(QDP_Layout *layout, void *args, int nd, int size[])
+{
+  QDP_Lattice *lat;
+  TGET;
+  ONE {
+    lat = QDP1_create_lattice(layout, args, nd, size);
+    SHARE_SET(lat);
+    TBARRIER;
+  } else {
+    TBARRIER;
+    SHARE_GET(lat);
+  }
+  TBARRIER;
   return lat;
 }
 
@@ -170,20 +218,23 @@ void
 QDP_destroy_lattice(QDP_Lattice *lat)
 {
   QDP_assert(lat);
-  lat->refcount--;
-  if(lat->refcount==0) {
-    lat->layout->free(lat);
-    if(lat->neighbor) {
-      for(int i=0; i<lat->ndim; i++) {
-	if(lat->neighbor[i]) QDP_destroy_shift(lat->neighbor[i]);
+  TGET;
+  ONE {
+    lat->refcount--;
+    if(lat->refcount==0) {
+      lat->layout->free(lat);
+      if(lat->neighbor) {
+	for(int i=0; i<lat->ndim; i++) {
+	  if(lat->neighbor[i]) QDP_destroy_shift(lat->neighbor[i]);
+	}
+	QDP_free(lat->neighbor);
       }
-      QDP_free(lat->neighbor);
+      if(lat->all) QDP_destroy_subset(lat->all);
+      if(lat->eo) QDP_destroy_subset(lat->eo);
+      QDP_free(lat->params);
+      QDP_free(lat->dims);
+      QDP_free(lat);
     }
-    if(lat->all) QDP_destroy_subset(lat->all);
-    if(lat->eo) QDP_destroy_subset(lat->eo);
-    QDP_free(lat->params);
-    QDP_free(lat->dims);
-    QDP_free(lat);
   }
 }
 
@@ -197,12 +248,15 @@ QDP_get_lattice_layout(QDP_Lattice *lat)
 void
 QDP_allocate_lattice_params(QDP_Lattice *lat, size_t size)
 {
-  QDP_assert(lat);
-  if(lat->params) {
-    QDP_error("lattice params already allocated");
-    QDP_abort(1);
+  TGET;
+  ONE {
+    QDP_assert(lat);
+    if(lat->params) {
+      QDP_error("lattice params already allocated");
+      QDP_abort(1);
+    }
+    QDP_malloc(lat->params, char, size);
   }
-  QDP_malloc(lat->params, char, size);
 }
 
 void *

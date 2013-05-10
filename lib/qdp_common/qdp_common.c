@@ -40,9 +40,13 @@ QDP_version_int(void)
 int
 QDP_profcontrol(int new)
 {
-  int old;
-  old = QDP_prof_level;
-  QDP_prof_level = new;
+  int old = QDP_prof_level;
+  TGET;
+  TBARRIER;
+  ONE {
+    QDP_prof_level = new;
+  }
+  TBARRIER;
   return old;
 }
 
@@ -53,24 +57,12 @@ QDP_register_prof(QDP_prof *qp)
   prof_last = &qp->next;
 }
 
-double
-QDP_time(void)
-{
-  struct timeval tp;
-  gettimeofday(&tp,NULL);
-  return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
-  //struct tms buf;
-  //times(&buf);
-  //return buf.tms_utime + buf.tms_stime;
-  //  return (double)clock()/CLOCKS_PER_SEC;
-}
-
 int
 QDP_initialize(int *argc, char **argv[])
 {
   if(qdp_initialized) {
     fprintf(stderr,
-    	    "error: QDP_initialize() called but QDP already initialized!\n");
+	    "error: QDP_initialize() called but QDP already initialized!\n");
     QDP_abort(1);
   }
   qdp_initialized = 1;
@@ -79,6 +71,8 @@ QDP_initialize(int *argc, char **argv[])
     qdp_initialized = 2;
   }
   QDP_this_node = QDP_mynode();
+  QDP_init_threads();
+  QDP_init_layout();
   prof_last = &prof_list;
   return 0;
 }
@@ -86,46 +80,49 @@ QDP_initialize(int *argc, char **argv[])
 void
 QDP_finalize(void)
 {
-  if(!qdp_initialized) {
-    fprintf(stderr,"error: QDP_finalize() called but QDP not initialized!\n");
-    QDP_abort(1);
-  }
-  if((prof_list)&&(QDP_this_node==0)) {
-    double s;
-    QDP_prof *qp;
-    s = 1000.0;
-    //s = 1000.0/sysconf(_SC_CLK_TCK);
-    *prof_last = NULL;
-    qp = prof_list;
-    printf("%-31s          time us per ns per\n","");
-    printf("%-31s  count   (ms)  call   site  caller:line\n","QDP function");
-    printf("----------------------------------------");
-    printf("---------------------------------------\n");
-    while(qp) {
-      if(qp->count) {
-	printf("%-31s %6i %6i %6i %6i %s:%i\n", qp->func, qp->count,
-	       (int)(s*qp->time+0.5), (int)((1000*s*qp->time/qp->count)+0.5),
-	       (int)((1000000*s*qp->time/(qp->nsites))+0.5),
-	       qp->caller, qp->line);
-	if(0*qp->math_time) {
-	  printf("%-31s %6i %6i %6i %6i %s:%i\n", "  -math", qp->count,
-		 (int)(s*qp->math_time+0.5),
-	       (int)((1000*s*qp->math_time/qp->count)+0.5),
-		 (int)((1000000*s*qp->math_time/(qp->nsites))+0.5),
-		 qp->caller, qp->line);
-	}
-	if(qp->comm_time) {
-	  printf("%-31s %6i %6i %6i %6i %s:%i\n", "  -comm", qp->count,
-		 (int)(s*qp->comm_time+0.5),
-		 (int)((1000*s*qp->comm_time/qp->count)+0.5),
-		 (int)((1000000*s*qp->comm_time/(qp->nsites))+0.5),
-		 qp->caller, qp->line);
-	}
-      }
-      qp = qp->next;
+  TGET;
+  ONE {
+    if(!qdp_initialized) {
+      fprintf(stderr,"error: QDP_finalize() called but QDP not initialized!\n");
+      QDP_abort(1);
     }
+    if((prof_list)&&(QDP_this_node==0)) {
+      double s;
+      QDP_prof *qp;
+      s = 1000.0;
+      //s = 1000.0/sysconf(_SC_CLK_TCK);
+      *prof_last = NULL;
+      qp = prof_list;
+      printf("%-31s          time us per ns per\n","");
+      printf("%-31s  count   (ms)  call   site  caller:line\n","QDP function");
+      printf("----------------------------------------");
+      printf("---------------------------------------\n");
+      while(qp) {
+	if(qp->count) {
+	  printf("%-31s %6i %6i %6i %6i %s:%i\n", qp->func, qp->count,
+		 (int)(s*qp->time+0.5), (int)((1000*s*qp->time/qp->count)+0.5),
+		 (int)((1000000*s*qp->time/(qp->nsites))+0.5),
+		 qp->caller, qp->line);
+	  if(0*qp->math_time) {
+	    printf("%-31s %6i %6i %6i %6i %s:%i\n", "  -math", qp->count,
+		   (int)(s*qp->math_time+0.5),
+		   (int)((1000*s*qp->math_time/qp->count)+0.5),
+		   (int)((1000000*s*qp->math_time/(qp->nsites))+0.5),
+		   qp->caller, qp->line);
+	  }
+	  if(qp->comm_time) {
+	    printf("%-31s %6i %6i %6i %6i %s:%i\n", "  -comm", qp->count,
+		   (int)(s*qp->comm_time+0.5),
+		   (int)((1000*s*qp->comm_time/qp->count)+0.5),
+		   (int)((1000000*s*qp->comm_time/(qp->nsites))+0.5),
+		   qp->caller, qp->line);
+	  }
+	}
+	qp = qp->next;
+      }
+    }
+    if(qdp_initialized==2) QDP_finalize_comm();
   }
-  if(qdp_initialized==2) QDP_finalize_comm();
 }
 
 int
@@ -144,14 +141,20 @@ QDP_abort(int status)
 void
 QDP_suspend_comm(void)
 {
+  TGET;
+  TBARRIER;
   QDP_suspended = 1;
   QDP_clear_shift_list();
+  TBARRIER;
 }
 
 void
 QDP_resume_comm(void)
 {
+  TGET;
+  TBARRIER;
   QDP_suspended = 0;
+  TBARRIER;
 }
 
 int
@@ -163,7 +166,13 @@ QDP_get_block_size(void)
 void
 QDP_set_block_size(int bs)
 {
-  if(bs>0) QDP_block_size = bs;
+  TGET;
+  TBARRIER;
+  ONE {
+    if(bs==0) bs = INT_MAX;
+    if(bs>0) QDP_block_size = bs;
+  }
+  TBARRIER;
 }
 
 int
@@ -175,7 +184,10 @@ QDP_get_mem_align(void)
 void
 QDP_set_mem_align(int align)
 {
-  QDP_mem_align = align;
+  TGET;
+  TBARRIER;
+  ONE { QDP_mem_align = align; }
+  TBARRIER;
 }
 
 int
@@ -187,7 +199,10 @@ QDP_get_mem_flags(void)
 void
 QDP_set_mem_flags(int flags)
 {
-  QDP_mem_flags = flags;
+  TGET;
+  TBARRIER;
+  ONE { QDP_mem_flags = flags; }
+  TBARRIER;
 }
 
 /* IO routines */
@@ -228,7 +243,10 @@ int
 QDP_set_read_group_size(int nodes)
 {
   int oldnodes = readnodes;
-  readnodes = nodes;
+  TGET;
+  TBARRIER;
+  ONE { readnodes = nodes; }
+  TBARRIER;
   return oldnodes;
 }
 
@@ -236,7 +254,10 @@ int
 QDP_set_write_group_size(int nodes)
 {
   int oldnodes = writenodes;
-  writenodes = nodes;
+  TGET;
+  TBARRIER;
+  ONE { writenodes = nodes; }
+  TBARRIER;
   return oldnodes;
 }
 
@@ -269,49 +290,57 @@ QDP_Reader *
 QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
 {
   QDP_Reader *qdpr;
-  QIO_Layout layout;
-  QIO_Filesystem fs;
-  QIO_Iflag iflag;
-  QIO_String *qio_md = QIO_string_create(0);
+  TGET;
+  ONE {
+    QIO_Layout layout;
+    QIO_Filesystem fs;
+    QIO_Iflag iflag;
+    QIO_String *qio_md = QIO_string_create(0);
 
-  qdpr = (QDP_Reader *)malloc(sizeof(struct QDP_Reader_struct));
-  if(qdpr == NULL) return NULL;
+    qdpr = (QDP_Reader *)malloc(sizeof(struct QDP_Reader_struct));
+    if(qdpr != NULL) {
+      qdpr->lat = lat;
+      iolat = qdpr->lat;
 
-  qdpr->lat = lat;
-  iolat = qdpr->lat;
+      layout.node_number = node_number_io;
+      layout.node_index = index_io;
+      layout.get_coords = get_coords_io;
+      layout.num_sites = numsites_io;
+      layout.latdim = QDP_ndim_L(lat);
+      layout.latsize = (int *)malloc(layout.latdim*sizeof(int));
+      QDP_latsize_L(lat, layout.latsize);
+      layout.volume = QDP_volume_L(lat);
+      layout.sites_on_node = QDP_sites_on_node_L(lat);
+      layout.this_node = QDP_this_node;
+      layout.number_of_nodes = QDP_numnodes();
 
-  layout.node_number = node_number_io;
-  layout.node_index = index_io;
-  layout.get_coords = get_coords_io;
-  layout.num_sites = numsites_io;
-  layout.latdim = QDP_ndim_L(lat);
-  layout.latsize = (int *)malloc(layout.latdim*sizeof(int));
-  QDP_latsize_L(lat, layout.latsize);
-  layout.volume = QDP_volume_L(lat);
-  layout.sites_on_node = QDP_sites_on_node_L(lat);
-  layout.this_node = QDP_this_node;
-  layout.number_of_nodes = QDP_numnodes();
+      fs.my_io_node = read_io_node;
+      fs.master_io_node = master_io_node;
 
-  fs.my_io_node = read_io_node;
-  fs.master_io_node = master_io_node;
+      iflag.serpar = QIO_PARALLEL;
+      //iflag.serpar = QIO_SERIAL;
+      iflag.volfmt = QIO_SINGLEFILE;
+      //iflag.volfmt = QIO_UNKNOWN;
 
-  iflag.serpar = QIO_PARALLEL;
-  //iflag.serpar = QIO_SERIAL;
-  iflag.volfmt = QIO_SINGLEFILE;
-  //iflag.volfmt = QIO_UNKNOWN;
+      qdpr->qior = QIO_open_read(qio_md, filename, &layout, &fs, &iflag);
 
-  qdpr->qior = QIO_open_read(qio_md, filename, &layout, &fs, &iflag);
+      QDP_string_set(md, QIO_string_ptr(qio_md));
+      QIO_string_destroy(qio_md);
 
-  QDP_string_set(md, QIO_string_ptr(qio_md));
-  QIO_string_destroy(qio_md);
+      free(layout.latsize);
 
-  free(layout.latsize);
-
-  if(!qdpr->qior) {
-    free(qdpr);
-    return NULL;
+      if(!qdpr->qior) {
+	free(qdpr);
+	qdpr = NULL;
+      }
+    }
+    SHARE_SET(qdpr);
+    TBARRIER;
+  } else {
+    TBARRIER;
+    SHARE_GET(qdpr);
   }
-
+  TBARRIER;
   return qdpr;
 }
 
@@ -326,57 +355,58 @@ QDP_Writer *
 QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
 {
   QDP_Writer *qdpw;
-  QIO_Layout *layout;
-  QIO_String *qio_md;
-  QIO_Filesystem fs;
-  QIO_Oflag oflag;
+  TGET;
+  ONE {
+    QIO_Layout layout;
+    QIO_String *qio_md;
+    QIO_Filesystem fs;
+    QIO_Oflag oflag;
 
-  qdpw = (QDP_Writer *)malloc(sizeof(struct QDP_Writer_struct));
-  if(qdpw == NULL) return NULL;
+    qdpw = (QDP_Writer *)malloc(sizeof(struct QDP_Writer_struct));
+    if(qdpw != NULL) {
+      qdpw->lat = lat;
+      iolat = qdpw->lat;
 
-  layout = (QIO_Layout *)malloc(sizeof(QIO_Layout));
-  if(layout == NULL) {
-    free(qdpw);
-    return NULL;
+      layout.node_number = node_number_io;
+      layout.node_index = index_io;
+      layout.get_coords = get_coords_io;
+      layout.num_sites = numsites_io;
+      layout.latdim = QDP_ndim_L(lat);
+      layout.latsize = (int *)malloc(layout.latdim*sizeof(int));
+      QDP_latsize_L(lat, layout.latsize);
+      layout.volume = QDP_volume_L(lat);
+      layout.sites_on_node = QDP_sites_on_node_L(lat);
+      layout.this_node = QDP_this_node;
+      layout.number_of_nodes = QDP_numnodes();
+
+      fs.my_io_node = write_io_node;
+      fs.master_io_node = master_io_node;
+
+      oflag.serpar = QIO_PARALLEL;
+      //oflag.serpar = QIO_SERIAL;
+      oflag.mode = QIO_TRUNC;
+      oflag.ildgstyle = QIO_ILDGLAT;                                           
+      oflag.ildgLFN = NULL;                                                    
+
+      qio_md = QIO_string_create();
+      QIO_string_set(qio_md, QDP_string_ptr(md));
+      qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, &layout, &fs, &oflag);
+      QIO_string_destroy(qio_md);
+
+      free(layout.latsize);
+
+      if(!qdpw->qiow) {
+	free(qdpw);
+	qdpw = NULL;
+      }
+    }
+    SHARE_SET(qdpw);
+    TBARRIER;
+  } else {
+    TBARRIER;
+    SHARE_GET(qdpw);
   }
-
-  qdpw->lat = lat;
-  iolat = qdpw->lat;
-
-  layout->node_number = node_number_io;
-  layout->node_index = index_io;
-  layout->get_coords = get_coords_io;
-  layout->num_sites = numsites_io;
-  layout->latdim = QDP_ndim_L(lat);
-  layout->latsize = (int *)malloc(layout->latdim*sizeof(int));
-  QDP_latsize_L(lat, layout->latsize);
-  layout->volume = QDP_volume_L(lat);
-  layout->sites_on_node = QDP_sites_on_node_L(lat);
-  layout->this_node = QDP_this_node;
-  layout->number_of_nodes = QDP_numnodes();
-
-  fs.my_io_node = write_io_node;
-  fs.master_io_node = master_io_node;
-
-  oflag.serpar = QIO_PARALLEL;
-  //oflag.serpar = QIO_SERIAL;
-  oflag.mode = QIO_TRUNC;
-  oflag.ildgstyle = QIO_ILDGLAT;                                           
-  oflag.ildgLFN = NULL;                                                    
-
-  qio_md = QIO_string_create();
-  QIO_string_set(qio_md, QDP_string_ptr(md));
-  qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, layout, &fs, &oflag);
-  QIO_string_destroy(qio_md);
-
-  free(layout->latsize);
-  free(layout);
-
-  if(!qdpw->qiow) {
-    free(qdpw);
-    return NULL;
-  }
-
+  TBARRIER;
   return qdpw;
 }
 
@@ -384,8 +414,19 @@ int
 QDP_close_read(QDP_Reader *qdpr)
 {
   int status;
-  status = QIO_close_read(qdpr->qior);
-  free(qdpr);
+  TGET;
+  ONE {
+    status = QIO_close_read(qdpr->qior);
+    free(qdpr);
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
   return status;
 }
 
@@ -393,8 +434,19 @@ int
 QDP_close_write(QDP_Writer *qdpw)
 {
   int status;
-  status = QIO_close_write(qdpw->qiow);
-  free(qdpw);
+  TGET;
+  ONE {
+    status = QIO_close_write(qdpw->qiow);
+    free(qdpw);
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
   return status;
 }
 
@@ -402,14 +454,30 @@ int
 QDP_read_record_info(QDP_Reader *qdpr, QDP_String *md)
 {
   int status;
-  QIO_RecordInfo record_info;  /* Private data ignored */
-  QIO_String *qio_md = QIO_string_create(0);
-
-  status = QIO_read_record_info(qdpr->qior, &record_info, qio_md);
-  QDP_string_set(md, QIO_string_ptr(qio_md));
-  QIO_string_destroy(qio_md);
-  //printf("QDP_read_record_info has datacount %d\n",
-  //record_info.datacount.value);
+  TGET;
+  ONE {
+    QIO_RecordInfo record_info;  /* Private data ignored */
+    QIO_String *qio_md = QIO_string_create(0);
+    status = QIO_read_record_info(qdpr->qior, &record_info, qio_md);
+    SHARE_SET(qio_md);
+    TBARRIER;
+    if(md) QDP_string_set(md, QIO_string_ptr(qio_md));
+    TBARRIER;
+    QIO_string_destroy(qio_md);
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    QIO_String *qio_md;
+    TBARRIER;
+    SHARE_GET(qio_md);
+    if(md) QDP_string_set(md, QIO_string_ptr(qio_md));
+    TBARRIER;
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
   return status;
 }
 
@@ -417,18 +485,44 @@ int
 QDP_read_qio_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md)
 {
   int status;
-  QIO_RecordInfo ri0, *record_info;
-  QIO_String *qio_md = QIO_string_create(0);
-
-  iolat = qdpr->lat;
-  record_info = &ri0;
-  if(ri) record_info = ri;
-  status = QIO_read_record_info(qdpr->qior, record_info, qio_md);
-  if(md) QDP_string_set(md, QIO_string_ptr(qio_md));
-  QIO_string_destroy(qio_md);
-  //printf("QDP_read_record_info has datacount %d\n",
-  //record_info.datacount.value);
-  if(!ri) QIO_destroy_record_info(record_info);
+  TGET;
+  ONE {
+    QIO_RecordInfo ri0, *record_info;
+    QIO_String *qio_md = QIO_string_create(0);
+    iolat = qdpr->lat;
+    record_info = &ri0;
+    if(ri) record_info = ri;
+    status = QIO_read_record_info(qdpr->qior, record_info, qio_md);
+    SHARE_SET(record_info);
+    TBARRIER;
+    TBARRIER;
+    if(!ri) QIO_destroy_record_info(record_info);
+    SHARE_SET(qio_md);
+    TBARRIER;
+    if(md) QDP_string_set(md, QIO_string_ptr(qio_md));
+    TBARRIER;
+    QIO_string_destroy(qio_md);
+    //printf("QDP_read_record_info has datacount %d\n",
+    //record_info.datacount.value);
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    QIO_RecordInfo *record_info;
+    TBARRIER;
+    SHARE_GET(record_info);
+    if(ri) memcpy(ri, record_info, sizeof(QIO_RecordInfo));
+    TBARRIER;
+    QIO_String *qio_md;
+    TBARRIER;
+    SHARE_GET(qio_md);
+    if(md) QDP_string_set(md, QIO_string_ptr(qio_md));
+    TBARRIER;
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
   return status;
 }
 
@@ -436,9 +530,19 @@ int
 QDP_next_record(QDP_Reader *qdpr)
 {
   int status;
-
-  iolat = qdpr->lat;
-  status = QIO_next_record(qdpr->qior);
+  TGET;
+  ONE {
+    iolat = qdpr->lat;
+    status = QIO_next_record(qdpr->qior);
+    SHARE_SET(&status);
+    TBARRIER;
+  } else {
+    int *p;
+    TBARRIER;
+    SHARE_GET(p);
+    status = *p;
+  }
+  TBARRIER;
   return status;
 }
 
@@ -552,4 +656,21 @@ QDP_string_copy(QDP_String *dest, QDP_String *src)
   size_t len = src->length;
   dest->string = realloc(dest->string, len);
   memcpy(dest->string, src->string, len);
+}
+
+
+/* for backward compatibility */
+#ifdef QDP_time
+#undef QDP_time
+#endif
+double
+QDP_time(void)
+{
+  struct timeval tp;
+  gettimeofday(&tp,NULL);
+  return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
+  //struct tms buf;
+  //times(&buf);
+  //return buf.tms_utime + buf.tms_stime;
+  //  return (double)clock()/CLOCKS_PER_SEC;
 }

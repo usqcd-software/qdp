@@ -1,12 +1,13 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([qdp],[1.9.0-a8],[josborn at physics.bu.edu])
+AC_INIT([qdp],[1.9.1],[josborn at physics.bu.edu])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_SRCDIR(include/qdp.h)
 AC_CONFIG_SRCDIR(lib/qdp_common/qdp_common.c)
-AM_CONFIG_HEADER([include/qdp_config.h])
+#AM_CONFIG_HEADER([include/qdp_config.h])
+AC_CONFIG_HEADER([include/qdp_config.h])
 
 dnl --enable-sse
 AC_ARG_ENABLE(
@@ -28,6 +29,18 @@ AC_ARG_ENABLE(
 if test "X$NC" = Xn -o "X$NC" = X1; then NC="N"; fi
 if test `expr $NC : '[0-9]*$' \& $NC \> 3` -ne 0; then NC="N"; fi
 if test "X$NC" != X2 -a "X$NC" != X3 -a "X$NC" != XN; then NC="all"; fi 
+
+dnl --enable-pthreads
+AC_ARG_ENABLE(
+  pthreads,
+  AC_HELP_STRING([--enable-pthreads],
+    [use pthreads]),
+  AC_SUBST(OPT_PTHREADS, [$enableval]),
+  AC_SUBST(OPT_PTHREADS, [no])
+)
+if test "X$OPT_PTHREADS" != "Xno"; then
+  AC_DEFINE_UNQUOTED(HAVE_PTHREADS, 1, [pthreads support])
+fi
 
 QMPDIR="other_libs/qmp"
 AC_ARG_WITH(
@@ -118,10 +131,12 @@ AM_CONDITIONAL(OPT_SSE, [test "X$OPT_SSE" != "Xno"])
 AM_CONDITIONAL(NC2, [test "X$NC" = "X2" -o "X$NC" = "Xall"])
 AM_CONDITIONAL(NC3, [test "X$NC" = "X3" -o "X$NC" = "Xall"])
 AM_CONDITIONAL(NCN, [test "X$NC" = "XN" -o "X$NC" = "Xall"])
+#AM_CONDITIONAL(HAVE_PTHREADS, [test "X$OPT_PTHREADS" != "Xno"])
 AM_CONDITIONAL(WITH_QMP, [test "X$WITH_QMP" = "X1"])
 
 # pass configuration to distcheck target
 DISTCHECK_CONFIGURE_FLAGS="--enable-nc=$NC"
+DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS --enable-pthreads=$OPT_PTHREADS"
 if test -n "$WITH_QMP"; then
   DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS --with-qmp=$QMPDIR"
 fi
@@ -137,9 +152,9 @@ AC_SUBST(DISTCHECK_CONFIGURE_FLAGS)
 # export CC and CFLAGS so that the other_libs will use the same
 export CC CFLAGS
 
-if test "X$WITH_QMP" = "X"; then
-  AC_CONFIG_SUBDIRS(other_libs/qmp)
-fi
+#if test "X$WITH_QMP" = "X"; then
+#  AC_CONFIG_SUBDIRS(other_libs/qmp)
+#fi
 
 # configuration files
 AC_CONFIG_FILES(Makefile)

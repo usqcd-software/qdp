@@ -37,6 +37,7 @@ extern "C" {
   } QDP_Layout;
 
   extern QDP_Layout *QDP_layout_hyper_eo;
+  extern QDP_Layout *QDP_layout_shiftopt;
 
   extern QDP_Layout *QDP_get_default_layout(void);
   extern void QDP_set_default_layout(QDP_Layout *layout);

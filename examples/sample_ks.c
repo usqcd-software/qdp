@@ -7,11 +7,13 @@
 #include <qmp.h>
 #include "congrad_ks.h"
 
+#define MAXTHREADS 2
+
 //int lattice_size[4] = { 32,32,32,32 };
 //int lattice_size[4] = { 30,30,30,30 };
-int lattice_size[4] = { 16,16,16,16 };
+//int lattice_size[4] = { 16,16,16,16 };
 //int lattice_size[4] = { 14,14,14,14 };
-//int lattice_size[4] = { 10,10,10,10 };
+int lattice_size[4] = { 10,10,10,10 };
 //int lattice_size[4] = { 14,10,6,6 };
 //int lattice_size[4] = { 5,5,10,10 };
 //int lattice_size[4] = { 8,8,8,8 };
@@ -108,6 +110,53 @@ point_V(QLA_ColorVector *s, int coords[])
   }
 }
 
+typedef struct {
+  QDP_ColorVector  *result;
+  QDP_ColorMatrix  **gauge;
+  QDP_ColorVector  *rhs;
+  QLA_Real         mass;
+  int              max_iter;
+  double           epsilon;
+  int              its;
+} cgargs;
+
+void
+thread_congrad(void *args)
+{
+  cgargs *a = (cgargs *)args;
+#define get(x) a->x
+  int its = congrad(get(result), get(gauge), get(rhs), get(mass), get(max_iter), get(epsilon));
+#undef get
+  a->its = its;
+}
+
+int
+run_congrad(QDP_ColorVector  *result,
+	    QDP_ColorMatrix  **gauge,
+	    QDP_ColorVector  *rhs,
+	    QLA_Real         mass,
+	    int              max_iter,
+	    double           epsilon)
+{
+  cgargs a;
+#define set(x) a.x = x
+  set(result);
+  set(gauge);
+  set(rhs);
+  set(mass);
+  set(max_iter);
+  set(epsilon);
+#undef set
+
+  for(int i=1; i<=MAXTHREADS; i++) {
+    printf("running with %i threads\n", i);
+    QDP_V_eq_zero(result, QDP_all);
+    QDP_create_threads(i, 1, thread_congrad, (void*)&a);
+  }
+
+  return a.its;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -115,12 +164,14 @@ main(int argc, char *argv[])
   QDP_ColorVector *source, *result;
   QDP_RandomState *rs;
   QDP_Int *li;
-  QLA_Real mass, t;
+  QLA_Real mass;
   double dtime;
   int i, count=1;
 
   QDP_initialize(&argc, &argv);
+  //QDP_profcontrol(0);
   QDP_check_comm(0);
+  QDP_set_block_size(0);
   if(argc>1) {
     int s=atoi(argv[1]);
     for(i=0; i<4; i++) lattice_size[i] = s;
@@ -175,13 +226,13 @@ main(int argc, char *argv[])
   dtime = -QDP_time();
   do {
     //fprintf(stderr,"count=%i\n",count);
-    QDP_V_eq_gaussian_S(result, rs, QDP_all);
+    //QDP_V_eq_gaussian_S(result, rs, QDP_all);
     //QDP_V_eq_func(result, point_V, QDP_all);
     //t = 1/(4*mass*mass);
     //QDP_V_eq_r_times_V(result, &t, source, QDP_all);
-    QDP_r_eq_norm2_V(&t, result, QDP_all);
-    if(QDP_this_node==0) printf("initial norm = %g\n", t);
-    i = congrad(result, gauge, source, mass, 100, 0.00001);
+    //QDP_r_eq_norm2_V(&t, result, QDP_all);
+    //if(QDP_this_node==0) printf("initial norm = %g\n", t);
+    i = run_congrad(result, gauge, source, mass, 100, 0.00001);
   } while(--count);
   if(QDP_this_node==0) printf("conjugate gradient steps: %i\n", i);
 

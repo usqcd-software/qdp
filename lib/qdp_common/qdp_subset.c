@@ -27,80 +27,13 @@ QDP_even_and_odd_func(QDP_Lattice *lat, int x[], void *args)
  *  Subset functions
  */
 
-QDP_Subset
-QDP_all_L(QDP_Lattice *lat)
-{
-  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
-  return lat->all[0];
-}
-
-QDP_Subset
-QDP_empty_L(QDP_Lattice *lat)
-{
-  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
-  return lat->all[1];
-}
-
 QDP_Subset *
-QDP_all_and_empty_L(QDP_Lattice *lat)
-{
-  if(!lat->all) lat->all = QDP_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
-  return lat->all;
-}
-
-QDP_Subset
-QDP_even_L(QDP_Lattice *lat)
-{
-  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
-  return lat->eo[0];
-}
-
-QDP_Subset
-QDP_odd_L(QDP_Lattice *lat)
-{
-  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
-  return lat->eo[1];
-}
-
-QDP_Subset *
-QDP_even_and_odd_L(QDP_Lattice *lat)
-{
-  if(!lat->eo) lat->eo = QDP_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
-  return lat->eo;
-}
-
-typedef struct {
-  int (*func)(int x[], void *args);
-  char args[];
-} func_dat;
-
-static int
-func_L(QDP_Lattice *lat, int x[], void *args)
-{
-  func_dat *fd = (func_dat *) args;
-  return fd->func(x, fd->args);
-}
-
-QDP_Subset *
-QDP_create_subset(int (*func)(int x[], void *args), void *args, int argsize, int n)
-{
-  QDP_Lattice *lat = QDP_get_default_lattice();
-  int fdsize = sizeof(func_dat) + argsize;
-  func_dat *fd = (func_dat *) malloc(fdsize);
-  fd->func = func;
-  memcpy(fd->args, args, argsize);
-  QDP_Subset *ret = QDP_create_subset_L(lat, func_L, fd, fdsize, n);
-  free(fd);
-  return ret;
-}
-
-QDP_Subset *
-QDP_create_subset_L(QDP_Lattice *lat,
-		    int (*func)(QDP_Lattice *lat, int x[], void *args),
-		    void *args, int argsize, int n)
+QDP1_create_subset_L(QDP_Lattice *lat,
+		     int (*func)(QDP_Lattice *lat, int x[], void *args),
+		     void *args, int argsize, int n)
 {
   int i, c, *x;
-  QDP_Subset obj, *ptr;
+  QDP_Subset *ptr, obj;
 
   x = (int *) malloc(QDP_ndim_L(lat)*sizeof(int));
 
@@ -161,24 +94,155 @@ QDP_create_subset_L(QDP_Lattice *lat,
   }
 
   free(x);
+  return ptr;
+}
 
+QDP_Subset
+QDP_all_L(QDP_Lattice *lat)
+{
+  if(!lat->all) {
+    TGET;
+    ONE {
+      lat->all = QDP1_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
+    }
+    TBARRIER;
+  }
+  return lat->all[0];
+}
+
+QDP_Subset
+QDP_empty_L(QDP_Lattice *lat)
+{
+  if(!lat->all) {
+    TGET;
+    ONE {
+      lat->all = QDP1_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
+    }
+    TBARRIER;
+  }
+  return lat->all[1];
+}
+
+QDP_Subset *
+QDP_all_and_empty_L(QDP_Lattice *lat)
+{
+  if(!lat->all) {
+    TGET;
+    ONE {
+      lat->all = QDP1_create_subset_L(lat, QDP_all_func, NULL, 0, 2);
+    }
+    TBARRIER;
+  }
+  return lat->all;
+}
+
+QDP_Subset
+QDP_even_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) {
+    TGET;
+    ONE {
+      lat->eo = QDP1_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+    }
+    TBARRIER;
+  }
+  return lat->eo[0];
+}
+
+QDP_Subset
+QDP_odd_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) {
+    TGET;
+    ONE {
+      lat->eo = QDP1_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+    }
+    TBARRIER;
+  }
+  return lat->eo[1];
+}
+
+QDP_Subset *
+QDP_even_and_odd_L(QDP_Lattice *lat)
+{
+  if(!lat->eo) {
+    TGET;
+    ONE {
+      lat->eo = QDP1_create_subset_L(lat, QDP_even_and_odd_func, NULL, 0, 2);
+    }
+    TBARRIER;
+  }
+  return lat->eo;
+}
+
+typedef struct {
+  int (*func)(int x[], void *args);
+  char args[];
+} func_dat;
+
+static int
+func_L(QDP_Lattice *lat, int x[], void *args)
+{
+  func_dat *fd = (func_dat *) args;
+  return fd->func(x, fd->args);
+}
+
+QDP_Subset *
+QDP_create_subset(int (*func)(int x[], void *args), void *args, int argsize, int n)
+{
+  // for now, we only use the data from thread 0
+  QDP_Subset *ret;
+  TGET;
+  ONE {
+    QDP_Lattice *lat = QDP_get_default_lattice();
+    int fdsize = sizeof(func_dat) + argsize;
+    func_dat *fd = (func_dat *) malloc(fdsize);
+    fd->func = func;
+    memcpy(fd->args, args, argsize);
+    ret = QDP_create_subset_L(lat, func_L, fd, fdsize, n);
+    free(fd);
+  } else {
+    ret = QDP_create_subset_L(NULL, NULL, NULL, 0, n);
+  }
+  return ret;
+}
+
+QDP_Subset *
+QDP_create_subset_L(QDP_Lattice *lat,
+		    int (*func)(QDP_Lattice *lat, int x[], void *args),
+		    void *args, int argsize, int n)
+{
+  QDP_Subset *ptr;
+  TGET;
+  ONE {
+    ptr = QDP1_create_subset_L(lat, func, args, argsize, n);
+    SHARE_SET(ptr);
+    TBARRIER;
+  } else {
+    TBARRIER;
+    SHARE_GET(ptr);
+  }
+  TBARRIER;
   return ptr;
 }
 
 void
 QDP_destroy_subset(QDP_Subset *s)
 {
-  int i, n;
-  QDP_Subset obj;
+  TGET;
+  ONE {
+    int i, n;
+    QDP_Subset obj;
 
-  obj = s[0]->first;
-  n = obj[0].colors;
-  for(i=0; i<n; ++i) {
-    if(obj[i].args) free(obj[i].args);
-    if(obj[i].indexed) free(obj[i].index);
+    obj = s[0]->first;
+    n = obj[0].colors;
+    for(i=0; i<n; ++i) {
+      if(obj[i].args) free(obj[i].args);
+      if(obj[i].indexed) free(obj[i].index);
+    }
+    free(obj);
+    free((void*)s);
   }
-  free(obj);
-  free((void*)s);
 }
 
 int

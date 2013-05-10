@@ -20,6 +20,8 @@ extern "C" {
     int refcount;
   };
 
+  extern void QDP_init_layout(void);
+
 #ifdef __cplusplus
 }
 #endif

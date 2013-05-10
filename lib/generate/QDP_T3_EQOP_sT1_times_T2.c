@@ -17,53 +17,59 @@ QDP$PC_$ABBR3_$EQOP_s$ABBR1$ADJ1_times_$ABBR2$ADJ2(
   QDP_ShiftDir fb,
   QDP_Subset subset)
 {
-  char **temp1;
-  QDP_msg_tag *mtag;
+  char **temp1=NULL;
+  QDP_msg_tag *mtag=NULL;
+  TGET;
+  ONE {
+    temp1 = (char **)malloc(QDP_sites_on_node_L(get_lat(dest))*sizeof(char *));
 
-  temp1 = (char **)malloc(QDP_sites_on_node_L(get_lat(dest))*sizeof(char *));
-
-  if((fb!=QDP_forward)&&(fb!=QDP_backward)) {
-    fprintf(stderr,"QDP: error: bad fb in QDP$PC_$ABBR_eq_s$ABBR\n");
-    QDP_abort(1);
-  }
-
-  /* prepare shift source */
-  if(src1->ptr==NULL) {
-    if(src1->data==NULL) {
-      fprintf(stderr,"error: shifting from uninitialized source\n");
+    if((fb!=QDP_forward)&&(fb!=QDP_backward)) {
+      fprintf(stderr,"QDP: error: bad fb in QDP$PC_$ABBR_eq_s$ABBR\n");
       QDP_abort(1);
     }
-  } else {
-    QDP_switch_ptr_to_data(&src1->dc);
-  }
 
-  mtag = QDP_declare_shift( temp1, (char *)src1->data, src1->dc.size,
-			    shift, fb, subset );
-  QDP_do_gather(mtag);
-  QDP_prepare_dest(&dest->dc);
-  QDP_prepare_src(&src2->dc);
-  QDP_wait_gather(mtag);
+    /* prepare shift source */
+    if(src1->ptr==NULL) {
+      if(src1->data==NULL) {
+	fprintf(stderr,"error: shifting from uninitialized source\n");
+	QDP_abort(1);
+      }
+    } else {
+      QDP_switch_ptr_to_data(&src1->dc);
+    }
+
+    mtag = QDP_declare_shift( temp1, (char *)src1->data, src1->dc.size,
+			      shift, fb, subset );
+    QDP_do_gather(mtag);
+    QDP_prepare_dest(&dest->dc);
+    QDP_prepare_src(&src2->dc);
+    QDP_wait_gather(mtag);
+  }
+  TBARRIER;
 
 #define SRC1O(o) ((void *)(((void **)(temp1))+(o)))
 #define N -1
 #if ($C+0) == -1
   int nc = QDP_get_nc(dest);
 #endif
+  int toff, toff1; TSPLIT(toff, toff1, subset->len); int tlen = toff1-toff; toff += subset->offset;
   if(src2->ptr==NULL) {
     if(subset->indexed==0) {
-      fvpd($NCVAR QDP_offset_data(dest,subset->offset), SRC1O(subset->offset), QDP_offset_data(src2,subset->offset), subset->len );
+      fvpd($NCVAR QDP_offset_data(dest,toff), SRC1O(toff), QDP_offset_data(src2,toff), tlen );
     } else {
-      fxpd($NCVAR QDP_offset_data(dest,0), SRC1O(0), QDP_offset_data(src2,0), subset->index, subset->len );
+      fxpd($NCVAR QDP_offset_data(dest,0), SRC1O(0), QDP_offset_data(src2,0), subset->index, tlen );
     }
   } else {
     if(subset->indexed==0) {
-      fvpp($NCVAR QDP_offset_data(dest,subset->offset), SRC1O(subset->offset), QDP_offset_ptr(src2,subset->offset), subset->len );
+      fvpp($NCVAR QDP_offset_data(dest,toff), SRC1O(toff), QDP_offset_ptr(src2,toff), tlen );
     } else {
-      fxpp($NCVAR QDP_offset_data(dest,0), SRC1O(0), QDP_offset_ptr(src2,0), subset->index, subset->len );
+      fxpp($NCVAR QDP_offset_data(dest,0), SRC1O(0), QDP_offset_ptr(src2,0), subset->index, tlen );
     }
   }
 
-  QDP_cleanup_gather(mtag);
-  free((void*)temp1);
+  ONE {
+    QDP_cleanup_gather(mtag);
+    free((void*)temp1);
+  }
 }
 !END
