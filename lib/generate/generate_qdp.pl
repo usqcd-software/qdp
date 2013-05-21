@@ -70,13 +70,53 @@ if($precision eq "FD") { $hlib =~ s/fd/df/; }
 if($making_header_file) {
   open HFILE, ">>".$outdir."qdp".$hlib.".h";
   END {
-    print HFILE "\n#ifdef __cplusplus\n";
-    print HFILE "}\n";
-    print HFILE "#endif\n\n";
-    print HFILE "#ifdef QDP_PROFILE\n";
-    print HFILE "#include \"qdp".$hlib."_profile.h\"\n";
-    print HFILE "#endif\n\n";
-    print HFILE "#endif\n";
+    print HFILE <<"    EOF;";
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef QDP_PROFILE
+#include \"qdp${hlib}_profile.h\"
+#endif
+
+    EOF;
+
+    if($pc =~ /^_[FD][23N]$/) {
+      print HFILE <<"      EOF;";
+  /* Translation to precision-generic names */
+#if QDP_Precision == '$precision'
+#include <qdp${hlib}_precision_generic.h>
+#endif
+
+      EOF;
+    }
+
+    if($pc =~ /[FD][23N]$/) {
+      print HFILE <<"      EOF;";
+  /* Translation to color-generic names */
+#if QDP_Colors == $color
+#include <qdp${hlib}_color_generic.h>
+#endif
+
+      EOF;
+    }
+
+    if($pc =~ /^_[FD][23N]*$/) {
+      my $clrs = "";
+      if($color != "") {
+        $clrs = " && QDP_Colors == ".$color;
+      }
+      print HFILE <<"      EOF;";
+  /* Translation to fully generic names */
+#if QDP_Precision == '$precision'$clrs
+#include <qdp${hlib}_generic.h>
+#endif
+
+      EOF;
+    }
+
+    print HFILE "#endif // _QDP$pc";
     close HFILE;
   }
 }

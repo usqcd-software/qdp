@@ -20,6 +20,11 @@ perl $gen_types $1 ${thisdir}qdp_color_generic.h $incdir/qdp_$1_color_generic.h
 perl $generic c $1 $incdir/qdp_$1.h $incdir/qdp_$1_color_generic.h
 fi
 
+if expr $1 : '[df][23n]$'; then
+perl $gen_types $1 ${thisdir}qdp_precision_generic.h $incdir/qdp_$1_precision_generic.h
+perl $generic p $1 $incdir/qdp_$1.h $incdir/qdp_$1_precision_generic.h
+fi
+
 perl $gen_types $1 ${thisdir}qdp_profile.h $incdir/qdp_$1_profile.h
 perl $profile $incdir/qdp_$1.h $incdir/qdp_$1_profile.h
 

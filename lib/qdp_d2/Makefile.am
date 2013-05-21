@@ -1838,7 +1838,7 @@ QDP_D2_write_V.o
 
 QDPSRC = $(QDPSRC1) $(QDPSRC2)
 QDPOBJ = $(QDPOBJ1) $(QDPOBJ2)
-QDPHDR = $(top_builddir)/include/qdp_d2.h qdp_d2_internal.h $(top_builddir)/include/qdp_d2_generic.h $(top_builddir)/include/qdp_d2_color_generic.h $(top_builddir)/include/qdp_d2_profile.h
+QDPHDR = $(top_builddir)/include/qdp_d2.h qdp_d2_internal.h $(top_builddir)/include/qdp_d2_generic.h $(top_builddir)/include/qdp_d2_color_generic.h $(top_builddir)/include/qdp_d2_precision_generic.h $(top_builddir)/include/qdp_d2_profile.h
 
 BUILD_SCRIPT_DIR = $(top_srcdir)/lib/generate
 

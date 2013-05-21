@@ -20,7 +20,7 @@ for dir in $dirs; do
   hdr="${idir}.h ${dir}_internal.h"
   case $dir in
     qdp_[fd])      hdrs="$hdr ${idir}_generic.h";;
-    qdp_[fd][23n]) hdrs="$hdr ${idir}_generic.h ${idir}_color_generic.h";;
+    qdp_[fd][23n]) hdrs="$hdr ${idir}_generic.h ${idir}_color_generic.h ${idir}_precision_generic.h";;
     qdp_d[f][23n]) hdrs="$hdr ${idir}_color_generic.h";;
     *)             hdrs="$hdr";;
   esac

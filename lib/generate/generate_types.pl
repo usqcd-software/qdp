@@ -254,12 +254,14 @@ if($cflag) {
 	      $temp = $text;
 	      $temp =~ s/\$PC/$tpc/g;
 	      $temp =~ s/\$P/$tp/g;
+	      $temp =~ s/\$C/$tc/g;
 	      $temp =~ s/\$TYPE/$dt/g;
 	      $temp =~ s/\$ABBR/$datatypes{$dt}{ABBR}/g;
 	      $qlaabbr = lc($datatypes{$dt}{ABBR});
 	      $temp =~ s/\$QLAABBR/$qlaabbr/g;
 	      $temp =~ s/\$QDPTYPE/QDP$us$dt/g;
 	      $temp =~ s/\$QDPPTYPE/QDP$us$precision$us$dt/g;
+	      $temp =~ s/\$QDPCTYPE/QDP$us$color$us$dt/g;
 	      $temp =~ s/\$QDPPCTYPE/QDP$tpc$us$dt/g;
 	      $temp =~ s/\$QLAPCTYPE/QLA$tpc$us$dt/g;
 	      $temp =~ s/\$NCVOID/$ncvoid/g;
@@ -322,6 +324,7 @@ if($cflag) {
       $line =~ s/\$PC/$pc/g;
       $line =~ s/\$PORPC/$porpc/g;
       $line =~ s/\$P/$precision/g;
+      $line =~ s/\$C/$color/g;
       $line =~ s/\$LIB/$lib/g;
       $line =~ s/\$lib/$llib/g;
       $line =~ s/\$clib/$clib/g;

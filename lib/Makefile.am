@@ -23,4 +23,3 @@ SUBDIRS = \
 	$(QDP_DIRS)
 
 EXTRA_DIST = make_qdp_dirs generate
-

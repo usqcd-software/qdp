@@ -3,56 +3,106 @@
 #ifndef _QDP_H
 #define _QDP_H
 
-/* The following macros specify the prevailing color and precision */
-/* Defaults to SU(3) single precision */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  // allow the user to specify QDP_Precision and/or QDP_PrecisionInt
+  // default to single precision
 #ifndef QDP_Precision
-#define QDP_Precision 'F'
+#  ifndef QDP_PrecisionInt
+#    define QDP_PrecisionInt 1
+#  endif
+#  if QDP_PrecisionInt == 1
+#    define QDP_Precision 'F'
+#    define QDP_PrecisionLetter F
+#  elif QDP_PrecisionInt == 2
+#    define QDP_Precision 'D'
+#    define QDP_PrecisionLetter D
+#  else
+#    error "bad QDP_PrecisionInt"
+#  endif
+#else
+#  ifndef QDP_PrecisionInt
+#    if QDP_Precision == 'F'
+#      define QDP_PrecisionInt 1
+#      define QDP_PrecisionLetter F
+#    elif QDP_Precision == 'D'
+#      define QDP_PrecisionInt 2
+#      define QDP_PrecisionLetter D
+#    else
+#      error "bad QDP_Precision"
+#    endif
+#  else
+#    if QDP_Precision == 'F'
+#      if QDP_PrecisionInt != 1
+#        error "inconsistent QDP_Precision='F' and QDP_PrecisionInt"
+#      endif
+#      define QDP_PrecisionLetter F
+#    elif QDP_Precision == 'D'
+#      if QDP_PrecisionInt != 2
+#        error "inconsistent QDP_Precision='D' and QDP_PrecisionInt"
+#      endif
+#      define QDP_PrecisionLetter D
+#    else
+#      error "bad QDP_Precision"
+#    endif
+#  endif
 #endif
 
-#ifndef QDP_Nc
-#define QDP_Nc 3
+  // allow the user to specify QDP_Colors and/or QDP_Nc
+  // default to Nc=3
+#ifndef QDP_Colors
+#  ifndef QDP_Nc
+#    define QDP_Nc 3
+#  endif
+#  if QDP_Nc == 2 || QDP_Nc == 3
+#    define QDP_Colors QDP_Nc
+#  elif QDP_Nc > 0
+#    define QDP_Colors 'N'
+#  else
+#    error "bad QDP_Nc"
+#  endif
+#else
+#  ifndef QDP_Nc
+#    if QDP_Colors == 2 || QDP_Colors == 3
+#      define QDP_Nc QDP_Colors
+#    elif QDP_Colors == 'N'
+#      define QDP_Nc 3
+#    else
+#      error "bad QDP_Colors"
+#    endif
+#  else
+#    if QDP_Colors == 2 || QDP_Colors == 3
+#      if QDP_Colors != QDP_Nc
+#        error "inconsistent QDP_Colors and QDP_Nc"
+#      endif
+#    elif QDP_Colors == 'N'
+#      if QDP_Nc <= 0
+#        error "bad QDP_Nc"
+#      endif
+#    else
+#      error "bad QDP_Colors"
+#    endif
+#  endif
 #endif
 
-/* allow numeric precision specification */
-#if QDP_Precision == 1
-#undef QDP_Precision
-#define QDP_Precision 'F'
-#endif
-#if QDP_Precision == 2
-#undef QDP_Precision
-#define QDP_Precision 'D'
-#endif
-
-/* include QLA headers */
+  /* include QLA headers */
 #ifndef QLA_Precision
 #define QLA_Precision QDP_Precision
 #endif
-
+#ifndef QLA_Colors
+#define QLA_Colors QDP_Colors
+#endif
 #ifndef QLA_Nc
 #define QLA_Nc QDP_Nc
 #endif
-
 #include <qla.h>
 
-/* Apply rule for default color namespace, based on QDP_Nc */
-#ifdef QDP_Colors
-#if (QDP_Colors != 'N') && (QDP_Colors != QDP_Nc)
-#error "QDP_Colors" QDP_Colors != "QDP_Nc" QDP_Nc
-#endif
-#else
-#if QDP_Nc == 2
-#define QDP_Colors 2
-#elif QDP_Nc == 3
-#define QDP_Colors 3
-#else
-#define QDP_Colors 'N'
-#endif
-#endif
-
-/* Define specific types and map them to generic types */
+  /* Define specific types and map them to generic types */
 #include <qdp_types.h>
 
-/* Headers we always define */
+  /* Headers we always define */
 #include <qdp_common.h>
 #include <qdp_io.h>
 #include <qdp_thread.h>
@@ -60,62 +110,47 @@
 #include <qdp_f.h>
 #include <qdp_d.h>
 
-/* Headers we define regardless of color */
-#if ( QDP_Precision == 'F' )
-#include <qdp_f_generic.h>
-#elif ( QDP_Precision == 'D' )
-#include <qdp_d_generic.h>
-#else
-#error Invalid QDP_Precision
-#endif
-
-/* Headers specific to color and precision */
-
-#if   ( QDP_Colors == 2 )
-
-#include <qdp_f2.h>
-#include <qdp_d2.h>
-#include <qdp_df2.h>
-#include <qdp_f2_color_generic.h>
-#include <qdp_d2_color_generic.h>
-#include <qdp_df2_color_generic.h>
-
-#if ( QDP_Precision == 'F' )
-#include <qdp_f2_generic.h>
-#elif ( QDP_Precision == 'D' )
-#include <qdp_d2_generic.h>
-#endif
-
-#elif ( QDP_Colors == 3 )
-
-#include <qdp_f3.h>
-#include <qdp_d3.h>
+  /* Headers we define regardless of precision */
+#if ( QDP_Colors == 3 )
 #include <qdp_df3.h>
-#include <qdp_f3_color_generic.h>
-#include <qdp_d3_color_generic.h>
-#include <qdp_df3_color_generic.h>
-
-#if ( QDP_Precision == 'F' )
-#include <qdp_f3_generic.h>
-#elif ( QDP_Precision == 'D' )
-#include <qdp_d3_generic.h>
-#endif
-
+#elif ( QDP_Colors == 2 )
+#include <qdp_df2.h>
 #elif ( QDP_Colors == 'N' )
-
-#include <qdp_fn.h>
-#include <qdp_dn.h>
 #include <qdp_dfn.h>
-#include <qdp_fn_color_generic.h>
-#include <qdp_dn_color_generic.h>
-#include <qdp_dfn_color_generic.h>
-
-#if ( QDP_Precision == 'F' )
-#include <qdp_fn_generic.h>
-#elif ( QDP_Precision == 'D' )
-#include <qdp_dn_generic.h>
 #endif
 
-#endif /* QDP_Colors */
+  /* Headers we define regardless of color */
+#if ( QDP_Precision == 'F' )
+#include <qdp_f.h>
+#elif ( QDP_Precision == 'D' )
+#include <qdp_d.h>
+#endif
+
+  /* Headers specific to color and precision */
+#if ( QDP_Precision == 'F' )
+
+#if   ( QDP_Colors == 3 )
+#include <qdp_f3.h>
+#elif ( QDP_Colors == 2 )
+#include <qdp_f2.h>
+#elif ( QDP_Colors == 'N' )
+#include <qdp_fn.h>
+#endif
+
+#elif ( QDP_Precision == 'D' )
+
+#if   ( QDP_Colors == 3 )
+#include <qdp_d3.h>
+#elif ( QDP_Colors == 2 )
+#include <qdp_d2.h>
+#elif ( QDP_Colors == 'N' )
+#include <qdp_dn.h>
+#endif
+
+#endif /* QDP_Precision */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _QDP_H */

@@ -1,13 +1,17 @@
 #!/usr/bin/perl
 
-($gc, $lib, $infile, $outfile) = @ARGV;
+($gcp, $lib, $infile, $outfile) = @ARGV;
 
-if($gc eq 'g') {
+if($gcp eq 'g') {
   if (! $lib =~ /[df][23n]*/) {
     exit 0;
   }
-} else {
+} elsif($gcp eq 'c') {
   if (! $lib =~ /[df][23n]/) {
+    exit 0;
+  }
+} else {
+  if (! $lib =~ /^[df][23n]/) {
     exit 0;
   }
 }
@@ -40,10 +44,12 @@ sub get_name_args($) {
 sub get_generic_name($) {
   ($name) = @_;
   $gname = $name;
-  if($gc eq 'g') {
+  if($gcp eq 'g') {
     $gname =~ s/QDP_[DF23N]+/QDP/;
-  } else {
+  } elsif($gcp eq 'c') {
     $gname =~ s/(QDP_[DF]+)[23N]+/\1/;
+  } else {
+    $gname =~ s/QDP_[DF]+([23N]+)/QDP_\1/;
   }
   return $gname;
 }

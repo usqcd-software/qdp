@@ -54,4 +54,107 @@ extern "C" {
 }
 #endif
 
+#define QDP_PROFX(_QDPfunc, _QDPargs, ...) \
+  do { \
+    if(QDP_prof_level>0&&QDP_thread_num()==0) { \
+      static QDP_prof qp; \
+      static int first_time=1; \
+      if(first_time) { \
+        first_time = 0; \
+        qp.count = 0; \
+        qp.time = 0; \
+        qp.comm_time = 0; \
+        qp.math_time = 0; \
+        qp.nsites = 0; \
+        qp.func = #_QDPfunc; \
+        qp.caller = __func__; \
+        qp.line = __LINE__; \
+        QDP_register_prof(&qp); \
+      } \
+      QDP_keep_time = 1; \
+      QDP_comm_time = 0; \
+      QDP_math_time = 0; \
+      qp.time -= QDP_time(); \
+      _QDPfunc _QDPargs; \
+      qp.time += QDP_time(); \
+      qp.comm_time += QDP_comm_time; \
+      qp.math_time += QDP_math_time; \
+      qp.count++; \
+      __VA_ARGS__; \
+      QDP_keep_time = 0; \
+    } else { \
+      _QDPfunc _QDPargs; \
+    } \
+  } while(0)
+
+#define QDP_PROFXX(_QDPfunc, _QDPargs, _QDPsubset) \
+  QDP_PROFX(_QDPfunc, _QDPargs, \
+	    qp.nsites += QDP_subset_len(_QDPsubset))
+
+#define QDP_PROFXV(_QDPfunc, _QDPargs, _QDPsubset, _QDPnv) \
+  QDP_PROFX(_QDPfunc, _QDPargs, \
+	    qp.nsites += (_QDPnv)*QDP_subset_len(_QDPsubset))
+
+#define QDP_PROFXM(_QDPfunc, _QDPargs, _QDPsubset, _QDPns) \
+  QDP_PROFX(_QDPfunc, _QDPargs, \
+            { int _i; for(_i=0; _i<_QDPns; ++_i) \
+	      qp.nsites += QDP_subset_len(_QDPsubset[_i]); })
+
+#define QDP_PROFS(_QDPfunc, _QDPargs, ...) \
+  do { \
+    if(QDP_prof_level>0&&QDP_thread_num()==0) { \
+      static QDP_prof qp[2]; \
+      static int first_time=1; \
+      double _time; \
+      if(first_time) { \
+        first_time = 0; \
+        qp[0].count = 0; \
+        qp[0].time = 0; \
+        qp[0].comm_time = 0; \
+        qp[0].math_time = 0; \
+        qp[0].nsites = 0; \
+        qp[0].func = #_QDPfunc"(no restart)"; \
+        qp[0].caller = __func__; \
+        qp[0].line = __LINE__; \
+        QDP_register_prof(&qp[0]); \
+        qp[1].count = 0; \
+        qp[1].time = 0; \
+        qp[1].comm_time = 0; \
+        qp[1].math_time = 0; \
+        qp[1].nsites = 0; \
+        qp[1].func = #_QDPfunc"(restart)"; \
+        qp[1].caller = __func__; \
+        qp[1].line = __LINE__; \
+        QDP_register_prof(&qp[1]); \
+      } \
+      QDP_keep_time = 1; \
+      QDP_comm_time = 0; \
+      QDP_math_time = 0; \
+      QDP_restart = 0; \
+      _time = QDP_time(); \
+      _QDPfunc _QDPargs; \
+      qp[QDP_restart].time += QDP_time() - _time; \
+      qp[QDP_restart].comm_time += QDP_comm_time; \
+      qp[QDP_restart].math_time += QDP_math_time; \
+      qp[QDP_restart].count++; \
+      __VA_ARGS__; \
+      QDP_keep_time = 0; \
+    } else { \
+      _QDPfunc _QDPargs; \
+    } \
+  } while(0)
+
+#define QDP_PROFSX(_QDPfunc, _QDPargs, _QDPsubset) \
+  QDP_PROFS(_QDPfunc, _QDPargs, \
+	    qp[QDP_restart].nsites += QDP_subset_len(_QDPsubset))
+
+#define QDP_PROFSV(_QDPfunc, _QDPargs, _QDPsubset, _QDPnv) \
+  QDP_PROFS(_QDPfunc, _QDPargs, \
+	    qp[QDP_restart].nsites += (_QDPnv)*QDP_subset_len(_QDPsubset))
+
+#define QDP_PROFSM(_QDPfunc, _QDPargs, _QDPsubset, _QDPns) \
+  QDP_PROFS(_QDPfunc, _QDPargs, \
+            { int _i; for(_i=0; _i<_QDPns; ++_i) \
+	      qp[QDP_restart].nsites += QDP_subset_len(_QDPsubset[_i]); })
+
 #endif

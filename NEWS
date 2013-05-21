@@ -1,3 +1,7 @@
+2013-05-20: James Osborn
+	Added precision-generic headers.
+	Modified Precision and Colors macros to match new QLA.
+
 ===========================================================================
 2013-05-10      version 1.9.1
 ===========================================================================

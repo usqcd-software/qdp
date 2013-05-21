@@ -1838,7 +1838,7 @@ QDP_FN_write_V.o
 
 QDPSRC = $(QDPSRC1) $(QDPSRC2)
 QDPOBJ = $(QDPOBJ1) $(QDPOBJ2)
-QDPHDR = $(top_builddir)/include/qdp_fn.h qdp_fn_internal.h $(top_builddir)/include/qdp_fn_generic.h $(top_builddir)/include/qdp_fn_color_generic.h $(top_builddir)/include/qdp_fn_profile.h
+QDPHDR = $(top_builddir)/include/qdp_fn.h qdp_fn_internal.h $(top_builddir)/include/qdp_fn_generic.h $(top_builddir)/include/qdp_fn_color_generic.h $(top_builddir)/include/qdp_fn_precision_generic.h $(top_builddir)/include/qdp_fn_profile.h
 
 BUILD_SCRIPT_DIR = $(top_srcdir)/lib/generate
 
