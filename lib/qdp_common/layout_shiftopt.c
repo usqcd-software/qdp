@@ -135,6 +135,7 @@ shiftsort(int *a, int *b, int *dx, int d, int nd)
   return ga-gb;
 }
 
+//static int shiftopts[] = { 1 };
 static int shiftopts[] = { 3 };
 static int nshiftopts = sizeof(shiftopts)/sizeof(shiftopts[0]);
 static int g_s0, *g_dx, g_nd;

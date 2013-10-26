@@ -69,6 +69,8 @@ my $hlib = lc $lib;
 if($precision eq "FD") { $hlib =~ s/fd/df/; }
 if($making_header_file) {
   open HFILE, ">>".$outdir."qdp".$hlib.".h";
+  my $qcolor = $color;
+  if($qcolor eq "N") { $qcolor = "'N'"; }
   END {
     print HFILE <<"    EOF;";
 
@@ -95,7 +97,7 @@ if($making_header_file) {
     if($pc =~ /[FD][23N]$/) {
       print HFILE <<"      EOF;";
   /* Translation to color-generic names */
-#if QDP_Colors == $color
+#if QDP_Colors == $qcolor
 #include <qdp${hlib}_color_generic.h>
 #endif
 
@@ -104,8 +106,8 @@ if($making_header_file) {
 
     if($pc =~ /^_[FD][23N]*$/) {
       my $clrs = "";
-      if($color != "") {
-        $clrs = " && QDP_Colors == ".$color;
+      if($color ne "") {
+        $clrs = " && QDP_Colors == ".$qcolor;
       }
       print HFILE <<"      EOF;";
   /* Translation to fully generic names */
@@ -1318,6 +1320,9 @@ sub make_functions(\%) {
 	      my(@src2_adjs);
 	      if( ($arg->{SRC2_DO_ADJ}) && ($s2t ne '') &&
 		  (!$datatypes{$s2t}{NO_ADJ}) ) {@src2_adjs=('','a');}
+	      elsif( ($arg->{SRC2_SQ_ADJ}) && ($s2t ne '') &&
+		     (!$datatypes{$s2t}{NO_ADJ}) &&
+		     ($datatypes{$s2t}{SQUARE}) ) {@src2_adjs=('','a');}
 	      elsif( ($arg->{SRC2_ADJ}) && ($s2t ne '') &&
 		     (!$datatypes{$s2t}{NO_ADJ}) ) {@src2_adjs=('a');}
 	      else { @src2_adjs = ( '' ); }

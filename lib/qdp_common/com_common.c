@@ -86,10 +86,12 @@
 
 /* If we want to do our own checksums */
 /*#include <stdint.h>*/ /* don't require uint32_t anymore */
-#define CRCBYTES 8
+#define CRCBYTES 32
 static int do_checksum = 0;
 static int crc32(int crc, const unsigned char *buf, size_t len);
 
+#define USE_STRIDED
+#define USE_PAIRS
 
 /**********************************************************************
  *                      INTERNAL DATA TYPES                           *
@@ -202,7 +204,7 @@ QDP_check_comm(int new)
  **********************************************************************/
 
 static QDP_gather *
-new_gather()
+new_gather(void)
 {
   QDP_gather *g;
 
@@ -525,16 +527,48 @@ alloc_gmem(void)
   return (gmem_t *) malloc(sizeof(gmem_t));
 }
 
+static void
+resort(gmem_t *gmem, int issend)
+{
+  while(gmem!=NULL) {
+    if(gmem->sitelist_allocated==0) {
+      int n = gmem->end - gmem->begin;
+
+      int *sl = (int *) malloc(n*sizeof(int));
+      for(int i=0; i<n; i++) sl[i] = gmem->sitelist[gmem->begin+i];
+      gmem->sitelist = sl;
+      gmem->sitelist_allocated = 1;
+
+      int *ol = (int *) malloc(n*sizeof(int));
+      for(int i=0; i<n; i++) ol[i] = gmem->otherlist[gmem->begin+i];
+      gmem->otherlist = ol;
+      gmem->otherlist_allocated = 1;
+
+      gmem->begin = 0;
+      gmem->end = n;
+    }
+    // assume now that gmem->begin=0
+
+    if(issend) {
+      sort_sendlist(gmem->otherlist, gmem->sitelist, gmem->end);
+    } else {
+      sort_sendlist(gmem->sitelist, gmem->otherlist, gmem->end);
+    }
+
+    gmem = gmem->next;
+  }
+}
+
 int
 make_recv_msg(recv_msg_t ***pprm, recvlist_t *rl, QDP_Subset subset,
 	      char **mem, int size, char *src)
 {
+  recv_msg_t *rm=NULL;
   int n=0;
 
   if(subset->indexed) {
     int i, j=0, len=0;
 
-    // order dependent
     for(i=0; i<subset->len; ++i) {
       while((j<rl->nsites)&&(rl->sitelist[j]<subset->index[i])) ++j;
       if(j>=rl->nsites) break;
@@ -542,7 +576,6 @@ make_recv_msg(recv_msg_t ***pprm, recvlist_t *rl, QDP_Subset subset,
     }
 
     if(len!=0) {
-      recv_msg_t *rm;
       rm = alloc_rm();
       rm->node = rl->node;
       rm->size = len*size;
@@ -588,7 +621,6 @@ make_recv_msg(recv_msg_t ***pprm, recvlist_t *rl, QDP_Subset subset,
 	   ( rl->sitelist[j] < subset->offset+subset->len ) ) j++;
 
     if(j!=i) {
-      recv_msg_t *rm;
       rm = alloc_rm();
       rm->node = rl->node;
       rm->size = (j-i)*size;
@@ -612,6 +644,7 @@ make_recv_msg(recv_msg_t ***pprm, recvlist_t *rl, QDP_Subset subset,
       n = 1;
     }
   }
+  if(rm) resort(rm->gmem, 0);
   return n;
 }
 
@@ -619,7 +652,7 @@ int
 make_send_msg(send_msg_t ***ppsm, sendlist_t *sl, QDP_Subset subset,
 	      char *mem, int stride, int size)
 {
-  send_msg_t *sm;
+  send_msg_t *sm = NULL;
   int n=0, *x;
   int c, i, len;
   QDP_Lattice *rlat = QDP_subset_lattice(subset);
@@ -686,6 +719,7 @@ make_send_msg(send_msg_t ***ppsm, sendlist_t *sl, QDP_Subset subset,
 
   free(x);
 
+  if(sm) resort(sm->gmem, 1);
   return n;
 }
 
@@ -752,49 +786,17 @@ QDP_declare_strided_gather(
   return mtag;
 }
 
-static void
-resort(gmem_t *gmem, int issend)
-{
-  while(gmem!=NULL) {
-    if(gmem->sitelist_allocated==0) {
-      int n = gmem->end - gmem->begin;
-
-      int *sl = (int *) malloc(n*sizeof(int));
-      for(int i=0; i<n; i++) sl[i] = gmem->sitelist[gmem->begin+i];
-      gmem->sitelist = sl;
-      gmem->sitelist_allocated = 1;
-
-      int *ol = (int *) malloc(n*sizeof(int));
-      for(int i=0; i<n; i++) ol[i] = gmem->otherlist[gmem->begin+i];
-      gmem->otherlist = ol;
-      gmem->otherlist_allocated = 1;
-
-      gmem->begin = 0;
-      gmem->end = n;
-    }
-    // assume now that gmem->begin=0
-
-    if(issend) {
-      sort_sendlist(gmem->otherlist, gmem->sitelist, gmem->end);
-    } else {
-      sort_sendlist(gmem->sitelist, gmem->otherlist, gmem->end);
-    }
-
-    gmem = gmem->next;
-  }
-}
-
 /*
 **  allocate buffers for gather
 */
 static void
 prepare_gather(QDP_msg_tag *mtag)
 {
+#ifndef USE_PAIRS
   mtag->mhrecv = QDP_alloc_mh(mtag->nrecvs);
   recv_msg_t *rm = mtag->recv_msgs;
   int j = 0;
   while(rm!=NULL) {
-    //resort(rm->gmem, 0);
     if(do_checksum) rm->size += CRCBYTES;
     rm->mem = QMP_allocate_memory( rm->size );
     rm->buf = QMP_get_memory_pointer( rm->mem );
@@ -808,12 +810,34 @@ prepare_gather(QDP_msg_tag *mtag)
   send_msg_t *sm = mtag->send_msgs;
   j = 0;
   while(sm!=NULL) {
-    //resort(sm->gmem, 1);
     QDP_prepare_send(mtag->mhsend, sm, j);
     sm = sm->next;
     ++j;
   }
   QDP_prepare_msgs(mtag->mhsend);
+#else
+  mtag->mhrecv = QDP_alloc_mh(0);
+  mtag->mhsend = QDP_alloc_mh(mtag->nrecvs+mtag->nsends);
+
+  recv_msg_t *rm = mtag->recv_msgs;
+  int j = 0;
+  while(rm!=NULL) {
+    if(do_checksum) rm->size += CRCBYTES;
+    rm->mem = QMP_allocate_memory( rm->size );
+    rm->buf = QMP_get_memory_pointer( rm->mem );
+    QDP_prepare_recv(mtag->mhsend, rm, j);
+    rm = rm->next;
+    ++j;
+  }
+  send_msg_t *sm = mtag->send_msgs;
+  j = 0;
+  while(sm!=NULL) {
+    QDP_prepare_send(mtag->mhsend, sm, mtag->nrecvs+j);
+    sm = sm->next;
+    ++j;
+  }
+  QDP_prepare_msgs(mtag->mhsend);
+#endif
 
   mtag->prepared = 1;
 }
@@ -856,21 +880,25 @@ prepare_pointers(QDP_msg_tag *mtag)
 void
 QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 {
+  if(QDP_keep_time) QDP_comm_time -= QDP_time();
+  //double t0 = 1e6*QDP_time();
   if(!mtag->prepared) prepare_gather(mtag);
 
+  //double t1 = 1e6*QDP_time();
   // start receives
-  if(mtag->nrecvs>0) {
-    if(do_checksum) {
-      recv_msg_t *rm = mtag->recv_msgs;
-      while(rm!=NULL) {
-	memset(rm->buf, '\0', rm->size);
-	rm = rm->next;
-      }
+  if(do_checksum) {
+    recv_msg_t *rm = mtag->recv_msgs;
+    while(rm!=NULL) {
+      memset(rm->buf, '\0', rm->size);
+      rm = rm->next;
     }
-    QDP_start_recv(mtag, gather_number);
   }
+  //if(QDP_keep_time) QDP_comm_time -= QDP_time();
+  QDP_start_recv(mtag, gather_number);
+  //if(QDP_keep_time) QDP_comm_time += QDP_time();
 
   // copy data to buffers
+  //double t2 = 1e6*QDP_time();
   send_msg_t *sm = mtag->send_msgs;
   while(sm!=NULL) {
     char *tpt = sm->buf;
@@ -925,16 +953,26 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 	}
       } while((gmem=gmem->next)!=NULL);
       *crc_pt = crc;
+      //fprintf(stderr, "%i cksum: %x  ptr: %p\n", QDP_this_node, crc, crc_pt);
     }
     sm = sm->next;
   }
 
+  //double t3 = 1e6*QDP_time();
   // start sends
-  if(mtag->nsends>0) QDP_start_send(mtag, gather_number);
+  //if(QDP_keep_time) QDP_comm_time -= QDP_time();
+  QDP_start_send(mtag, gather_number);
+  //if(QDP_keep_time) QDP_comm_time += QDP_time();
 
+  //double t4 = 1e6*QDP_time();
   if(!mtag->pointers) prepare_pointers(mtag);
 
   ++gather_number;
+  //double t5 = 1e6*QDP_time();
+  //if(QDP_this_node==0) {
+  //printf("prep: %g  recv: %g  copy: %g  send: %g  ptrs: %g  tot: %g\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t5-t0);
+  //}
+  if(QDP_keep_time) QDP_comm_time += QDP_time();
 }
 
 static void
@@ -1010,45 +1048,35 @@ void
 QDP_wait_gather(QDP_msg_tag *mtag)
 {
   /* wait for all receive messages */
-  if(mtag->nrecvs>0) QDP_wait_recv( mtag );
+  QDP_wait_recv( mtag );
 
   /* wait for all send messages */
-  if(mtag->nsends>0) QDP_wait_send( mtag );
+  QDP_wait_send( mtag );
 
   /* Verify the checksums received */
   if(do_checksum) {
     int fail = 0;
-    if(mtag->nrecvs>0) {
-      int crcgot;
-      recv_msg_t *rm;
-      char *tpt;
-      int msg_size;
-      char *crc_pt;
-      int *crc;
-
-      rm = mtag->recv_msgs;
-      while(rm != NULL) {
-	tpt = rm->buf;
-	msg_size = rm->size - CRCBYTES;
-	crc_pt = tpt + msg_size;
-	crc = (int *) crc_pt;
-	crcgot = crc32(0, (unsigned char *)tpt, msg_size);
-	if(*crc != crcgot) {
-	  fprintf(stderr,
-	          "QDP error: node %d received checksum %x but node %d sent checksum %x\n",
-		  QDP_this_node, crcgot, rm->node, *crc);
-	  fprintf(stderr, "node %i recv buf=%p size=%i\n",
-		  QDP_this_node, rm->buf, rm->size);
-	  fail = 1;
-	}
-
-	rm = rm->next;
+    recv_msg_t *rm = mtag->recv_msgs;
+    while(rm != NULL) {
+      char *tpt = rm->buf;
+      int msg_size = rm->size - CRCBYTES;
+      char *crc_pt = tpt + msg_size;
+      int crc = *(int *) crc_pt;
+      int crcgot = crc32(0, (unsigned char *)tpt, msg_size);
+      if(crc != crcgot) {
+	fprintf(stderr,
+		"QDP error: node %d received checksum %x but node %d sent checksum %x\n",
+		QDP_this_node, crcgot, rm->node, crc);
+	fprintf(stderr, "node %i recv buf=%p size=%i\n",
+		QDP_this_node, rm->buf, rm->size);
+	//fprintf(stderr, "%i first: %p  value: %x\n", QDP_this_node, rm->buf, *(int*)rm->buf);
+	fail = 1;
       }
+      rm = rm->next;
     }
-
     QMP_sum_int(&fail);
     if(fail > 0) {
-      dump_messages(mtag);
+      //dump_messages(mtag);
       fflush(stdout);
       QMP_barrier();
       QMP_abort(1);
@@ -1532,9 +1560,23 @@ QDP_sum_float_array(float *fpt, int nfloats)
 **  Sum double over all nodes
 */
 void
-QDP_sum_double(double *dpt)
+QDP_sum_double(double *d)
 {
-  QMP_sum_double(dpt);
+  TGET;
+  REDUCE_SET(d);
+  TBARRIER;
+  ONE {
+    for(int i=1; i<TSIZE; i++) {
+      *d += *(QLA_D_Real *)REDUCE_GET(i);
+    }
+    QMP_sum_double(d);
+    TBARRIER;
+    TBARRIER;
+  } else {
+    TBARRIER;
+    *d = *(QLA_D_Real *)REDUCE_GET(0);
+    TBARRIER;
+  }
 }
 
 /*
@@ -1682,6 +1724,7 @@ QDP_free_mh(QDP_mh *mh)
   free(mh);
 }
 
+#ifdef USE_STRIDED
 static int
 get_stride(gmem_t *gmem, void **base, size_t *size, int *num, ptrdiff_t *stride)
 {
@@ -1790,6 +1833,7 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
   mem_size = 0;
   k=0;
   gmem = sm->gmem;
+  int has_strided = 0;
   do {
     int sn;
 
@@ -1800,6 +1844,7 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
       //fprintf(stderr, "strided gather: %i %i %i %i\n", gmem->sb, gmem->se,
       //gmem->ss, gmem->sn);
       k++;
+      has_strided = 1;
     } else {
       size[k] = (gmem->end-gmem->begin)*gmem->size;
       num[k] = 1;
@@ -1820,33 +1865,29 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
   }
 
   if(mem_size) {
-    int i, offset;
     sm->size = mem_size;
     sm->mem = QMP_allocate_memory( sm->size );
     sm->buf = QMP_get_memory_pointer( sm->mem );
     if(do_checksum) memset(sm->buf, '\0', sm->size);
-    //if(k==0) {
-    //mh->mmv[i] = QMP_declare_msgmem(sm->buf, sm->size);
-    //} else {
-    //base[k] = sm->buf;
-    //size[k] = sm->size;
-    //num[k] = 1;
-    //stride[k] = 0;
-    //k++;
-    //}
-    i = 0;
-    offset = 0;
-    gmem = sm->gmem;
-    do {
-      if(!gmem->sn) {
+    if(!has_strided) {
+      k = 0;
+      mh->mmv[i] = QMP_declare_msgmem(sm->buf, sm->size);
+    } else {
+      int i, offset;
+      i = 0;
+      offset = 0;
+      gmem = sm->gmem;
+      do {
+	if(!gmem->sn) {
+	  base[i] = sm->buf + offset;
+	  offset += size[i];
+	}
+	i++;
+	gmem = gmem->next;
+      } while(gmem!=NULL);
+      if(do_checksum) {
 	base[i] = sm->buf + offset;
-	offset += size[i];
       }
-      i++;
-      gmem = gmem->next;
-    } while(gmem!=NULL);
-    if(do_checksum) {
-      base[i] = sm->buf + offset;
     }
   } else {
     sm->mem = NULL;
@@ -1868,6 +1909,117 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
   free(stride);
 }
 
+#else /* not USE_STRIDED */
+
+static size_t
+gcd(size_t a, size_t b)
+{
+  if(a<b) {
+    if(a==0) return b;
+    return gcd(a,b-a);
+  }
+  if(b==0) return a;
+  return gcd(b,a-b);
+}
+
+void
+QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int ii)
+{
+  gmem_t *gmem = sm->gmem;
+  char *base = gmem->mem;
+  int elemsize = gcd(gmem->size, gmem->stride);
+  int n = gmem->end - gmem->begin;
+  //if(QDP_this_node==0) printf("%s: n: %i  p: %p  size: %i  stride: %i\n", __func__, n, gmem->mem, gmem->size, gmem->stride);
+  for(gmem=gmem->next; gmem!=NULL; gmem=gmem->next) {
+    ptrdiff_t bdiff = gmem->mem - base;
+    if(bdiff<0) { base = gmem->mem; bdiff = -bdiff; }
+    elemsize = gcd(elemsize, bdiff);
+    elemsize = gcd(elemsize, gmem->size);
+    elemsize = gcd(elemsize, gmem->stride);
+    n += gmem->end - gmem->begin;
+    //if(QDP_this_node==0) printf(" %s: n: %i  p: %p  size: %i  stride: %i\n", __func__, n, gmem->mem, gmem->size, gmem->stride);
+  }
+  if(do_checksum) {
+    sm->size = CRCBYTES;
+    sm->mem = QMP_allocate_memory( sm->size );
+    sm->buf = QMP_get_memory_pointer( sm->mem );
+    ptrdiff_t bdiff = sm->buf - base;
+    if(bdiff<0) { base = sm->buf; bdiff = -bdiff; }
+    elemsize = gcd(elemsize, bdiff);
+    elemsize = gcd(elemsize, sm->size);
+    n++;
+  } else {
+    sm->mem = NULL;
+    sm->buf = NULL;
+  }
+
+  int blocklen[n];
+  int index[n];
+  int count = 0;
+  int tsize = 0;
+  for(gmem=sm->gmem; gmem!=NULL; gmem=gmem->next) {
+    ptrdiff_t bdiff = gmem->mem - base;
+    int idx0 = bdiff/elemsize;
+    int ste = gmem->stride/elemsize;
+    int sze = gmem->size/elemsize;
+    if(ste==sze) {
+      for(int i=gmem->begin; i<gmem->end; i++) {
+	index[count] = idx0 + ste*gmem->sitelist[i];
+	int bl = sze;
+	//if(QDP_this_node==0) printf("%i : %i : %i\n", count, i, gmem->sitelist[i]);
+	while(i+1<gmem->end && gmem->sitelist[i+1]==gmem->sitelist[i]+1) {
+	  i++;
+	  bl += sze;
+	}
+	//if(QDP_this_node==0) printf("%i : %i : %i : %i\n", count, i, gmem->sitelist[i], bl);
+	blocklen[count] = bl;
+	count++;
+	tsize += bl;
+      }
+    } else {
+      for(int i=gmem->begin; i<gmem->end; i++) {
+	index[count] = idx0 + ste*gmem->sitelist[i];
+	blocklen[count] = sze;
+	count++;
+	tsize += sze;
+      }
+    }
+    gmem->sn = 1;
+  }
+  if(do_checksum) {
+    ptrdiff_t bdiff = sm->buf - base;
+    index[count] = bdiff/elemsize;
+    blocklen[count] = sm->size/elemsize;
+    //fprintf(stderr, "%i first: %p  value: %x  index: %i  count %i\n", QDP_this_node, sm->gmem->mem,
+    //*(int*)(sm->gmem->mem+sm->gmem->stride*sm->gmem->sitelist[sm->gmem->begin]), index[0], blocklen[0]);
+    //fprintf(stderr, "%i cksum: count: %i  index: %i  blocklen: %i  elemsize: %i  base: %p\n",
+    //QDP_this_node, count, index[count], blocklen[count], elemsize, base);
+    count++;
+  }
+  tsize *= elemsize;
+  int asize = tsize/count;
+  if(asize>-1) {
+    mh->mmv[ii] =
+      QMP_declare_indexed_msgmem(base, blocklen, index, elemsize, count);
+    mh->mhv[ii] = QMP_declare_send_to(mh->mmv[ii], sm->node, 0);
+  } else {
+    //if(QDP_this_node==0) printf("%s: count: %i  elemsize: %i  size: %i\n", __func__, count, elemsize, tsize);
+    for(gmem=sm->gmem; gmem!=NULL; gmem=gmem->next) {
+      gmem->sn = 0;
+    }
+    sm->size = tsize;
+    if(do_checksum) {
+      sm->size += CRCBYTES;
+      QMP_free_memory(sm->mem);
+    }
+    sm->mem = QMP_allocate_memory( sm->size );
+    sm->buf = QMP_get_memory_pointer( sm->mem );
+    mh->mmv[ii] = QMP_declare_msgmem(sm->buf, sm->size);
+    mh->mhv[ii] = QMP_declare_send_to(mh->mmv[ii], sm->node, 0);
+  }
+}
+#endif
+
 /*
 **  prepare to receive message
 */
@@ -1884,7 +2036,11 @@ QDP_prepare_recv(QDP_mh *mh, recv_msg_t *rm, int i)
 void
 QDP_prepare_msgs(QDP_mh *mh)
 {
+#ifndef USE_PAIRS
   if(mh->n) mh->mh = QMP_declare_multiple( mh->mhv, mh->n );
+#else
+  if(mh->n) mh->mh = QMP_declare_send_recv_pairs( mh->mhv, mh->n );
+#endif
 }
 
 /*
@@ -1893,7 +2049,7 @@ QDP_prepare_msgs(QDP_mh *mh)
 void
 QDP_start_send(QDP_msg_tag *mtag, int gather_number)
 {
-  QMP_start(mtag->mhsend->mh);
+  if(mtag->mhsend->n) QMP_start(mtag->mhsend->mh);
 }
 
 /*
@@ -1902,7 +2058,7 @@ QDP_start_send(QDP_msg_tag *mtag, int gather_number)
 void
 QDP_start_recv(QDP_msg_tag *mtag, int gather_number)
 {
-  QMP_start(mtag->mhrecv->mh);
+  if(mtag->mhrecv->n) QMP_start(mtag->mhrecv->mh);
 }
 
 /*
@@ -1911,7 +2067,7 @@ QDP_start_recv(QDP_msg_tag *mtag, int gather_number)
 void
 QDP_wait_send(QDP_msg_tag *mtag)
 {
-  QMP_wait(mtag->mhsend->mh);
+  if(mtag->mhsend->n) QMP_wait(mtag->mhsend->mh);
 }
 
 /*
@@ -1920,7 +2076,22 @@ QDP_wait_send(QDP_msg_tag *mtag)
 void
 QDP_wait_recv(QDP_msg_tag *mtag)
 {
-  QMP_wait(mtag->mhrecv->mh);
+  if(mtag->mhrecv->n) QMP_wait(mtag->mhrecv->mh);
+}
+
+void
+QDP_clear_to_send(QDP_msg_tag *mtag)
+{
+#if 1
+  if(mtag->mhrecv->n) {
+    //fprintf(stderr, "%i mhrecv->n: %i  mh: %p\n", QDP_this_node, mtag->mhrecv->n, mtag->mhrecv->mh);
+    QMP_clear_to_send(mtag->mhrecv->mh, QMP_CTS_READY);
+  }
+  if(mtag->mhsend->n) {
+    //fprintf(stderr, "%i mhsend->n: %i  mh: %p\n", QDP_this_node, mtag->mhsend->n, mtag->mhsend->mh);
+    QMP_clear_to_send(mtag->mhsend->mh, QMP_CTS_READY);
+  }
+#endif
 }
 
 /*

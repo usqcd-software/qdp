@@ -3,10 +3,6 @@
 #ifndef _QDP_H
 #define _QDP_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
   // allow the user to specify QDP_Precision and/or QDP_PrecisionInt
   // default to single precision
 #ifndef QDP_Precision
@@ -56,7 +52,7 @@ extern "C" {
 #  ifndef QDP_Nc
 #    define QDP_Nc 3
 #  endif
-#  if QDP_Nc == 2 || QDP_Nc == 3
+#  if QDP_Nc == 1 || QDP_Nc == 2 || QDP_Nc == 3
 #    define QDP_Colors QDP_Nc
 #  elif QDP_Nc > 0
 #    define QDP_Colors 'N'
@@ -65,7 +61,7 @@ extern "C" {
 #  endif
 #else
 #  ifndef QDP_Nc
-#    if QDP_Colors == 2 || QDP_Colors == 3
+#    if QDP_Colors == 1 || QDP_Colors == 2 || QDP_Colors == 3
 #      define QDP_Nc QDP_Colors
 #    elif QDP_Colors == 'N'
 #      define QDP_Nc 3
@@ -73,7 +69,7 @@ extern "C" {
 #      error "bad QDP_Colors"
 #    endif
 #  else
-#    if QDP_Colors == 2 || QDP_Colors == 3
+#    if QDP_Colors == 1 || QDP_Colors == 2 || QDP_Colors == 3
 #      if QDP_Colors != QDP_Nc
 #        error "inconsistent QDP_Colors and QDP_Nc"
 #      endif
@@ -110,47 +106,22 @@ extern "C" {
 #include <qdp_f.h>
 #include <qdp_d.h>
 
-  /* Headers we define regardless of precision */
-#if ( QDP_Colors == 3 )
-#include <qdp_df3.h>
-#elif ( QDP_Colors == 2 )
-#include <qdp_df2.h>
-#elif ( QDP_Colors == 'N' )
-#include <qdp_dfn.h>
-#endif
-
-  /* Headers we define regardless of color */
-#if ( QDP_Precision == 'F' )
-#include <qdp_f.h>
-#elif ( QDP_Precision == 'D' )
-#include <qdp_d.h>
-#endif
-
-  /* Headers specific to color and precision */
-#if ( QDP_Precision == 'F' )
-
-#if   ( QDP_Colors == 3 )
-#include <qdp_f3.h>
-#elif ( QDP_Colors == 2 )
-#include <qdp_f2.h>
-#elif ( QDP_Colors == 'N' )
-#include <qdp_fn.h>
-#endif
-
-#elif ( QDP_Precision == 'D' )
-
-#if   ( QDP_Colors == 3 )
-#include <qdp_d3.h>
-#elif ( QDP_Colors == 2 )
-#include <qdp_d2.h>
-#elif ( QDP_Colors == 'N' )
-#include <qdp_dn.h>
-#endif
-
-#endif /* QDP_Precision */
-
-#ifdef __cplusplus
-}
+#if QDP_Colors == 1
+#  include <qdp_f1.h>
+#  include <qdp_d1.h>
+#  include <qdp_df1.h>
+#elif QDP_Colors == 2
+#  include <qdp_f2.h>
+#  include <qdp_d2.h>
+#  include <qdp_df2.h>
+#elif QDP_Colors == 3
+#  include <qdp_f3.h>
+#  include <qdp_d3.h>
+#  include <qdp_df3.h>
+#elif QDP_Colors == 'N'
+#  include <qdp_fn.h>
+#  include <qdp_dn.h>
+#  include <qdp_dfn.h>
 #endif
 
 #endif /* _QDP_H */

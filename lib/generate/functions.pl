@@ -659,6 +659,7 @@ make_functions(%{{
    SRC1_SCALAR => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
+   SRC2_SQ_ADJ => 1,
   )}});
 
 comment1("Multiplication by complex constant");
@@ -672,6 +673,7 @@ make_functions(%{{
    SRC1_SCALAR => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
+   SRC2_SQ_ADJ => 1,
   )}});
 
 comment1("Multiplication by i");
@@ -805,20 +807,7 @@ make_functions(%{{
    SRC1_TYPES  => [ 'Real' ],
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
-  )}});
-
-comment1("Multiplication: uniform complex types");
-comment2("r <eqop> a * b");
-
-make_functions(%{{
-  (
-   DEST_TYPES  => [ 'Complex','ColorMatrix','DiracPropagator' ],
-   EQ_OPS      => [ @eqops, @veqops ],
-   SRC1_TYPES  => [ 'DEST' ],
-   SRC1_DO_ADJ => 1,
-   FUNCS       => [ 'times' ],
-   SRC2_TYPES  => [ 'DEST' ],
-   SRC2_DO_ADJ => 1,
+   SRC2_SQ_ADJ => 1,
   )}});
 
 comment1("Multiplication by complex field");
@@ -826,52 +815,41 @@ comment2("r <eqop> a * b");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ @color_types ],
+   DEST_TYPES  => [ @complex_types ],
    EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'Complex' ],
+   SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
+   SRC2_SQ_ADJ => 1,
   )}});
 
-comment1("Color matrix field times vector field");
+comment1("Multiplication by colormatrix field");
 comment2("r <eqop> a * b");
 
 make_functions(%{{
   (
-   DEST_TYPES  => [ 'ColorVector','HalfFermion','DiracFermion' ],
+   DEST_TYPES  => [ @color_types ],
    EQ_OPS      => [ @eqops, @veqops ],
    SRC1_TYPES  => [ 'ColorMatrix' ],
    SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
    SRC2_TYPES  => [ 'DEST' ],
+   SRC2_SQ_ADJ => 1,
   )}});
 
-comment1("Color matrix field times propagator field");
+comment1("Multiplication by propagator field");
 comment2("r <eqop> a * b");
 
 make_functions(%{{
   (
    DEST_TYPES  => [ 'DiracPropagator' ],
-   EQ_OPS      => [ @eqops ],
-   SRC1_TYPES  => [ 'ColorMatrix' ],
+   EQ_OPS      => [ @eqops, @veqops ],
+   SRC1_TYPES  => [ 'DiracPropagator' ],
    SRC1_DO_ADJ => 1,
    FUNCS       => [ 'times' ],
-   SRC2_TYPES  => [ 'DEST' ],
-   SRC2_DO_ADJ => 1,
-  )}});
-
-comment1("Propagator field times color matrix field");
-comment2("r <eqop> a * b");
-
-make_functions(%{{
-  (
-   DEST_TYPES  => [ 'DiracPropagator' ],
-   EQ_OPS      => [ @eqops ],
-   SRC1_TYPES  => [ 'DEST' ],
-   SRC1_DO_ADJ => 1,
-   FUNCS       => [ 'times' ],
-   SRC2_TYPES  => [ 'ColorMatrix' ],
-   SRC2_DO_ADJ => 1,
+   SRC2_TYPES  => [ 'ColorMatrix','DiracPropagator' ],
+   SRC2_SQ_ADJ => 1,
   )}});
 
 comment1("Local inner product");

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+perl="$1"
+src="$2"
+vnc="$src/lib/generate/virtualNc.pl"
+
+$perl $vnc ../include/qdp_fn.h ../include/qdp_f1.h
+$perl $vnc ../include/qdp_dn.h ../include/qdp_d1.h
+$perl $vnc ../include/qdp_dfn.h ../include/qdp_df1.h
+
+hs="
+qdp_fn_color_generic.h
+qdp_fn_generic.h
+qdp_fn_precision_generic.h
+qdp_dn_color_generic.h
+qdp_dn_generic.h
+qdp_dn_precision_generic.h
+qdp_dfn_color_generic.h
+"
+
+spat="
+s/QDP_Nc,//;
+s/QDP_Nc//;
+s/\(QDP_[DFQ]*\)N/\11/g;
+"
+
+for h in $hs; do
+    h2="`echo $h |sed 's/\([fdq]\)n/\11/'`"
+    #echo "$h : $h2"
+    #echo "$spat"
+    cat ../include/$h |sed "$spat" >../include/$h2
+done

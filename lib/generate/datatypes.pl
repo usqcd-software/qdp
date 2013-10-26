@@ -11,15 +11,18 @@
 		      NO_ADJ => 1,
 		      NO_PRECISION => 1,
 		      NO_COLOR => 1,
+		      SQUARE => 1,
 		     },
 	      Real => {
 		       ABBR => "R",
 		       NO_ADJ => 1,
 		       NO_COLOR => 1,
+		       SQUARE => 1,
 		      },
 	      Complex => {
 			  ABBR => "C",
 			  NO_COLOR => 1,
+			  SQUARE => 1,
 			 },
 	      ColorVector => {
 			      ABBR => "V",
@@ -32,9 +35,11 @@
 			      },
 	      ColorMatrix => {
 			      ABBR => "M",
+			      SQUARE => 1,
 			     },
 	      DiracPropagator => {
 			       ABBR => "P",
+			       SQUARE => 1,
 			      },
 	     );
 

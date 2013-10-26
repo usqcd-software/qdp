@@ -13,6 +13,22 @@ if NC3
 endif
 if NCN
   QDP_DIRS += $(QDP_CN_DIRS)
+nodist_include_HEADERS = \
+ $(top_builddir)/include/qdp_f1.h \
+ $(top_builddir)/include/qdp_f1_generic.h \
+ $(top_builddir)/include/qdp_f1_color_generic.h \
+ $(top_builddir)/include/qdp_f1_precision_generic.h \
+ $(top_builddir)/include/qdp_d1.h \
+ $(top_builddir)/include/qdp_d1_generic.h \
+ $(top_builddir)/include/qdp_d1_color_generic.h \
+ $(top_builddir)/include/qdp_d1_precision_generic.h \
+ $(top_builddir)/include/qdp_df1.h \
+ $(top_builddir)/include/qdp_df1_color_generic.h
+$(nodist_include_HEADERS): makeheaders
+makeheaders:
+	$(top_srcdir)/lib/generate/make_virtualNc $(PERL) $(top_srcdir)
+clean-local:
+	-rm -f $(nodist_include_HEADERS)
 endif
 
 SUBDIRS = \
@@ -20,6 +36,7 @@ SUBDIRS = \
 	qdp_int \
 	$(QDP_DIRS) \
 	optimized \
-	$(QDP_DIRS)
+	$(QDP_DIRS) \
+	.
 
 EXTRA_DIST = make_qdp_dirs generate

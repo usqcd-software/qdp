@@ -1,3 +1,12 @@
+===========================================================================
+2013-10-26      version 1.10.0
+===========================================================================
+2013-10-26: James Osborn
+        Updated communications code to use qmppair.
+
+2013-10-17: James Osborn
+        Added virtual Nc=1 library.
+
 2013-05-20: James Osborn
 	Added precision-generic headers.
 	Modified Precision and Colors macros to match new QLA.

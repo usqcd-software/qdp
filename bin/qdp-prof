@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "X$2" != "X" ]; then
+  checkfunc='if(f!="'"$2"'") next;'
+fi
+
 cat "$1" |awk '
 /^QDP function/{ prof = -1; next; }
 /^------------/{ prof = -prof; next; }
@@ -18,6 +22,7 @@ cat "$1" |awk '
   split($(6+o),a,":");
   f = a[1];
   l = a[2];
+  '"$checkfunc"'
   if(ns+0==0) ns = 0.25;
   if(match($1,"-comm")) {
     qms[q0] -= ms;
@@ -44,16 +49,24 @@ function vsort(a) {
   }
 }
 END{
-  mfa["QDP_F3_V_vpeq_M_times_V"] = 72;
-  mfa["QDP_D3_M_eq_M_times_M"] = 198;
-  mfa["QDP_D3_M_eq_Ma_times_M"] = 198;
-  mfa["QDP_D3_M_eq_M_times_Ma"] = 198;
-  mfa["QDP_D3_M_peq_C_times_M"] = 72;
-  mfa["QDP_D3_C_peq_M_dot_M"] = 72;
-  mfa["QDP_D3_M_peq_r_times_M"] = 36;
-  mfa["QDP_F3_r_eq_re_V_dot_V"] = 12;
-  mfa["QDP_D3_M_peq_M"] = 18;
-  printf("QDP functions\n");
+  mfa["V_meq_V"] = 6;
+  mfa["M_peq_M"] = 18;
+  mfa["r_eq_norm2_V"] = 12;
+  mfa["r_eq_re_V_dot_V"] = 12;
+  mfa["V_peq_r_times_V"] = 12;
+  mfa["V_meq_r_times_V"] = 12;
+  mfa["M_eq_r_times_M"] = 18;
+  mfa["M_peq_r_times_M"] = 36;
+  mfa["V_eq_r_times_V_plus_V"] = 12;
+  mfa["V_eq_r_times_V_minus_V"] = 12;
+  mfa["V_vpeq_M_times_V"] = 72;
+  mfa["M_peq_C_times_M"] = 72;
+  mfa["C_peq_M_dot_M"] = 72;
+  mfa["M_eq_M_times_M"] = 198;
+  mfa["M_eq_Ma_times_M"] = 198;
+  mfa["M_eq_M_times_Ma"] = 198;
+  printf("%-40s %10s %10s %10s %10s\n",
+         "QDP functions", "seconds", "cum. %", "ns/site", "Mflops");
   vsort(qms);
   tot *= 1e-3;
   tt = 0;
@@ -64,7 +77,9 @@ END{
     if(tqs+0==0) tqs = 0.25;
     ns = qms[q]/tqs;
     if(ns+0==0) ns = 0.25;
-    mf = 1000*mfa[q]/ns;
+    qg = q;
+    sub("QDP_.._", "", qg);
+    mf = 1000*mfa[qg]/ns;
     printf("%-40s %10.3f %10.3f %10.3f", q, t, 100*(tot-tt)/tot, ns);
     if(mf>0) printf(" %10.3f", mf);
     printf("\n");
