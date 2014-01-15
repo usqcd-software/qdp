@@ -10,10 +10,8 @@ void
 initial_gauge(QLA_ColorMatrix *g, int coords[])
 {
   QLA_Complex z;
-  int i;
-
   QLA_M_eq_zero(g);
-  for(i=0; i<QLA_Nc; i++) {
+  for(int i=0; i<QLA_Nc; i++) {
     QLA_c_eq_r_plus_ir(z, i, 0);
     QLA_elem_M(*g,i,i) = z;
   }
@@ -23,10 +21,8 @@ void
 initial_df(QLA_DiracFermion *df, int coords[])
 {
   QLA_Complex z;
-  int i,j;
-
-  for(i=0; i<QLA_Nc; i++) {
-    for(j=0; j<4; j++) {
+  for(int i=0; i<QLA_Nc; i++) {
+    for(int j=0; j<QLA_Ns; j++) {
       QLA_c_eq_r_plus_ir(z, i+j, coords[0]);
       QLA_elem_D(*df,i,j) = z;
     }
@@ -36,10 +32,9 @@ initial_df(QLA_DiracFermion *df, int coords[])
 void
 initial_li(QLA_Int *li, int coords[])
 {
-  int i,t;
-
-  t = coords[3];
-  for(i=2; i>=0; --i) {
+  int td = QDP_ndim() - 1;
+  int t = coords[td];
+  for(int i=td-1; i>=0; --i) {
     t = t*QDP_coord_size(i) + coords[i];
   }
   *li = t;
@@ -49,11 +44,9 @@ void
 print_df(QLA_DiracFermion *df, int coords[])
 {
   QLA_Complex z;
-  int i,j;
-
-  for(i=0; i<4; i++) if(coords[i]) return;
-  for(i=0; i<QLA_Nc; i++) {
-    for(j=0; j<4; j++) {
+  for(int i=0; i<QDP_ndim(); i++) if(coords[i]) return;
+  for(int i=0; i<QLA_Nc; i++) {
+    for(int j=0; j<QLA_Ns; j++) {
       z = QLA_elem_D(*df,i,j);
       printf0("%g\t%g\n", QLA_real(z), QLA_imag(z));
     }
@@ -63,7 +56,8 @@ print_df(QLA_DiracFermion *df, int coords[])
 int
 timeslices(int x[], void *args)
 {
-  return x[3];
+  int td = *(int*)args;
+  return x[td];
 }
 
 void
@@ -126,7 +120,9 @@ run_tests(void)
 
   printf0("creating subset... ");
   fflush(stdout);
-  ts = QDP_create_subset(timeslices, NULL, 0, QDP_coord_size(3));
+  int nd = QDP_ndim();
+  int td = nd - 1;
+  ts = QDP_create_subset(timeslices, &td, sizeof(td), QDP_coord_size(td));
   printf0("done\n");
 
   printf0("Calling QDP_M_eq_gaussian_S... ");
@@ -196,9 +192,9 @@ run_tests(void)
 
   printf0("Calling QDP_D_eq_sD on custom subset... ");
   fflush(stdout);
-  for(k=0; k<100; k++) {
-    for(i=0; i<QDP_coord_size(3); i++) {
-      for(j=0; j<4; j++) {
+  for(k=0; k<10; k++) {
+    for(i=0; i<QDP_coord_size(td); i++) {
+      for(j=0; j<nd; j++) {
 	QDP_D_eq_sD(d2, d1, QDP_neighbor[j], QDP_forward, ts[i]);
 	QDP_D_eq_M_times_D(d1, m, d2, QDP_all);
 	QDP_D_eq_sD(d3, d1, QDP_neighbor[j], QDP_backward, ts[i]);
@@ -208,36 +204,196 @@ run_tests(void)
   }
   printf0("done\n");
 
-  QDP_DiracFermion *dv[4], *d1v[4];
-  QDP_ShiftDir sd[4];
-  for(i=0; i<4; i++) {
+  QDP_DiracFermion *dv[nd], *d1v[nd];
+  QDP_ShiftDir sd[nd];
+  for(i=0; i<nd; i++) {
     d1v[i] = d1;
     dv[i] = QDP_create_D();
     sd[i] = QDP_forward;
   }
   printf0("Calling QDP_D_veq_sD on custom subset... ");
   fflush(stdout);
-  for(i=0; i<QDP_coord_size(3); i++) {
-    QDP_D_veq_sD(dv, d1v, QDP_neighbor, sd, ts[i], 4);
+  for(i=0; i<QDP_coord_size(td); i++) {
+    QDP_D_veq_sD(dv, d1v, QDP_neighbor, sd, ts[i], nd);
   }
   printf0("done\n");
-  for(i=0; i<4; i++) {
+  for(i=0; i<nd; i++) {
     QDP_destroy_D(dv[i]);
   }
 
   printf0("Freeing fields... ");
   fflush(stdout);
-  QDP_destroy_M(m);
+  QDP_destroy_S(rs);
+  QDP_destroy_I(li);
+  QDP_destroy_R(r);
+  QDP_destroy_C(c);
+  QDP_destroy_V(v);
+  QDP_destroy_H(hf);
   QDP_destroy_D(d1);
   QDP_destroy_D(d2);
   QDP_destroy_D(d3);
+  QDP_destroy_M(m);
+  QDP_destroy_P(p);
   printf0("done\n");
+}
+
+static int
+subIdent(QDP_Lattice *rlat, int x[], void *args)
+{
+  int color = 0;
+  int nd = QDP_ndim_L(rlat);
+  int *rof = (int *)args;
+  int *sls = rof + nd;
+  for(int i=0; i<nd; i++) {
+    int k = x[i] - rof[i];
+    if(k<0 || k>=sls[i]) color = 1;
+  }
+#if 0
+  if(color==0) {
+    printf("SUB:");
+    for(int i=0; i<nd; i++) printf(" %i", x[i]);
+    printf("\n");
+  }
+#endif
+  return color;
+}
+
+static void
+mapIdent(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
+	 int *num, int idx, QDP_ShiftDir fb, void *args)
+{
+  int rnd = QDP_ndim_L(rlat);
+  int snd = QDP_ndim_L(slat);
+  if(fb==QDP_forward) {
+    int *rof = (int *)args;
+    int *sls = rof + rnd;
+    for(int i=0; i<rnd; i++) {
+      int k = rx[i] - rof[i];
+      if(k<0 || k>=sls[i]) *num = 0;
+      if(i<snd) sx[i] = k;
+    }
+    for(int i=rnd; i<snd; i++) sx[i] = 0;
+#if 0
+    if(*num) {
+      printf("FWD:");
+      for(int i=0; i<rnd; i++) printf(" %i", rx[i]);
+      printf(" <-");
+      for(int i=0; i<snd; i++) printf(" %i", sx[i]);
+      printf("\n");
+    }
+#endif
+  } else { // QDP_backward
+    int *sof = (int *)args;
+    int *sls = sof + 2*snd;
+    for(int i=0; i<snd; i++) {
+      int k = 0;
+      if(i<rnd) k = rx[i];
+      k += sof[i];
+      if(k<0 || k>=sls[i]) *num = 0;
+      sx[i] = k;
+    }
+    for(int i=snd; i<rnd; i++) if(rx[i]) *num = 0;
+#if 0
+    if(*num) {
+      printf("BCK:");
+      for(int i=0; i<snd; i++) printf(" %i", sx[i]);
+      printf(" ->");
+      for(int i=0; i<rnd; i++) printf(" %i", rx[i]);
+      printf("\n");
+    }
+#endif
+  }
+}
+
+QDP_Subset *
+getSubsIdent(QDP_Lattice *rlat, QDP_Lattice *slat, int roff[])
+{
+  int rnd = QDP_ndim_L(rlat);
+  int snd = QDP_ndim_L(slat);
+  int rof[3*rnd], *sls, *rls;
+  sls = rof + rnd;
+  rls = sls + rnd;
+  for(int i=0; i<rnd; i++) {
+    rof[i] = roff[i];
+    rls[i] = QDP_coord_size_L(rlat, i);
+    sls[i] = 1;
+    if(i<snd) sls[i] = QDP_coord_size_L(slat, i);
+  }
+  QDP_Subset *sub = QDP_create_subset_L(rlat, subIdent, rof, sizeof(rof), 2);
+  return sub;
+}
+
+void
+testShift(QDP_Lattice *rlat, QDP_Lattice *slat)
+{
+  QDP_Real *rf = QDP_create_R_L(rlat);
+  QDP_Real *sf = QDP_create_R_L(slat);
+  QLA_Real rs=1, ss=2;
+  QLA_Real rs2=rs*rs, ss2=ss*ss;
+  QDP_R_eq_r(rf, &rs, QDP_all_L(rlat));
+  QDP_R_eq_r(sf, &ss, QDP_all_L(slat));
+  QLA_Real rn, sn, rn2;
+  QDP_r_eq_norm2_R(&rn, rf, QDP_all_L(rlat));
+  QDP_r_eq_norm2_R(&sn, sf, QDP_all_L(slat));
+  printf0("recv V: %g\n", rn/rs2);
+  printf0("send V: %g\n", sn/ss2);
+
+  int rnd = QDP_ndim_L(rlat);
+  int snd = QDP_ndim_L(slat);
+  int rof[3*rnd], *sls, *rls;
+  sls = rof + rnd;
+  rls = sls + rnd;
+  for(int i=0; i<rnd; i++) {
+    rof[i] = 0;
+    rls[i] = QDP_coord_size_L(rlat, i);
+    sls[i] = 1;
+    if(i<snd) sls[i] = QDP_coord_size_L(slat, i);
+  }
+  printf0("rls:");
+  for(int i=0; i<rnd; i++) printf0(" %i", rls[i]);
+  printf0("\n");
+  printf0("sls:");
+  for(int i=0; i<rnd; i++) printf0(" %i", sls[i]);
+  printf0("\n");
+  int done = 0;
+  do {
+    printf0("roffset:");
+    for(int i=0; i<rnd; i++) printf0(" %i", rof[i]);
+    printf0("\n");
+    //QDP_Subset *sub = QDP_create_subset_L(rlat,subIdent,rof,sizeof(rof),2);
+    QDP_Subset *sub = getSubsIdent(rlat, slat, rof);
+    printf0("created subset\n");
+    QDP_Shift map = QDP_create_map_L(rlat, slat, mapIdent, rof, sizeof(rof));
+    printf0("created map\n");
+    QDP_r_eq_norm2_R(&rn2, rf, sub[0]);
+    printf0("subset V: %g\n", rn2/rs2);
+    //QDP_R_eq_zero(rf, sub[0]);
+    QDP_R_eq_sR(rf, sf, map, QDP_forward, sub[0]);
+    printf0("finished shift\n");
+    QDP_r_eq_norm2_R(&rn2, rf, sub[0]);
+    printf0("subset V: %g\n", rn2/ss2);
+    QDP_r_eq_norm2_R(&rn2, rf, QDP_all_L(rlat));
+    printf0("diff V: %g\n", (rn2-rn)/(ss2-rs2));
+    QDP_destroy_shift(map);
+    printf0("destroyed map\n");
+    QDP_destroy_subset(sub);
+    printf0("destroyed subset\n");
+
+    for(int i=0; i<rnd; i++) {
+      rof[i] += sls[i];
+      if(rof[i]<rls[i]) break;
+      rof[i] = 0;
+      if(i==rnd-1) done = 1;
+    }
+  } while(!done);
 }
 
 int
 main(int argc, char *argv[])
 {
-  int lattice_size[4] = { 8,8,8,8 };
+  int lattice_size[] = { 8,8,8,8 };
+  //int lattice_size[] = { 4,4 };
+  int nd = sizeof(lattice_size)/sizeof(int);
 
   printf0("Initializing lattice... ");
   fflush(stdout);
@@ -245,7 +401,7 @@ main(int argc, char *argv[])
   printf0("done\n");
   printf0("Setting lattice size... ");
   fflush(stdout);
-  QDP_set_latsize(4, lattice_size);
+  QDP_set_latsize(nd, lattice_size);
   printf0("done\n");
   printf0("Creating layout... ");
   fflush(stdout);
@@ -266,6 +422,12 @@ main(int argc, char *argv[])
 
   printf0("Setting default lattice... ");
   QDP_set_default_lattice(lat2);
+  printf0("done\n");
+
+  printf0("Testing inter-lattice shift...\n");
+  testShift(lat, lat2);
+  printf0("reverse direction...\n");
+  testShift(lat2, lat);
   printf0("done\n");
 
   printf0("Destroying old lattice... ");

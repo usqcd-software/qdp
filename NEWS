@@ -1,3 +1,8 @@
+2014-01-15: James Osborn
+        Now track shifts and subsets by id.
+  	Fixed OpenMP bug in com_common.c.
+	Fixed bug in declaring gather when nodes are not participating.
+
 ===========================================================================
 2013-10-26      version 1.10.0
 ===========================================================================

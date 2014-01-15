@@ -8,6 +8,7 @@ QDP_Subset *QDP_all_and_empty = NULL;
 QDP_Subset QDP_even;
 QDP_Subset QDP_odd;
 QDP_Subset *QDP_even_and_odd = NULL;
+static int subsetId = 0;
 
 static int
 QDP_all_func(QDP_Lattice *lat, int x[], void *args)
@@ -56,6 +57,8 @@ QDP1_create_subset_L(QDP_Lattice *lat,
     obj[i].len = 0;
     obj[i].indexed = 0;
     obj[i].lattice = lat;
+    obj[i].id = subsetId;
+    subsetId++;
   }
 
   for(i=0; i<QDP_sites_on_node_L(lat); ++i) {

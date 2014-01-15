@@ -15,6 +15,7 @@ extern "C" {
     void *args;
     int argsize;
     QDP_gather *gather;
+    int id;
   };
 
   extern void QDP_make_shifts(void);

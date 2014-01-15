@@ -14,6 +14,7 @@ struct QDP_Subset_struct {
   void *args;
   int colors;
   int coloring;
+  int id;
   QDP_Lattice *lattice;
   struct QDP_Subset_struct *first;
 };

@@ -13,6 +13,8 @@
 #include "com_common_internal.h"
 #include "com_specific.h"
 
+#define printf0(...) do { if(QDP_this_node==0) printf(__VA_ARGS__); } while(0)
+
 #define QDP_error(...) \
   fprintf(stderr, "error on %i/%i: %s %s %i: ", QDP_this_node, QMP_get_number_of_nodes(), __FILE__, __func__, __LINE__); \
   fprintf(stderr, __VA_ARGS__); \

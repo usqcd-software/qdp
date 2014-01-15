@@ -48,9 +48,11 @@ typedef struct QDP_shift_tag_t {
 } QDP_shift_tag_t;
 
 struct QDP_shift_src_t {
-  QDP_Shift shift;
+  //QDP_Shift shift;
+  int shiftId;
   QDP_ShiftDir fb;
-  QDP_Subset subset;
+  //QDP_Subset subset;
+  int subsetId;
   char **ptr;
   QDP_shift_tag_t *st;
   QDP_shift_list_t *sl;

@@ -162,6 +162,7 @@ shiftopt(const void *aa, const void *bb)
   return 0;
 }
 
+#if 0
 static int
 lexeo(const void *aa, const void *bb)
 {
@@ -175,6 +176,7 @@ lexeo(const void *aa, const void *bb)
   if(pa!=pb) return pa-pb;
   return la-lb;
 }
+#endif
 
 static void
 geti2l(int *i2l, int s0, int *dx, int nd, int ns)

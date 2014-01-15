@@ -225,9 +225,11 @@ QDP_alloc_shift_src_t(QDP_data_common_t *dc, QDP_Shift shift, QDP_ShiftDir fb, Q
   }
   //printf("alloc ss\n");
   ss->dc = dc;
-  ss->shift = shift;
+  //ss->shift = shift;
+  ss->shiftId = shift->id;
   ss->fb = fb;
-  ss->subset = subset;
+  //ss->subset = subset;
+  ss->subsetId = subset->id;
   ss->st = NULL;
   LEAVE;
   return ss;
@@ -460,8 +462,8 @@ QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc,
       break;
     }
     ss = *pss;
-    if( (ss->dc==src_dc) && (ss->shift==shift) &&
-	(ss->fb==fb) && (ss->subset==subset) ) {
+    if( (ss->dc==src_dc) && (ss->shiftId==shift->id) &&
+	(ss->fb==fb) && (ss->subsetId==subset->id) ) {
       if(ss->st->shift_pending) {
 	ss->st->shift_pending = 0;
 	QDP_wait_gather(ss->st->msgtag);

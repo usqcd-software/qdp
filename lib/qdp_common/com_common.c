@@ -63,6 +63,7 @@
 #include <string.h>
 #include <qmp.h>
 
+//#define DO_TRACE
 #include "qdp_internal.h"
 
 // prevent use of default lattice variables/functions
@@ -316,24 +317,26 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
     TRACE;
     QDP_get_coords_L(rlat, xr, QDP_this_node, i);
     TRACE;
-    int num, idx = 0; // FIXME: get only the first source site for now
+    int num=1, idx=0;
     func(rlat, slat, xr, xs, &num, idx, dir, args);
     TRACE;
-    int j = QDP_node_number_L(slat, xs);
-    TRACE;
-    if( j==QDP_this_node ) {
-      gt->fromlist[i] = QDP_index_L(slat, xs);
-    } else {
-      gt->fromlist[i] = NOWHERE;
-      if(ns[j]==0) ++gt->nrecvs;
-      if(ns[j]>=ls[j]) {
-	ls[j] += 16;
-	sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
-	dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+    gt->fromlist[i] = NOWHERE;
+    if(num>0) { // FIXME: get only the first source site for now
+      int j = QDP_node_number_L(slat, xs);
+      TRACE;
+      if( j==QDP_this_node ) {
+	gt->fromlist[i] = QDP_index_L(slat, xs);
+      } else {
+	if(ns[j]==0) ++gt->nrecvs;
+	if(ns[j]>=ls[j]) {
+	  ls[j] += 16;
+	  sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
+	  dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+	}
+	sl[j][ns[j]] = i;
+	dl[j][ns[j]] = QDP_index_L(slat, xs);
+	++ns[j];
       }
-      sl[j][ns[j]] = i;
-      dl[j][ns[j]] = QDP_index_L(slat, xs);
-      ++ns[j];
     }
   }
 
@@ -366,21 +369,23 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
   gt->nsends = 0;
   for(int i=0; i<QDP_sites_on_node_L(slat); ++i) {
     QDP_get_coords_L(slat, xs, QDP_this_node, i);
-    int num, idx = 0; // FIXME: get only the first dest site for now
-    // need to find lowest index for each node of all dest sites
-    // maybe store an recv buffer index for the recv lists
+    int num=1, idx=0;
     func(slat, rlat, xs, xr, &num, idx, dir, args);
-    int j = QDP_node_number_L(rlat, xr);
-    if( j!=QDP_mynode() ) {
-      if(ns[j]==0) ++gt->nsends;
-      if(ns[j]>=ls[j]) {
-	ls[j] += 16;
-	sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
-	dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+    if(num>0) { // FIXME: get only the first dest site for now
+      // need to find lowest index for each node of all dest sites
+      // maybe store an recv buffer index for the recv lists
+      int j = QDP_node_number_L(rlat, xr);
+      if( j!=QDP_mynode() ) {
+	if(ns[j]==0) ++gt->nsends;
+	if(ns[j]>=ls[j]) {
+	  ls[j] += 16;
+	  sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
+	  dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+	}
+	sl[j][ns[j]] = i;
+	dl[j][ns[j]] = QDP_index_L(rlat, xr);
+	++ns[j];
       }
-      sl[j][ns[j]] = i;
-      dl[j][ns[j]] = QDP_index_L(rlat, xr);
-      ++ns[j];
     }
   }
 
@@ -737,25 +742,22 @@ QDP_declare_strided_gather(
   QDP_Subset subset,	/* subset of sites to gather to */
   char **dest)		/* array of pointers for result */
 {
-  int i, j;	        /* scratch */
+  TRACE;
   QDP_msg_tag *mtag;	/* message tag structure we will return a pointer to */
-  recv_msg_t **rm;
-  send_msg_t **sm;
   gather_t *gt;         /* pointer to current gather */
-
   gt = &g->g[fb];
 
   /* set pointers in sites whose neighbors are on this node */
   if(subset->indexed) {
-    for(i=0; i<subset->len; ++i) {
-      j = subset->index[i];
+    for(int i=0; i<subset->len; ++i) {
+      int j = subset->index[i];
       if(gt->fromlist[j] != NOWHERE) {
 	dest[j] = src + gt->fromlist[j]*stride;
       }
     }
   } else {
-    i = subset->offset + subset->len;
-    for(j=subset->offset; j<i; ++j) {
+    int i = subset->offset + subset->len;
+    for(int j=subset->offset; j<i; ++j) {
       if(gt->fromlist[j] != NOWHERE) {
 	dest[j] = src + gt->fromlist[j]*stride;
       }
@@ -768,21 +770,22 @@ QDP_declare_strided_gather(
   mtag->pointers = 0;
 
   mtag->nrecvs = 0;
-  rm = &mtag->recv_msgs;
-  for(i=0; i<gt->nrecvs; ++i) {
+  recv_msg_t **rm = &mtag->recv_msgs;
+  for(int i=0; i<gt->nrecvs; ++i) {
     mtag->nrecvs += make_recv_msg(&rm, &gt->recvlist[i], subset,
 				  dest, size, src);
   }
   *rm = NULL;
 
   mtag->nsends = 0;
-  sm = &mtag->send_msgs;
-  for(i=0; i<gt->nsends; ++i) {
+  send_msg_t **sm = &mtag->send_msgs;
+  for(int i=0; i<gt->nsends; ++i) {
     mtag->nsends += make_send_msg(&sm, &gt->sendlist[i], subset,
 				  src, stride, size);
   }
   *sm = NULL;
 
+  TRACE;
   return mtag;
 }
 
@@ -867,8 +870,8 @@ prepare_pointers(QDP_msg_tag *mtag)
 
 #define inline_copy(dest, src, type, count) \
 { \
-  int _k; \
-  for(_k=0; _k<count; _k++) { \
+  /*printf0("copy:  %p  %p  %i\n", dest, src, count);*/	\
+  for(int _k=0; _k<count; _k++) { \
     ((type *)(dest))[_k] = ((type *)(src))[_k];	\
   } \
 }
@@ -880,6 +883,7 @@ prepare_pointers(QDP_msg_tag *mtag)
 void
 QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 {
+  TRACE;
   if(QDP_keep_time) QDP_comm_time -= QDP_time();
   //double t0 = 1e6*QDP_time();
   if(!mtag->prepared) prepare_gather(mtag);
@@ -906,13 +910,12 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
     do {
       if(gmem->sn==0) { // not strided
 	if(gmem->size%sizeof(COPY_TYPE)!=0) {
-
+	  //printf0("b: %i  e: %i  sz: %i  st: %i\n", gmem->begin, gmem->end, gmem->size, gmem->stride);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
 	  for(int i=gmem->begin; i<gmem->end; i++) {
-	    memcpy(tpt, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size);
-	    tpt += gmem->size;
+	    memcpy(tpt+i*gmem->size, gmem->mem+gmem->sitelist[i]*gmem->stride, gmem->size);
 	  }
 	} else {
 	  char *pt = tpt - gmem->begin*gmem->size;
@@ -953,7 +956,7 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 	}
       } while((gmem=gmem->next)!=NULL);
       *crc_pt = crc;
-      //fprintf(stderr, "%i cksum: %x  ptr: %p\n", QDP_this_node, crc, crc_pt);
+      //fprintf(stderr, "%i cksum: %x  ptr: %p  size: %i\n", QDP_this_node, crc, crc_pt, sm->size);
     }
     sm = sm->next;
   }
@@ -973,8 +976,10 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
   //printf("prep: %g  recv: %g  copy: %g  send: %g  ptrs: %g  tot: %g\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t5-t0);
   //}
   if(QDP_keep_time) QDP_comm_time += QDP_time();
+  TRACE;
 }
 
+#if 0
 static void
 hexdump(FILE *f, char *buf, int size, int *pos)
 {
@@ -1040,6 +1045,7 @@ dump_messages(QDP_msg_tag *mtag)
     fclose(f);
   }
 }
+#endif
 
 /*
 **  wait for gather to finish
@@ -1836,7 +1842,6 @@ QDP_prepare_send(QDP_mh *mh, send_msg_t *sm, int i)
   int has_strided = 0;
   do {
     int sn;
-
     sn = get_stride(gmem, base+k, size+k, num+k, stride+k);
     //sn = 0;
 

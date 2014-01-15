@@ -3,6 +3,7 @@
 #include "qdp_internal.h"
 
 QDP_Shift *QDP_neighbor = NULL;
+static int shiftId = 0;
 
 QDP_Shift
 QDP1_create_shift_L(QDP_Lattice *lat, int disp[])
@@ -14,6 +15,8 @@ QDP1_create_shift_L(QDP_Lattice *lat, int disp[])
   shift->args = NULL;
   shift->argsize = 0;
   shift->disp = NULL;
+  shift->id = shiftId;
+  shiftId++;
   TRACE;
   shift->gather = QDP_make_gather_shift_L( lat, disp, QDP_WANT_INVERSE );
   TRACE;
@@ -60,6 +63,8 @@ QDP_create_map_L(QDP_Lattice *rlat, QDP_Lattice *slat,
     shift->args = args;
     shift->argsize = argsize;
     shift->disp = NULL;
+    shift->id = shiftId;
+    shiftId++;
     shift->gather = QDP_make_gather_map_L(rlat, slat, func, args, argsize, QDP_WANT_INVERSE);
     SHARE_SET(shift);
     TBARRIER;
