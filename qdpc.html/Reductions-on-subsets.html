@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+<title>Reductions on subsets - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Subsets.html#Subsets" title="Subsets">
+<link rel="prev" href="Defining-a-subset.html#Defining-a-subset" title="Defining a subset">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Reductions-on-subsets"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Defining-a-subset.html#Defining-a-subset">Defining a subset</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Subsets.html#Subsets">Subsets</a>
+<hr>
+</div>
+
+<h4 class="subheading">Reductions on subsets</h4>
+
+<p>Reduction operations (norms, inner products, global sums) come in two
+variants according to whether the result is computed on a single
+subset of the lattice or on multiple subsets.  Thus the operation
+
+<pre class="example">       QLA_Complex z;
+       QDP_ColorVector *a, *b;
+       QDP_c_eq_V_dot_V(&amp;z, a, b, QDP_even);
+</pre>
+   <p>sums the dot product of the lattice staggered fermion fields <em>a</em>
+and <em>b</em> on the even sites and stores the result in <em>z</em>. 
+The operation
+
+<pre class="example">       QLA_Complex z[nt];
+       QDP_ColorVector *a, *b;
+       QDP_c_eq_V_dot_V_multi(z, a, b, ts, nt);
+</pre>
+   <p>with the timeslice subsets illustrated above computes the dot product
+summed separately on each timeslice and stores the sums in the array
+<em>z</em>, so that the value in <em>z[i]</em> results from the sum on the
+subset <em>ts[i]</em>.
+
+   </body></html>
+

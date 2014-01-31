@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+<title>Creating displacement shifts - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Shifts.html#Shifts" title="Shifts">
+<link rel="prev" href="Shifts.html#Shifts" title="Shifts">
+<link rel="next" href="Creating-arbitrary-permutations.html#Creating-arbitrary-permutations" title="Creating arbitrary permutations">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Creating-displacement-shifts"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Creating-arbitrary-permutations.html#Creating-arbitrary-permutations">Creating arbitrary permutations</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Shifts.html#Shifts">Shifts</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Shifts.html#Shifts">Shifts</a>
+<hr>
+</div>
+
+<h4 class="subheading">Creating displacement shifts</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>QDP_Shift QDP_create_shift(int d[]);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Creates a shift defined by the displacement vector <code>d</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>int d[4] = {0,1,2,0};<br>
+QDP_Shift knight[4][4];<br>
+knight[2][3] = QDP_create_shift(d);</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>The displacement vector points from the recieving site towards the sender
+(or the opposite if later used with the <code>QDP_backward</code> direction). 
+Calling with a displacement vector {1,0,0,0} would reproduce
+the shift <code>QDP_neighbor[0]</code>.
+
+   </body></html>
+

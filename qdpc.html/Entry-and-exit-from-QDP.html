@@ -1,0 +1,178 @@
+<html lang="en">
+<head>
+<title>Entry and exit from QDP - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="next" href="Layout-utilities.html#Layout-utilities" title="Layout utilities">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Entry-and-exit-from-QDP"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Layout-utilities.html#Layout-utilities">Layout utilities</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.1 Entry and exit from QDP</h3>
+
+<p>QDP must first be initialized before any QDP functions are to be used
+except for <code>QDP_is_initialized()</code> which may be called anytime. 
+Initializing QDP also initializes QMP if it has not already been done. 
+Thus the user can safely start QMP before QDP and do any necessary
+broadcasts or other operations. 
+Before any QDP field operations are done one must also create the
+ lattice layout.
+
+<!-- @subheading Entry to QDP -->
+   <div class="float">
+
+<h4 class="subheading">Entry to QDP</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_initialize(int *argc, char ***argv);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Starts QDP. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_initialize(&amp;argc, &amp;argv);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The routine <code>QDP_initialize</code> is called once by all nodes and
+starts QDP operations. 
+It initialiazes message passing (if not already done),
+ but does not setup the site layout
+(see <code>QDP_create_layout</code> and related functions). 
+It also defines the global variable
+<code>int QDP_this_node;</code>
+specifying the logical node number of the current node.
+
+<!-- @subheading Exit from QDP -->
+   <div class="float">
+
+<h4 class="subheading">Exit from QDP</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_finalize(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Exits QDP. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_finalize();</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>This call provides for an orderly shutdown.  It is called by all
+nodes. It also finalizes QMP only if it was initialized by QDP. 
+If profiling was turned on in any functions then node 0 will dump some
+statistics to <code>stdout</code>. 
+Then it returns control to the calling process.
+
+<!-- @subheading Panic exit from QDP -->
+   <div class="float">
+
+<h4 class="subheading">Panic exit from QDP</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_abort(int status);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Panic shutdown of the process. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_abort(1);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>This routine may be called by one or more nodes.  It sends kill
+signals to all nodes and exits with exit status <code>status</code>.
+
+<!-- @subheading Check for initialization -->
+   <div class="float">
+
+<h4 class="subheading">Check for initialization</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_is_initialized(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Checks if QDP is initialized. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>if(!QDP_is_initialized()) QDP_initialize(&amp;argc, &amp;argv);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Control profiling -->
+   <div class="float">
+
+<h4 class="subheading">Control profiling</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_profcontrol(int new);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Controls profiling. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>old = QDP_profcontrol(new);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>Profiling results are only available for code that is compiled with
+the macro <code>QDP_PROFILE</code> defined.  This must be defined before
+the qdp.h header is included.  When <code>QDP_finalize</code> is called
+a list of QDP function and call times will be sent to stdout on
+node 0.  This function toggles the accumulation of the profiling
+statistics within the profiled sections of code. 
+A value of zero turns the collection of timing info off and
+nonzero values turn it on.  It is on by default.
+
+<!-- @subheading Control checking communications -->
+   <div class="float">
+
+<h4 class="subheading">Control checking communications</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_check_comm(int new);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Controls checking communications. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>old = QDP_check_comm(new);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>A nonzero value turns the internal communications checksums on and
+zero turns it off.  It is off by default.
+
+   </body></html>
+

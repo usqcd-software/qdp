@@ -1,0 +1,280 @@
+<html lang="en">
+<head>
+<title>Layout utilities - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="Entry-and-exit-from-QDP.html#Entry-and-exit-from-QDP" title="Entry and exit from QDP">
+<link rel="next" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Layout-utilities"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Entry-and-exit-from-QDP.html#Entry-and-exit-from-QDP">Entry and exit from QDP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.2 Layout utilities</h3>
+
+<p>The layout routine determines which nodes get which lattice sites and
+in what linear order the sites are stored.  It has entry points that
+allow a user to access single site data extracted from a QDP lattice
+field.  The layout must be created before any operations on QDP field
+objects are allowed.  If a user removes data from a QDP lattice object
+(see <code>QDP_expose</code> or <code>QDP_extract</code>) and wishes to manipulate
+the data on a site-by-site basis, the global entry points provided
+here are needed to locate the site data.
+
+   <p>The current QDP/C implementation allows only hypercubic layouts with
+the same sublattice dimensions on every node. 
+It would be relatively easy to add other layouts if the need arised. 
+<!-- Some implementations may have a built-in tightly constrained layout. -->
+<!-- In flexible implementations there may be several layout choices, -->
+<!-- thereby allowing the user the freedom to select one that works best -->
+<!-- with a given application.  Furthermore, such implementations may allow -->
+<!-- the user to create a custom layout to replace one of the standard -->
+<!-- layouts.  As long as the custom layout procedure provides the entry -->
+<!-- points and functionality described here, compatibility with the -->
+<!-- remainder of the QDP library is assured. -->
+
+<h4 class="subheading">Defining the layout</h4>
+
+<p>Prior to creating the layout the layout parameters must be defined. 
+This is done through function calls.
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_set_latsize(int nd, int size[]);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Sets number of spacetime dimensions and lattice size.<br>
+No default.  Must always be set. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_set_latsize(4, size);</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_create_layout(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Lays out the sites. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_create_layout();</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>All layout parameters must be initialized through the <code>set</code> function
+calls prior to creating the layout.
+
+   <p>After creating the layout the following global variables are accessible. 
+The predefined lattice subsets for specifying even, odd, and
+global subsets of the lattice:
+
+   <p><code>QDP_Subset QDP_even, QDP_odd, QDP_all;</code>
+
+   <p>The even and odd subsets are elements of a two-element subset array
+<code>QDP_even_odd</code>, such that
+
+<pre class="example">     <code>QDP_even = QDP_even_odd[0];</code>
+     <code>QDP_odd  = QDP_even_odd[1];</code>
+</pre>
+   <p>It also creates the nearest-neighbor shifts
+
+   <p><code>QDP_shift QDP_neighbor[];</code>
+
+   <p>for each coordinate direction. 
+And finally the variable
+
+   <p><code>int QDP_sites_on_node;</code>
+
+   <p>gives the number of sites assigned to a node by the layout utility. 
+Note that this may vary between nodes.
+
+   <p>The following global entry points are provided by the
+<code>QDP_create_layout</code> procedure:
+
+<!-- @subheading Number of dimensions -->
+   <div class="float">
+
+<h4 class="subheading">Number of dimensions</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_ndim(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns the number of dimensions. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>ndim = QDP_ndim();</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Length of lattice in a given direction -->
+   <div class="float">
+
+<h4 class="subheading">Length of lattice in a given direction</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_coord_size(int i);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns length of lattice in direction <code>i</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>nx = QDP_coord_size(0);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Length of lattice in all directions -->
+   <div class="float">
+
+<h4 class="subheading">Length of lattice in all directions</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_latsize(int latsize[]);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns lattice dimensions into array <code>latsize</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_latsize(latsize);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Length of lattice in all directions -->
+   <div class="float">
+
+<h4 class="subheading">Length of lattice in all directions</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>size_t QDP_volume(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns lattice volume. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>vol = QDP_volume();</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Node number of site -->
+   <div class="float">
+
+<h4 class="subheading">Node number of site</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_node_number(int x[]);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns logical node number containing site <code>x</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>node = QDP_node_number(x);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Linear index of site -->
+   <div class="float">
+
+<h4 class="subheading">Linear index of site</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_index(int x[]);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns the linearized index for the lattice site <code>x</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>k = QDP_index(x);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The linear index returned by <code>QDP_index</code> ranges from 0 to
+<code>QDP_sites_on_node</code> - 1.
+
+<!-- @subheading Number of sites on a node -->
+   <div class="float">
+
+<h4 class="subheading">Number of sites on a node</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_numsites(int node);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Return the number of sites on a node.  Same as <code>QDP_sites_on_node</code>
+if <code>node = QDP_this_node</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>k = QDP_numsites(i);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Map node and linear index to coordinate -->
+   <div class="float">
+
+<h4 class="subheading">Map node and linear index to coordinate</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_get_coords(int x[], int node, int index);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns site coordinates <code>x</code> for the given node
+<code>node</code> and linear index <code>index</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_get_coords(x, 0, 31);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subheading Defining the spacetime coordinate -->
+   <div class="float">
+
+<h4 class="subheading">Defining the spacetime coordinate</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_I_eq_coord(QDP_Int *r, int i);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">The <code>i</code>th spacetime coordinate. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_Int *coord_z;<br>
+QDP_I_eq_coord(coord_z, 2);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The call <code>QDP_I_eq_coord(&amp;coord[i],i)</code> fills an integer lattice
+field <code>coord[i]</code> with a value on each site equal to the integer
+value of the <em>i</em>th space-time coordinate on that site.
+
+   </body></html>
+

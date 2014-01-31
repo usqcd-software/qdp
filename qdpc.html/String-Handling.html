@@ -1,0 +1,149 @@
+<html lang="en">
+<head>
+<title>String Handling - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link rel="prev" href="Reading-and-writing-QLA-arrays.html#Reading-and-writing-QLA-arrays" title="Reading and writing QLA arrays">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="String-Handling"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Reading-and-writing-QLA-arrays.html#Reading-and-writing-QLA-arrays">Reading and writing QLA arrays</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>
+<hr>
+</div>
+
+<h4 class="subsection">4.7.4 String Handling</h4>
+
+<p>The file and record metadata is passed to QDP in <code>QDP_string</code> objects. 
+These can be created, destroyed and converted to/from C strings with
+the following routines.
+
+<!-- @subsubheading{Creating an empty QDP string} -->
+   <div class="float">
+
+<h5 class="subsubheading">Creating an empty QDP string</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>QDP_String *QDP_string_create(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Creates an empty string. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>fileinfo = QDP_string_create();
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubheading{Destroying a QDP string} -->
+   <div class="float">
+
+<h5 class="subsubheading">Destroying a QDP string</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_string_destroy(QDP_String *xml);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Frees the <code>QDP_string</code> object and its contents. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_string_destroy(xml);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubheading{Set a QDP string from a C string} -->
+   <div class="float">
+
+<h5 class="subsubheading">Set a QDP string from a C string</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_string_set(QDP_String *qstring, char *cstring);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Sets the QDP string to contain a copy of the null-terminated character array <code>cstring</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_string *fileinfo = QDP_string_create();<br>
+QDP_string_set(fileinfo, string);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubheading{Copying a QDP string} -->
+   <div class="float">
+
+<h5 class="subsubheading">Copying a QDP string</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_string_copy(QDP_String *dest, QDP_String *src);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Copies the string. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_string_copy(newxml, oldxml);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubheading{Accessing the string length} -->
+   <div class="float">
+
+<h5 class="subsubheading">Accessing the string length</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>size_t QDP_string_length(QDP_String *qs);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns the length of the string. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>length = QDP_string_length(xml);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubheading{Accessing the character string} -->
+   <div class="float">
+
+<h5 class="subsubheading">Accessing the character string</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>char *QDP_string_ptr(QDP_String *qs);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Returns a pointer to the null-terminated character array in the string. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>printf("%sn", QDP_string_ptr(xml));
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   </body></html>
+

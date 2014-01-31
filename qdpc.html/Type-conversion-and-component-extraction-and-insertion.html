@@ -1,0 +1,492 @@
+<html lang="en">
+<head>
+<title>Type conversion and component extraction and insertion - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Function-Details.html#Function-Details" title="Function Details">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Type-conversion-and-component-extraction-and-insertion"></a>
+Up:&nbsp;<a rel="up" accesskey="u" href="Function-Details.html#Function-Details">Function Details</a>
+<hr>
+</div>
+
+   <div class="float">
+
+<h3 class="section">5.4 Type conversion and component extraction and insertion</h3>
+
+   <p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Convert float to double</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Convert double to float</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Convert real to complex (zero imaginary part)</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_R(QDP_Complex *r, QDP_Real *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a + i0
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Convert real and imaginary to complex</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_R_plus_i_R(QDP_Complex *r, QDP_Real *a, QDP_Real *b, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a + i b
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Real/Imaginary part of complex</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_</code><var>func</var><code>_C(QDP_Real *r, QDP_Complex *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>re, im</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Integer to real</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_I(QDP_Real *r, QDP_Int *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Real to integer (truncate/round)</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_eq_</code><var>func</var><code>_R(QDP_Int *r, QDP_Real *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>trunc, round</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Accessing a color matrix element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_M(QDP_Complex *r, QDP_ColorMatrix *a, int i, int j, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[i, j]
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a color matrix element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_elem_C(QDP_ColorMatrix *r, QDP_Complex *a, int i, int j, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i, j] = a
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Accessing a half fermion or Dirac fermion spinor element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_</code><var>T</var><code>(QDP_Complex *r, </code><var>Type</var><code> *a, int color, int spin, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[color, spin]
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a half fermion or Dirac fermion spinor element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_elem_C(</code><var>Type</var><code> *r, QDP_Complex *a, int color, int spin, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[color, spin] = a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Accessing a color vector element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_V(QDP_Complex *r, QDP_ColorVector *a, int i, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[i]
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a color vector element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_V_eq_elem_C(QDP_ColorVector *r, QDP_Complex *a, int i, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = a
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Accessing a Dirac propagator matrix element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_P(QDP_Complex *r, QDP_DiracPropagator *a, int ic, int is, int jc, int js, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[ic, is, jc, js]
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a Dirac propagator matrix element</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_eq_elem_C(QDP_DiracPropagator *r, QDP_Complex *a, int ic, int is, int jc, int js, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, is, jc, js] = a
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Extracting a color vector from a color matrix column</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_V_eq_colorvec_M(QDP_ColorVector *r, QDP_ColorMatrix *a, int j, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = a[i, j] (for all i)
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a color vector into a color matrix column</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_colorvec_V(QDP_ColorMatrix *r, QDP_ColorVector *a, int j, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i, j] = a[i] (for all i)
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Extracting a color vector from a half fermion or Dirac fermion</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_V_eq_colorvec_</code><var>T</var><code>(QDP_ColorVector *r, </code><var>Type</var><code> *a, int spin, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[color] = a[color, spin] (for all color)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a color vector into a half fermion or Dirac fermion</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_colorvec_V(</code><var>Type</var><code> *r, QDP_ColorVector *a, int spin, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[color, spin] = a[color] (for all color)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Extracting a Dirac vector from a Dirac propagator matrix column</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_eq_diracvec_P(QDP_DiracFermion *r, QDP_DiracPropagator *a, int jc, int js, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, is] = a[ic, is, jc, js] (for all ic, is)
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Inserting a Dirac vector into a Dirac propagator matrix column</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_eq_diracvec_D(QDP_DiracPropagator *r, QDP_DiracFermion *a, int jc, int js, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, is, jc, js] = a[ic, is] (for all ic, is)
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Trace of color matrix</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_trace_M(QDP_Complex *r, QDP_ColorMatrix *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = trace(a)
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Real/Imaginary part of trace of color matrix</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_</code><var>func</var><code>_M(QDP_Real *r, QDP_ColorMatrix *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>re_trace, im_trace</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Traceless antihermitian part of color matrix</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_antiherm_M(QDP_ColorMatrix *r, QDP_ColorMatrix *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = (a - a^dagger)/2 - i Im Tr a/n_c
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Spin trace of Dirac propagator</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_spintrace_P(QDP_ColorMatrix *r, QDP_DiracPropagator *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, jc] = Sum_is a[ic, is, jc, is]
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Dirac spin projection</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_H_</code><var>eqop</var><code>_spproj_D(QDP_HalfFermion *r, QDP_DiracFermion *a, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_H_v</code><var>eqop</var><code>_spproj_D(QDP_HalfFermion *r[], QDP_DiracFermion *a[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin project(a, dir, sign)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Dirac spin reconstruction</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_sprecon_H(QDP_DiracFermion *r, QDP_HalfFermion *a, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_sprecon_H(QDP_DiracFermion *r[], QDP_HalfFermion *a[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin reconstruct(a, dir, sign)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Dirac spin projection with reconstruction</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_spproj_D(QDP_DiracFermion *r, QDP_DiracFermion *a, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_spproj_D(QDP_DiracFermion *r[], QDP_DiracFermion *a[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin reconstruct(spin project(a, dir, sign), dir, sign)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Matrix multiply and Dirac spin projection</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_H_</code><var>eqop</var><code>_M{a}_times_D(QDP_HalfFermion *r, QDP_ColorMatrix *a, QDP_DiracFermion *b, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_H_v</code><var>eqop</var><code>_M{a}_times_D(QDP_HalfFermion *r[], QDP_ColorMatrix *a[], QDP_DiracFermion *b[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin project(a*b, dir, sign)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq_spproj, peq_spproj, meq_spproj, eqm_spproj</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Matrix multiply and Dirac spin reconstruction</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_M{a}_times_H(QDP_DiracFermion *r, QDP_ColorMatrix *a, QDP_HalfFermion *b, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_M{a}_times_H(QDP_DiracFermion *r[], QDP_ColorMatrix *a[], QDP_HalfFermion *b[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin reconstruct(a*b, dir, sign)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq_sprecon, peq_sprecon, meq_sprecon, eqm_sprecon</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Matrix multiply and Dirac spin projection with reconstruction</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_M{a}_times_D(QDP_DiracFermion *r, QDP_ColorMatrix *a, QDP_DiracFermion *b, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_M{a}_times_D(QDP_DiracFermion *r[], QDP_ColorMatrix *a[], QDP_DiracFermion *b[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin reconstruct(spin project(a*b, dir, sign), dir, sign)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq_spproj, peq_spproj, meq_spproj, eqm_spproj</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   </body></html>
+

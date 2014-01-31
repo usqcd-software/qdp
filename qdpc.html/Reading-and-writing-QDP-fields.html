@@ -1,0 +1,187 @@
+<html lang="en">
+<head>
+<title>Reading and writing QDP fields - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link rel="prev" href="Opening-and-closing-binary-files.html#Opening-and-closing-binary-files" title="Opening and closing binary files">
+<link rel="next" href="Reading-and-writing-QLA-arrays.html#Reading-and-writing-QLA-arrays" title="Reading and writing QLA arrays">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Reading-and-writing-QDP-fields"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Reading-and-writing-QLA-arrays.html#Reading-and-writing-QLA-arrays">Reading and writing QLA arrays</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Opening-and-closing-binary-files.html#Opening-and-closing-binary-files">Opening and closing binary files</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>
+<hr>
+</div>
+
+<h4 class="subsection">4.7.2 Reading and writing QDP fields</h4>
+
+<p><br>
+
+<!-- @subsubsection{Reading a field} -->
+   <div class="float">
+
+<h5 class="subsubheading">Reading a field</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_read_</code><var>T</var><code>(QDP_Reader *in, QDP_String *record_xml, QDP_</code><var>Type</var><code> *field);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Reads the field and its metadata from the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_Real *field = QDP_create_R();<br>
+QDP_read_R(reader, record_xml, field);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the <code>QDP_String</code> for the record metadata
+and the field for the data in advance. 
+The datatype of the record must match the field type.
+
+<!-- @subsubsection{Reading an array of fields} -->
+   <div class="float">
+
+<h5 class="subsubheading">Reading an array of fields</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_vread_</code><var>T</var><code>(QDP_Reader *in, QDP_String *record_xml, QDP_</code><var>Type</var><code> *field[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Reads the array of fields and its metadata from the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_ColorMatrix *field[4];<br>
+for(i=0; i&lt;4; i++) field[i] = QDP_create_M();<br>
+QDP_vread_M(reader, record_xml, field, 4);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the <code>QDP_String</code> for the record metadata
+and the fields for the data in advance.
+
+<h5 class="subsubheading">Reading only the record information</h5>
+
+<p>It may be convenient to examine the record metadata first to decide whether
+to read or skip the accompanying binary data.
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_read_record_info(QDP_Reader *in, QDP_String *record_xml);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Reads the only the metadata from the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_read_record_info(reader, record_xml);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>A subsequent call to <code>QDP_read_</code><var>T</var> returns a copy of the same
+metadata along with the lattice field.
+
+<!-- @subsubsection{Skipping to the next record} -->
+   <div class="float">
+
+<h5 class="subsubheading">Skipping to the next record</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_next_record(QDP_Reader *in);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Advances to the beginning of the next record. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_next_record(reader);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubheading{Writing a field} -->
+   <div class="float">
+
+<h5 class="subsubheading">Writing a field</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_write_</code><var>T</var><code>(QDP_Writer *out, QDP_String *record_xml, QDP_</code><var>Type</var><code> *field);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Writes the field and its metadata as the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_Real *field = QDP_create_R();<br>
+QDP_R_eq_zero(field, QDP_all);<br>
+QDP_write_R(writer, record_xml, field);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the <code>QDP_String</code> for the record metadata
+and the array for the data in advance.
+
+<!-- @subsubheading{Writing an array of fields} -->
+   <div class="float">
+
+<h5 class="subsubheading">Writing an array of fields</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_write_v</code><var>T</var><code>(QDP_Writer *out, QDP_String *record_xml, QDP_</code><var>Type</var><code> *field[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Writes the array of fields and its metadata as the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_ColorMatrix *field[4];<br>
+for(i=0; i&lt;4; i++) field[i] = QDP_create_M();<br>
+for(i=0; i&lt;4; i++) QDP_M_eq_zero(field[i], QDP_all);<br>
+QDP_write_vM(writer, record_xml, field, 4);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has prepared the record metadata and the array data
+in advance.
+
+   </body></html>
+

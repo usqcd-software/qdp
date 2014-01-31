@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+<title>Generic Names - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Datatypes.html#Datatypes" title="Datatypes">
+<link rel="prev" href="Datatypes.html#Datatypes" title="Datatypes">
+<link rel="next" href="Specific-Types-for-Color-and-Precision.html#Specific-Types-for-Color-and-Precision" title="Specific Types for Color and Precision">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Generic-Names"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Specific-Types-for-Color-and-Precision.html#Specific-Types-for-Color-and-Precision">Specific Types for Color and Precision</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Datatypes.html#Datatypes">Datatypes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Datatypes.html#Datatypes">Datatypes</a>
+<hr>
+</div>
+
+<h3 class="section">3.1 Generic Names</h3>
+
+<p>The linear algebra portion of the QDP API is designed to resemble the
+Level 1 QLA API.  Thus the datatypes and function naming conventions
+are similar.  As with QLA there are two levels of generic naming:
+fully generic in which both color and precision may be controlled
+globally through two macros and color-generic in which precision is
+explicit but not color.  Generic naming applies to datatypes, module
+names, and accessor macros and follows similar rules.
+
+   <p>Names for fully generic datatypes are listed in the table below.
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="30%">Name </td><td valign="top" width="20%">Abbreviation </td><td valign="top" width="50%">Description
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_RandomState</code> </td><td valign="top" width="20%"><code>S</code>          </td><td valign="top" width="50%">implementation dependent
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_Int</code> </td><td valign="top" width="20%"><code>I</code>          </td><td valign="top" width="50%">integer
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_Real</code> </td><td valign="top" width="20%"><code>R</code>          </td><td valign="top" width="50%">real
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_Complex</code> </td><td valign="top" width="20%"><code>C</code>          </td><td valign="top" width="50%">complex
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_ColorVector</code> </td><td valign="top" width="20%"><code>V</code>          </td><td valign="top" width="50%">one-spin, N_c color spinor
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_HalfFermion</code> </td><td valign="top" width="20%"><code>H</code>          </td><td valign="top" width="50%">two-spin, N_c color spinor
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_DiracFermion</code> </td><td valign="top" width="20%"><code>D</code>          </td><td valign="top" width="50%">four-spin, N_c color spinor
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_ColorMatrix</code> </td><td valign="top" width="20%"><code>M</code>          </td><td valign="top" width="50%">N_c \times N_c complex matrix
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>QDP_DiracPropagator</code> </td><td valign="top" width="20%"><code>P</code>          </td><td valign="top" width="50%">4 N_c \times 4 N_c complex matrix
+<br>
+
+   <br></td></tr></table>
+
+<p class="noindent">The name for the corresponding primitive type, also known as the QLA
+type, is obtained by replacing the <code>QDP</code> prefix with a <code>QLA</code>
+prefix.  Thus <code>QLA_ColorMatrix</code> is the primitive (QLA) type associated
+with the field <code>QDP_ColorMatrix</code>.
+
+   <p>Names for color-generic datatypes are obtained by inserting
+<code>_F</code> for single precision or <code>_D</code> for double precision
+after <code>QDP</code> where appropriate. 
+Thus <code>QDP_D_ColorMatrix</code> specifies a double precision color
+matrix with color to be set through a global macro.
+
+   <p>A long double precision type with abbreviation <code>Q</code> is defined for
+QLA, but currently not for QDP.
+
+   </body></html>
+

@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+<title>Defining a subset - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Subsets.html#Subsets" title="Subsets">
+<link rel="prev" href="Subsets.html#Subsets" title="Subsets">
+<link rel="next" href="Reductions-on-subsets.html#Reductions-on-subsets" title="Reductions on subsets">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Defining-a-subset"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Reductions-on-subsets.html#Reductions-on-subsets">Reductions on subsets</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Subsets.html#Subsets">Subsets</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Subsets.html#Subsets">Subsets</a>
+<hr>
+</div>
+
+<h4 class="subheading">Defining a subset</h4>
+
+<p>Subsets are defined through the data type <code>QDP_Subset</code>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>QDP_Subset * QDP_create_subset(int (*func)(int x[], void *args), void *args,
+int argsize, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Creates an array of <code>n</code> subsets based on <code>func</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_Subset ts[nt];<br>
+ts = QDP_create_subset(timeslice, NULL, 0, nt);<br>
+where timeslice(x, NULL) returns x[3]</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>The extra arguments <code>args</code> are passed directly to the function and saved
+in case the subset function is needed again when doing shifts involving the
+subset.  Therefore the function should not depend on any other global
+parameters that may change later in the program. 
+It is permissible to call <code>QDP_create_subset</code> with n = 1. 
+In this case the function must return zero if the site is in the
+subset and nonzero if not.  (Note, this is opposite the <em>true</em>,
+<em>false</em> convention in C).
+
+<!-- @subheading Destroying subsets -->
+   <div class="float">
+
+<h4 class="subheading">Destroying subsets</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_destroy_subset(QDP_subset s[]);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Destroys all subsets created with <code>s</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_destroy_subset(ts);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>This procedure frees all memory associated with the subset object <em>s</em>. 
+The <code>QDP_subset *</code> value <em>s</em> should be the object
+returned by <code>QDP_create_subset</code>.  All subsets in the array
+<em>s</em> are destroyed.
+
+   <div class="float">
+
+<h4 class="subheading">Getting the size of a subset</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_subset_len(QDP_subset s);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Returns the number of sites in a subset.
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   </body></html>
+

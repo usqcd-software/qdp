@@ -1,0 +1,66 @@
+<html lang="en">
+<head>
+<title>Introduction - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="index.html#Top" title="Top">
+<link rel="next" href="Compilation-with-QDP.html#Compilation-with-QDP" title="Compilation with QDP">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Introduction"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="index.html#Top">Top</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">1 Introduction</h2>
+
+<!-- ==================================================================== -->
+<p>This is the detailed user's guide for the C binding of the QDP Data Parallel
+Applications Programmer Interface developed under the auspices of the
+U.S. Department of Energy Scientific Discovery through Advanced
+Computing (SciDAC) program.
+
+   <p>The QDP Level 2 API has the following features:
+
+     <ul>
+<li>Provides data parallel operations (logically SIMD) on all sites
+across the lattice or on subsets of these sites. 
+<li>Operates on lattice objects, which have an implementation-dependent
+data layout that is not visible above this API. 
+<li>Hides details of how the implementation maps onto a given
+architecture, namely how the logical problem grid (i.e. lattice) is
+mapped onto the machine architecture. 
+<li>Allows asynchronous (non-blocking) shifts of lattice level
+objects over any permutation map of sites onto sites. However, from
+the user's view these instructions appear blocking and in fact may be
+so in some implementation. 
+<li>Provides some combined shift and linear algebra instructions for
+convenience and optimization. 
+<li>Provides fill operations (filling a lattice quantity from a
+scalar value(s)), global reduction operations, and lattice-wide
+operations on various data-type primitives, such as matrices, vectors,
+and tensor products of matrices (propagators). 
+</ul>
+
+<!-- ==================================================================== -->
+</body></html>
+

@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+<title>Color argument - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link rel="prev" href="Constant-Arguments.html#Constant-Arguments" title="Constant Arguments">
+<link rel="next" href="Adjoint.html#Adjoint" title="Adjoint">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Color-argument"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Adjoint.html#Adjoint">Adjoint</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Constant-Arguments.html#Constant-Arguments">Constant Arguments</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>
+<hr>
+</div>
+
+<h4 class="subheading">Color argument for <em>SU(N)</em></h4>
+
+<p>For the general color case <em>SU(N)</em> the specific function requires an
+extra argument giving the number of colors.  It always comes first. 
+Thus in the above example we would write
+
+   <p><code>QDP_FN_V_eq_c_times_V(nc, c, z, b, s);</code>
+
+   <p>where <code>nc</code> specifies the number of colors.  In normal practice,
+the variable <code>nc</code> should be replaced by the required user-defined
+macro <code>QDP_Nc</code> specifying the prevailing number of colors.  The
+generic function is actually a macro and is automatically converted to
+this usage with <code>QDP_Nc</code> for the first argument.  However, if the
+specific name is used, the user must supply the argument.
+
+   </body></html>
+

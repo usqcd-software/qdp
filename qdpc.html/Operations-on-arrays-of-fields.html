@@ -1,0 +1,64 @@
+<html lang="en">
+<head>
+<title>Operations on arrays of fields - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link rel="prev" href="Shift.html#Shift" title="Shift">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Operations-on-arrays-of-fields"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Shift.html#Shift">Shift</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>
+<hr>
+</div>
+
+<h4 class="subheading">Operations on arrays of fields</h4>
+
+<p>Some of the routines can operate on multiple fields at a time. 
+These functions are designated by placing a <code>v</code> in front of the
+<em>eqop</em> operator.  The allowed <em>eqop</em>'s are then
+<code>veq</code>, <code>vpeq</code>, <code>vmeq</code> and <code>veqm</code>. 
+All arguments to the function are then made into arrays of the type
+the original argument was <em>except</em> for the subset. 
+Even scalar values (QLA types) and other parameters are turned into arrays. 
+The length of the arrays is then given as the last argument. 
+For example the function
+
+   <p><code>QDP_F3_V_peq_M_times_V(QDP_F3_ColorVector *r, QDP_F3_ColorMatrix *a, <br>
+    QDP_F3_ColorVector *b, QDP_Subset s );</code>
+
+<p class="noindent">becomes
+
+   <p><code>QDP_F3_V_vpeq_M_times_V(QDP_F3_ColorVector *r[], QDP_F3_ColorMatrix *a[],
+<br>     QDP_F3_ColorVector *b[], QDP_Subset s, int n );</code>
+
+<p class="noindent">This has the same effect as the following code
+
+   <p><code>for(i=0; i&lt;n; i++)
+QDP_F3_V_peq_M_times_V( r[i], a[i], b[i], s );</code>
+
+<p class="noindent">however it may be implemented in a more efficient manner
+(see <a href="Optimization-Calls.html#Optimization-Calls">Optimization Calls</a>). 
+It is permissible to have multiple array elements point to the same field. 
+The result will always agree with that of the above <code>for</code> loop.
+
+   </body></html>
+

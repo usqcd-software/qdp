@@ -1,0 +1,697 @@
+<html lang="en">
+<head>
+<title>Function Details - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Function-Details"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">5 Function Details</h2>
+
+<!-- ==================================================================== -->
+<p>This section describes in some detail the names and functionality for
+all functions in the interface involving linear algebra with and
+without shifts.  Because of the variety of datatypes, and assignment
+operations, there are a few hundred names altogether.  However, there
+are only a couple dozen categories.  It is hoped that the construction
+of the names is sufficiently natural that with only a little practice,
+the user can guess the name of any function and determine its
+functionality without consulting a list.
+
+   <p>In prototype specifications throughout this document the notation
+<var>Type</var> specifies the generic or specific datatype name matching
+the abbreviation <var>T</var> according to the table in <a href="Datatypes.html#Datatypes">Datatypes</a>. 
+We also introduce the shorthand
+
+<!-- @code{#typedef const QDP_Subset Subset} -->
+<p><code>#define </code><var>subset</var><code> QDP_Subset subset</code>
+
+   <p>Unless otherwise indicated, operations occur on all sites in the
+specified subset.
+
+<h3 class="section">5.1 Functions involving shifts</h3>
+
+<h4 class="subheading">Shifting</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_s</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, QDP_Shift s, QDP_ShiftDir d, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_veq_s</code><var>T</var><code>(</code><var>Type</var><code> *r[], </code><var>Type</var><code> *a[], QDP_Shift s[], QDP_ShiftDir d[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = shift(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Left multiplication by shifted color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_sM_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QDP_ColorMatrix *a, </code><var>Type</var><code> *b, QDP_Shift s, QDP_ShiftDir d, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = shift(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Left multiplication of shifted field by color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_M_times_s</code><var>T</var><code>(</code><var>Type</var><code> *r, QDP_ColorMatrix *a, </code><var>Type</var><code> *b, QDP_Shift s, QDP_ShiftDir d, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a * shift(b)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Left multiplication by color matrix then shift</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_sM_times_s</code><var>T</var><code>(</code><var>Type</var><code> *r, QDP_ColorMatrix *a, </code><var>Type</var><code> *b, QDP_Shift s, QDP_ShiftDir d, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = shift(a * b)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h3 class="section">5.2 Fills and random numbers</h3>
+
+<h4 class="subheading">Zero fills</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_zero(</code><var>Type</var><code> *r, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = 0
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Constant fills</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>t</var><code>(</code><var>Type</var><code> *r, </code><var>QLA_Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Fill color matrix with constant times identity</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_c(QDP_ColorMatrix *r, QLA_Complex *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a I
+<br></td></tr></table>
+
+<h4 class="subheading">Seeding the random number generator field from an integer field</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_S_eq_seed_i_I(QDP_RandomState *r, QLA_Int c, QDP_Int *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">seed r from constant c and field a
+<br></td></tr></table>
+
+<h4 class="subheading">Uniform random number fills</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_random_S(QDP_Real *r, QDP_RandomState *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = uniform random number in (0,1) from seed a
+<br></td></tr></table>
+
+<h4 class="subheading">Gaussian random number fills</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_gaussian_S(</code><var>Type</var><code> *r, QDP_RandomState *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = normal gaussian from seed a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Function fills</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_func(</code><var>Type</var><code> *r, void (*func)(</code><var>QLA_Type</var><code> *dest, int coords[]), </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">calls func(&amp;r[x], x) for all coordinates x in subset
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h3 class="section">5.3 Unary Operations</h3>
+
+<h4 class="subheading">Bitwise not</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_eq_not_I(QDP_Int *r, QDP_Int *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = not(a)
+<br></td></tr></table>
+
+<h4 class="subheading">Elementary unary functions on reals</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_</code><var>func</var><code>_R(QDP_Real *r, QDP_Real *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>sin, cos, tan, asin, acos, atan, sqrt, fabs, exp, log, sign, ceil, floor, sinh, cosh, tanh, log10</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Elementary unary functions real to complex</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_cexpi_R(QDP_Complex *r, QDP_Real *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = exp(ia)
+<br></td></tr></table>
+
+<h4 class="subheading">Elementary unary functions complex to real</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_</code><var>func</var><code>_C(QDP_Real *r, QDP_Complex *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>norm, arg</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Elementary unary functions on complex values</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_</code><var>func</var><code>_C(QDP_Complex *r, QDP_Complex *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>cexp, csqrt, clog</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Copying</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_veq_</code><var>T</var><code>(</code><var>Type</var><code> *r[], </code><var>Type</var><code> *a[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Incrementing</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_</code><var>T</var><code>(</code><var>Type</var><code> *r[], </code><var>Type</var><code> *a[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eqm, peq, meq</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Transpose</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_transpose_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> transpose(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Complex conjugate</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_conj_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> conjugate(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Hermitian conjugate</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_</code><var>T</var><code>a(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> adjoint(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Local squared norm: uniform precision</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_norm2_</code><var>T</var><code>(QDP_Real *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = norm2(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h3 class="section">5.4 Type conversion and component extraction and insertion</h3>
+
+<h4 class="subheading">Convert float to double</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Convert double to float</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Convert real to complex (zero imaginary part)</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_R(QDP_Complex *r, QDP_Real *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a + i0
+<br></td></tr></table>
+
+<h4 class="subheading">Convert real and imaginary to complex</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_R_plus_i_R(QDP_Complex *r, QDP_Real *a, QDP_Real *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a + i b
+<br></td></tr></table>
+
+<h4 class="subheading">Real/Imaginary part of complex</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_</code><var>func</var><code>_C(QDP_Real *r, QDP_Complex *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>re, im</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Integer to real</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_I(QDP_Real *r, QDP_Int *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a
+<br></td></tr></table>
+
+<h4 class="subheading">Real to integer (truncate/round)</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_eq_</code><var>func</var><code>_R(QDP_Int *r, QDP_Real *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>trunc, round</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Accessing a color matrix element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_M(QDP_Complex *r, QDP_ColorMatrix *a, int i, int j, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[i, j]
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a color matrix element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_elem_C(QDP_ColorMatrix *r, QDP_Complex *a, int i, int j, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i, j] = a
+<br></td></tr></table>
+
+<h4 class="subheading">Accessing a half fermion or Dirac fermion spinor element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_</code><var>T</var><code>(QDP_Complex *r, </code><var>Type</var><code> *a, int color, int spin, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[color, spin]
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a half fermion or Dirac fermion spinor element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_elem_C(</code><var>Type</var><code> *r, QDP_Complex *a, int color, int spin, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[color, spin] = a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Accessing a color vector element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_V(QDP_Complex *r, QDP_ColorVector *a, int i, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[i]
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a color vector element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_V_eq_elem_C(QDP_ColorVector *r, QDP_Complex *a, int i, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = a
+<br></td></tr></table>
+
+<h4 class="subheading">Accessing a Dirac propagator matrix element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_elem_P(QDP_Complex *r, QDP_DiracPropagator *a, int ic, int is, int jc, int js, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a[ic, is, jc, js]
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a Dirac propagator matrix element</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_eq_elem_C(QDP_DiracPropagator *r, QDP_Complex *a, int ic, int is, int jc, int js, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, is, jc, js] = a
+<br></td></tr></table>
+
+<h4 class="subheading">Extracting a color vector from a color matrix column</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_V_eq_colorvec_M(QDP_ColorVector *r, QDP_ColorMatrix *a, int j, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = a[i, j] (for all i)
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a color vector into a color matrix column</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_colorvec_V(QDP_ColorMatrix *r, QDP_ColorVector *a, int j, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i, j] = a[i] (for all i)
+<br></td></tr></table>
+
+<h4 class="subheading">Extracting a color vector from a half fermion or Dirac fermion</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_V_eq_colorvec_</code><var>T</var><code>(QDP_ColorVector *r, </code><var>Type</var><code> *a, int spin, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[color] = a[color, spin] (for all color)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a color vector into a half fermion or Dirac fermion</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_colorvec_V(</code><var>Type</var><code> *r, QDP_ColorVector *a, int spin, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[color, spin] = a[color] (for all color)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>H, D</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Extracting a Dirac vector from a Dirac propagator matrix column</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_eq_diracvec_P(QDP_DiracFermion *r, QDP_DiracPropagator *a, int jc, int js, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, is] = a[ic, is, jc, js] (for all ic, is)
+<br></td></tr></table>
+
+<h4 class="subheading">Inserting a Dirac vector into a Dirac propagator matrix column</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_eq_diracvec_D(QDP_DiracPropagator *r, QDP_DiracFermion *a, int jc, int js, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, is, jc, js] = a[ic, is] (for all ic, is)
+<br></td></tr></table>
+
+<h4 class="subheading">Trace of color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_trace_M(QDP_Complex *r, QDP_ColorMatrix *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = trace(a)
+<br></td></tr></table>
+
+<h4 class="subheading">Real/Imaginary part of trace of color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_</code><var>func</var><code>_M(QDP_Real *r, QDP_ColorMatrix *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = <var>func</var>(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>re_trace, im_trace</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Traceless antihermitian part of color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_antiherm_M(QDP_ColorMatrix *r, QDP_ColorMatrix *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = (a - a^dagger)/2 - i Im Tr a/n_c
+<br></td></tr></table>
+
+<h4 class="subheading">Spin trace of Dirac propagator</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_eq_spintrace_P(QDP_ColorMatrix *r, QDP_DiracPropagator *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[ic, jc] = Sum_is a[ic, is, jc, is]
+<br></td></tr></table>
+
+<h4 class="subheading">Dirac spin projection</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_H_eq_spproj_D(QDP_HalfFermion *r, QDP_DiracFermion *a, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_H_veq_spproj_D(QDP_HalfFermion *r[], QDP_DiracFermion *a[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin project(a, dir, sign)
+<br></td></tr></table>
+
+<h4 class="subheading">Dirac spin reconstruction</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_sprecon_H(QDP_DiracFermion *r, QDP_HalfFermion *a, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_sprecon_H(QDP_DiracFermion *r[], QDP_HalfFermion *a[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin reconstruct(a, dir, sign)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Matrix multiply and Dirac spin reconstruction</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_M_times_H(QDP_DiracFermion *r, QDP_ColorMatrix *a, QDP_HalfFermion *b, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_M_times_H(QDP_DiracFermion *r[], QDP_ColorMatrix *a[], QDP_HalfFermion *b[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = spin reconstruct(a*b, dir, sign)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq_sprecon, peq_sprecon, meq_sprecon, eqm_sprecon</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Matrix multiply and Wilson spin multiplication</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_D_</code><var>eqop</var><code>_M_times_D(QDP_DiracFermion *r, QDP_ColorMatrix *a, QDP_DiracFermion *b, int dir, int sign, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_D_v</code><var>eqop</var><code>_M_times_D(QDP_DiracFermion *r[], QDP_ColorMatrix *a[], QDP_DiracFermion *b[], int dir[], int sign[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Wilson spin(a*b, dir, sign)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq_wilsonspin, peq_wilsonspin, meq_wilsonspin, eqm_wilsonspin</code>
+<br></td></tr></table>
+
+<h3 class="section">5.5 Binary operations with constants</h3>
+
+<h4 class="subheading">Multiplication by integer constant</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_</code><var>eqop</var><code>_i_times_I(QDP_Int *r, QLA_Int *a, QDP_Int *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multiplication by real constant</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_r_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QLA_Real *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_r_times_</code><var>T</var><code>(</code><var>Type</var><code> *r[], QLA_Real *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multiplication by complex constant</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_c_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QLA_Complex *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_c_times_</code><var>T</var><code>(</code><var>Type</var><code> *r[], QLA_Complex *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multiplication by i</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_i_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> i a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Left multiplication by gamma matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_gamma_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, int i, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = gamma(i) * a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>D, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Right multiplication by gamma matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_eq_P_times_gamma(QDP_DiracPropagator *r, QDP_DiracPropagator *a, int i, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a * gamma(i)
+<br></td></tr></table>
+
+<h3 class="section">5.6 Binary operations with fields</h3>
+
+<h4 class="subheading">Elementary binary functions on integers</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_eq_I_</code><var>func</var><code>_I(QDP_Int *r, QDP_Int *a, QDP_Int *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a <var>func</var> b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>lshift, rshift, mod, max, min, or, and, xor</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Elementary binary functions on reals</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_R_</code><var>func</var><code>_R(QDP_Real *r, QDP_Real *a, QDP_Real *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a <var>func</var> b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>mod, max, min, pow, atan2</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multiplying real by integer power of 2</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_R_ldexp_I(QDP_Real *r, QDP_Real *a, QDP_Int *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a * 2^b
+<br></td></tr></table>
+
+<h4 class="subheading">Addition</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>_plus_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a + b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Subtraction</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>_minus_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a - b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multiplication: uniform types</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_</code><var>T</var><code>_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Division of integer, real, and complex fields</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>_divide_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a / b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Left multiplication by color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_M_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QDP_ColorMatrix *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_M_times_</code><var>T</var><code>(</code><var>Type</var><code> *r[], QDP_ColorMatrix *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Left multiplication by adjoint of color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_Ma_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QDP_ColorMatrix *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_Ma_times_</code><var>T</var><code>(</code><var>Type</var><code> *r[], QDP_ColorMatrix *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Right multiplication by color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_</code><var>eqop</var><code>_P_times_M(QDP_DiracPropagator *r, QDP_DiracPropagator *a, QDP_ColorMatrix *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Right multiplication by adjoint of color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_</code><var>T</var><code>_times_Ma(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, QDP_ColorMatrix *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * adjoint(b)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Adjoint of color matrix times adjoint of color matrix</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_</code><var>eqop</var><code>_Ma_times_Ma(QDP_ColorMatrix *r, QDP_ColorMatrix *a, QDP_ColorMatrix *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> adjoint(a) * adjoint(b)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Local inner product</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_C_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QDP_Complex *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Tr adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Real part of local inner product</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_R_eq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>(QDP_Real *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Re Tr adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Color matrix from outer product</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_M_</code><var>eqop</var><code>_V_times_Va(QDP_ColorMatrix *r, QDP_ColorVector *a, QDP_ColorVector *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_M_v</code><var>eqop</var><code>_V_times_Va(QDP_ColorMatrix *r[], QDP_ColorVector *a[], QDP_ColorVector *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i, j] <var>eqop</var> a[i] * b[j]
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+<br></td></tr></table>
+
+<h3 class="section">5.7 Ternary operations with fields</h3>
+
+<h4 class="subheading">Addition or subtraction with integer scalar multiplication</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_eq_i_times_I_</code><var>func</var><code>_I(QDP_Int *r, QLA_Int *c, QDP_Int *a, QDP_Int *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = c * a +/- b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>plus, minus</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Addition or subtraction with real scalar multiplication</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_r_times_</code><var>T</var><code>_</code><var>func</var><code>_</code><var>T</var><code>(</code><var>Type</var><code> *r, QLA_Real *c, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = c * a +/- b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>plus, minus</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Addition or subtraction with complex scalar multiplication</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_c_times_</code><var>T</var><code>_</code><var>func</var><code>_</code><var>T</var><code>(</code><var>Type</var><code> *r, QLA_Complex *c, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = c * a +/- b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>plus, minus</code>
+<br></td></tr></table>
+
+<h3 class="section">5.8 Boolean operations</h3>
+
+<h4 class="subheading">Comparisons of integers and reals</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_eq_</code><var>T</var><code>_</code><var>func</var><code>_</code><var>T</var><code>(QDP_Int *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a <var>func</var> b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>func</var> </td><td valign="top" width="85%"><code>eq, ne, gt, lt, ge, le</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Copy under a mask</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_</code><var>T</var><code>_mask_I(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, QDP_Int *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a (if b is not 0)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h3 class="section">5.9 Reductions</h3>
+
+<h4 class="subheading">Global squared norm: uniform precision</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_norm2_</code><var>T</var><code>(QLA_Real *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_norm2_</code><var>T</var><code>(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum norm2(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Global inner product</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Tr a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R</code>
+<br></td></tr></table>
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_c_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Complex *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_c_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Complex r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Tr adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+   <br></td></tr></table>
+
+<h4 class="subheading">Real part of global inner product</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Re Tr adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Global sums</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_sum_I(QLA_Real *r, QDP_Int *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum a
+<br></td></tr></table>
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>t</var><code>_eq_sum_</code><var>T</var><code>(</code><var>QLA_Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+
+<h4 class="subheading">Multisubset Norms</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_norm2_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_norm2_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a[], QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] norm2(a)
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multisubset inner products</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] a * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R</code>
+<br></td></tr></table>
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_c_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Complex r[], </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_c_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Complex r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+   <br></td></tr></table>
+
+<h4 class="subheading">Multisubset real part of global inner product</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Re Tr adjoint(a) * b
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br></td></tr></table>
+
+<h4 class="subheading">Multisubset global sums</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_sum_I_multi(QLA_Real r[], QDP_Int *a, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] a
+<br></td></tr></table>
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>t</var><code>_eq_sum_</code><var>T</var><code>_multi(</code><var>QLA_Type</var><code> r[], </code><var>Type</var><code> *a, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] a
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+
+</body></html>
+

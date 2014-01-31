@@ -1,0 +1,148 @@
+<html lang="en">
+<head>
+<title>QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="../index.html#dir" title="(dir)">
+<link rel="next" href="Introduction.html#Introduction" title="Introduction">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<h1 class="settitle">QDP/C User Manual</h1>
+<div class="node">
+<p>
+<a name="Top"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Introduction.html#Introduction">Introduction</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="../index.html#dir">(dir)</a>
+<hr>
+</div>
+
+<h2 class="unnumbered">QDP/C User Manual</h2>
+
+<p>Version 1.3.1
+
+   <p>This document provides a detailed description of the C implementation of the<br>
+SciDAC Level 2 QDP Data Parallel interface.
+
+   <div class="contents">
+<h2>Table of Contents</h2>
+<ul>
+<li><a name="toc_Top" href="index.html#Top">QDP/C User Manual</a>
+<li><a name="toc_Introduction" href="Introduction.html#Introduction">1 Introduction</a>
+<li><a name="toc_Compilation-with-QDP" href="Compilation-with-QDP.html#Compilation-with-QDP">2 Compilation with QDP</a>
+<ul>
+<li><a href="Compilation-with-QDP.html#Compilation-with-QDP">2.1 Generic header and macros</a>
+<li><a href="Compilation-with-QDP.html#Compilation-with-QDP">2.2 Libraries</a>
+<li><a href="Compilation-with-QDP.html#Compilation-with-QDP">2.3 Nonuniform color and precision</a>
+</li></ul>
+<li><a name="toc_Datatypes" href="Datatypes.html#Datatypes">3 Datatypes</a>
+<ul>
+<li><a href="Datatypes.html#Datatypes">3.1 Generic Names</a>
+<li><a href="Datatypes.html#Datatypes">3.2 Specific Types for Color and Precision</a>
+<li><a href="Datatypes.html#Datatypes">3.3 Color and Precision Uniformity</a>
+<li><a href="Datatypes.html#Datatypes">3.4 Breaking Color and Precision Uniformity</a>
+</li></ul>
+<li><a name="toc_QDP-Functions" href="QDP-Functions.html#QDP-Functions">4 QDP Functions</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1 Entry and exit from QDP</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1.1 Entry to QDP</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1.2 Exit from QDP</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1.3 Panic exit from QDP</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1.4 Check for initialization</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1.5 Control profiling</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.1.6 Control checking communications</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2 Layout utilities</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.1 Defining the layout</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.2 Number of dimensions</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.3 Length of lattice in a given direction</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.4 Length of lattice in all directions</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.5 Length of lattice in all directions</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.6 Node number of site</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.7 Linear index of site</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.8 Number of sites on a node</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.9 Map node and linear index to coordinate</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.2.10 Defining the spacetime coordinate</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.3 Naming Conventions for Data Parallel Functions</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.3.1 Constant Arguments</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.3.2 Color argument for <em>SU(N)</em></a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.3.3 Adjoint</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.3.4 Shift</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.3.5 Operations on arrays of fields</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.4 Creating and destroying lattice fields</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.4.1 Creating a lattice field</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.4.2 Destroying a lattice field</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.5 Subsets</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.5.1 Defining a subset</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.5.2 Destroying subsets</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.5.3 Reductions on subsets</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.6 Shifts</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.6.1 Creating displacement shifts</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.6.2 Creating arbitrary permutations</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.6.3 Destroying a shift</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.7 I/O utilities</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8 Temporary entry and exit from QDP</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8.1 Exposing QDP data</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8.2 Returning control of QDP data</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8.3 Extracting QDP data</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8.4 Inserting QDP data</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8.5 Suspending QDP communications</a>
+<li><a href="QDP-Functions.html#QDP-Functions">4.8.6 Resuming QDP communications</a>
+</li></ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.9 Optimization Calls</a>
+<ul>
+<li><a href="QDP-Functions.html#QDP-Functions">4.9.1 Marking discarded data</a>
+</li></ul>
+</li></ul>
+<li><a name="toc_Function-Details" href="Function-Details.html#Function-Details">5 Function Details</a>
+<ul>
+<li><a href="Function-Details.html#Function-Details">5.1 Functions involving shifts</a>
+<li><a href="Function-Details.html#Function-Details">5.2 Fills and random numbers</a>
+<li><a href="Function-Details.html#Function-Details">5.3 Unary Operations</a>
+<li><a href="Function-Details.html#Function-Details">5.4 Type conversion and component extraction and insertion</a>
+<li><a href="Function-Details.html#Function-Details">5.5 Binary operations with constants</a>
+<li><a href="Function-Details.html#Function-Details">5.6 Binary operations with fields</a>
+<li><a href="Function-Details.html#Function-Details">5.7 Ternary operations with fields</a>
+<li><a href="Function-Details.html#Function-Details">5.8 Boolean operations</a>
+<li><a href="Function-Details.html#Function-Details">5.9 Reductions</a>
+</li></ul>
+</li></ul>
+</div>
+
+<ul class="menu">
+<li><a accesskey="1" href="Introduction.html#Introduction">Introduction</a>:           Introduction to QDP/C. 
+<li><a accesskey="2" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>:   How to compile a program that uses QDP. 
+<li><a accesskey="3" href="Datatypes.html#Datatypes">Datatypes</a>:              Datatypes. 
+<li><a accesskey="4" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>:          QDP Functions. 
+<li><a accesskey="5" href="Function-Details.html#Function-Details">Function Details</a>:       Function Details. 
+</ul>
+
+<!-- ==================================================================== -->
+</body></html>
+

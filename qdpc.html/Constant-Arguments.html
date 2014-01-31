@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+<title>Constant Arguments - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link rel="prev" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link rel="next" href="Color-argument.html#Color-argument" title="Color argument">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Constant-Arguments"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Color-argument.html#Color-argument">Color argument</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>
+<hr>
+</div>
+
+<h4 class="subheading">Constant Arguments</h4>
+
+<p>In some cases it is desirable to keep an argument constant over the
+entire subset.  For example the function
+
+   <p><code>QDP_V_eq_c_times_V(c,z,b,s)</code>
+
+   <p>multiplies a lattice field of color vectors by a complex constant as in
+
+   <p><code>c[x] = z*b[x]</code>
+
+   <p>for <code>x</code> in subset <code>s</code>. 
+In this case we specify that the argument is constant (coordinate-independent)
+by writing the type abbreviation in lower case: <code>c</code>.
+
+   </body></html>
+

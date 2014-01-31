@@ -1,0 +1,108 @@
+<html lang="en">
+<head>
+<title>Reading and writing QLA arrays - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link rel="prev" href="Reading-and-writing-QDP-fields.html#Reading-and-writing-QDP-fields" title="Reading and writing QDP fields">
+<link rel="next" href="String-Handling.html#String-Handling" title="String Handling">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Reading-and-writing-QLA-arrays"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="String-Handling.html#String-Handling">String Handling</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Reading-and-writing-QDP-fields.html#Reading-and-writing-QDP-fields">Reading and writing QDP fields</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>
+<hr>
+</div>
+
+<h4 class="subsection">4.7.3 Reading and writing QLA arrays</h4>
+
+<p>QLA data is global data that carries no lattice site index. 
+Typically these values result from a global reduction. For example, a
+correlation function might be computed on every time slice of the
+lattice and summed globally over the entire machine.  From the
+standpoint of data parallel I/O operation the data is treated as a
+global quantity with the same name and value on every processor.  When
+it is written to a file, it is assumed that the values are the same on
+each node, so only one node needs to write its value.  When it is read
+from a file, the I/O system does a broadcast to every node, so the
+result of reading is a global value.
+
+   <p>An interface is provided for reading and writing arrays of QLA data. 
+Single QLA values can be passed as an array of length one.  The naming
+conventions for the routines follow conventions of the QDP API. 
+Notice that the encoded QLA data type is lower case and the argument is a
+pointer to a QLA type.
+
+<!-- subsubheading{Reading a QLA array} -->
+   <div class="float">
+
+<h5 class="subsubheading">Reading a QLA array</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_vread_</code><var>t</var><code>(QDP_Reader *in, QDP_String *record_xml, QLA_</code><var>Type</var><code> *array, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Reads the QLA array and its metadata from the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QLA_Complex array[nt];<br>
+QDP_vread_c(reader, record_xml, array, nt);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has created the record metadata and the
+field data in advance.
+
+<!-- subsubheading{Writing an array of QLA values} -->
+   <div class="float">
+
+<h5 class="subsubheading">Writing an array of QLA values</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_write_v</code><var>t</var><code>(QDP_Writer *out, QDP_String *record_xml, QLA_</code><var>Type</var><code> *array, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Writes the QLA array and its metadata as the next record in the specified file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QLA_Complex array[nt];<br>
+QDP_c_eq_V_dot_V_multi(array, prop, src, timeslices, nt);<br>
+QDP_write_vc(writer, record_xml, array, nt);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The integer return value is 0 for success and 1 for failure.  It is
+assumed the user has prepared the record metadata and the field data
+in advance.
+
+   </body></html>
+

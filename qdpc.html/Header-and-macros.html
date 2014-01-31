@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+<title>Header and macros - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Compilation-with-QDP.html#Compilation-with-QDP" title="Compilation with QDP">
+<link rel="prev" href="Compilation-with-QDP.html#Compilation-with-QDP" title="Compilation with QDP">
+<link rel="next" href="Libraries.html#Libraries" title="Libraries">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Header-and-macros"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Libraries.html#Libraries">Libraries</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>
+<hr>
+</div>
+
+<h3 class="section">2.1 Header and macros</h3>
+
+<p>The main header file for QDP is <code>qdp.h</code> and must be included in all
+QDP programs.  This will automatically include any other header files
+that are necessary for the specified number of colors and will also include
+the QLA headers. Typically the user will want to select a prevailing color and
+precision for the entire calculation.  This allows one
+to use generic function names and datatypes, making it possible to
+change colors and precision with a simple recompilation, if desired. 
+The following macros can be defined by the user prior to including this
+header file:
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="20%">Optional Macros    </td><td valign="top" width="23%">Choices           </td><td valign="top" width="15%">Default
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%"><code>QDP_Precision</code> </td><td valign="top" width="23%">'F', 1, 'D', 2    </td><td valign="top" width="15%">'F'
+<br></td></tr><tr align="left"><td valign="top" width="20%"><code>QDP_Nc</code>        </td><td valign="top" width="23%">number of colors  </td><td valign="top" width="15%">3
+<br></td></tr><tr align="left"><td valign="top" width="20%"><code>QDP_Colors</code>    </td><td valign="top" width="23%">2, 3, 'N'         </td><td valign="top" width="15%">3
+<br>
+
+   <br></td></tr></table>
+
+<p class="noindent">Single quotes are required around nonnumeric values. 
+The <code>QDP_Precision</code> macro sets the default precision to either
+single (1 or 'F') or double (2 or 'D'). 
+The <code>QDP_Nc</code> macro sets the default number of colors and can be
+any positive integer.  Note however that QLA may have been compiled with
+a limit on the maximum allowed value. 
+<code>QDP_Colors</code> determines which QDP and QLA library versions will
+be used for calculations.  It is automatically set to
+ <em>2</em> when <code>QDP_Nc</code> is <em>2</em>,
+<em>3</em> when <em>3</em>, and <em>N</em> otherwise. 
+If for some reason a users wishes to work with the <em>N</em> namespace
+for two or three colors, rather than the more efficient <em>2</em> or <em>3</em>
+namespace, they may do so by setting this macro to <em>'N'</em> explicitly.
+
+   <p>The number of spins is fixed in QDP to be the same value that the QLA
+library that QDP was compiled against has which defaults to 4.
+
+   <p>A sample preamble for double precision SU(3) reads
+
+<pre class="example">     #define QDP_Precision 'D'
+     #define QDP_Nc 3
+     #include &lt;qdp.h&gt;
+</pre>
+   <p class="noindent">with the include search path set to <samp><span class="file">QDP_HOME/include</span></samp>
+and <samp><span class="file">QDP_HOME</span></samp> set to the home directory for QDP. 
+With such a preamble the generic function names and datatypes are
+automatically mapped to the appropriate specific types. 
+Of course the precision and color macros can also be defined
+through a compiler flag, as in
+
+   <p><samp><span class="command">gcc -DQDP_Precision=2 -DQDP_Nc=3 ...</span></samp>
+
+<p class="noindent">For SU(4) one might do
+
+<pre class="example">     #define QDP_Precision 'F'
+     #define QDP_Nc 4
+     #include &lt;qdp.h&gt;
+</pre>
+   </body></html>
+

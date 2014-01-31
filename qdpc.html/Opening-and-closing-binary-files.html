@@ -1,0 +1,149 @@
+<html lang="en">
+<head>
+<title>Opening and closing binary files - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link rel="prev" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link rel="next" href="Reading-and-writing-QDP-fields.html#Reading-and-writing-QDP-fields" title="Reading and writing QDP fields">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Opening-and-closing-binary-files"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Reading-and-writing-QDP-fields.html#Reading-and-writing-QDP-fields">Reading and writing QDP fields</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>
+<hr>
+</div>
+
+<h4 class="subsection">4.7.1 Opening and closing binary files</h4>
+
+<p>As with standard Unix, a file must be opened before reading or
+writing.  However, we distinguish file handles for both cases. 
+<!-- If the system provides a parallel file system, it is possible for several -->
+<!-- processors to read and write a single file. We call this mode -->
+<!-- @emph{parallel}.  Otherwise the file is read by a single processor and -->
+<!-- the data delivered according to the distributed memory layout.  The -->
+<!-- reverse occurs upon writing. We call this mode @emph{serial}. To allow -->
+<!-- user choice where the architecture permits, we provide for requesting -->
+<!-- either mode.  However, the request may be overridden if the system -->
+<!-- permits only one mode.  Upon writing, we allow appending to an -->
+<!-- existing file. -->
+
+<!-- @subsubsection{Open a file for reading} -->
+   <div class="float">
+
+<h5 class="subsubheading">Open a file for reading</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>QDP_Reader *QDP_open_read(QDP_String *md, char *filename);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Opens a named file for reading and reads the file metadata. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_Reader *infile;<br>
+QDP_String *file_xml = QDP_string_create();<br>
+infile = QDP_open_read(file_xml, filename);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The <code>QDP_Reader</code> return value is the file handle used in
+subsequent references to the file.  A null return value signals an
+error. The I/O system takes responsibility for allocating and freeing
+space for the handle.  It is assumed the user has preperly created the
+<code>QDP_String</code> that will hold the file metadata
+so it can be read from the head of the file and inserted. 
+<!-- The other arguments have the same meaning as with \verb|QDP_open_write|. -->
+The volume format (see <code>QDP_open_write</code> below) is autodetected,
+ so is not specified.
+
+<!-- @subsubsection{Open a file for writing} -->
+   <div class="float">
+
+<h5 class="subsubheading">Open a file for writing</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>QDP_Writer *QDP_open_write(QDP_String *md, char *filename, int volfmt);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Opens a named file for writing and writes the file metadata. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_Writer *outfile;<br>
+QDP_String *file_xml = QDP_string_create();<br>
+QDP_string_set(file_xml, xml_string);<br>
+outfile = QDP_open_write(file_xml, filename, QDP_SINGLEFILE);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The <code>QDP_Writer</code> return value is the file handle used in
+subsequent references to the file.  A null return value signals an
+error. The I/O system takes responsibility for allocating and freeing
+space for the handle.  It is assumed the user has already created the
+file metadata in <code>file_xml</code>, so it can be written
+at the head of the file.  The <code>volfmt</code> argument is either
+<code>QDP_SINGLEFILE</code> or <code>QDP_MULTIFILE</code>. 
+<code>QDP_SINGLEFILE</code> creates a single file for the output from all nodes
+while <code>QDP_MULTIFILE</code> creates one file per node.
+
+<!-- @subsubsection{Close an input file} -->
+   <div class="float">
+
+<h5 class="subsubheading">Close an input file</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_close_read(QDP_Reader *reader);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Closes an input file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_close_read(reader);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<!-- @subsubsection{Close an output file} -->
+   <div class="float">
+
+<h5 class="subsubheading">Close an output file</h5>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>int QDP_close_write(QDP_Writer *writer);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Closes an output file. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_close_write(writer);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>In both cases the integer return value is 0 for success and 1 for failure.
+
+   </body></html>
+

@@ -1,0 +1,192 @@
+<html lang="en">
+<head>
+<title>Compilation with QDP - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Introduction.html#Introduction" title="Introduction">
+<link rel="next" href="Datatypes.html#Datatypes" title="Datatypes">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Compilation-with-QDP"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Datatypes.html#Datatypes">Datatypes</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Introduction.html#Introduction">Introduction</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">2 Compilation with QDP</h2>
+
+<!-- ==================================================================== -->
+<h3 class="section">2.1 Generic header and macros</h3>
+
+<p>As described above, normally the user selects a prevailing color and
+precision for the entire calculation.  In that case it is permissible
+to use the generic function names and datatypes, making it possible to
+change colors and precision with a simple recompilation, if desired. 
+For this purpose the generic header file is <code>qdp.h</code>.  The
+following macros must be defined by the user prior to including this
+header file:
+
+   <p><table summary="">
+<tr align="left"><td valign="top" width="20%">Required Macro     </td><td valign="top" width="23%">Choices
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%"><code>QDP_Precision</code> </td><td valign="top" width="23%">'D', 'F'
+<br></td></tr><tr align="left"><td valign="top" width="20%"><code>QDP_Nc</code>        </td><td valign="top" width="23%">number of colors
+
+   <br></td></tr></table>
+
+<p class="noindent">Single quotes are required around nonnumeric values. 
+In the C implementation of QDP the number of spins is set to 4 when
+the library is built.
+
+   <p>An additional macro is available to the user, but is
+normally set to its default value according to the
+macro <code>QDP_Nc</code>.
+
+   <p><table summary="">
+<tr align="left"><td valign="top" width="20%">Optional Macro  </td><td valign="top" width="15%">Choices
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%"><code>QDP_Colors</code> </td><td valign="top" width="15%">2, 3, 'N'
+
+   <br></td></tr></table>
+
+<p class="noindent">This is the macro that determines the color namespace for the generic
+functions.  Its default value is <em>2</em> when <code>QDP_Nc</code> is <em>2</em>,
+<em>3</em> when <em>3</em>, and <em>N</em> otherwise. 
+If for some reason a users wishes to work with the <em>N</em> namespace
+for two or three colors, rather than the more efficient <em>2</em> or <em>3</em>
+namespace, he/she may do so by setting this macro to <em>'N'</em> explicitly.
+
+   <p>A sample preamble for double precision SU(3) reads
+
+<pre class="example">     #define QDP_Precision 'D'
+     #define QDP_Nc 3
+     #include &lt;qdp.h&gt;
+</pre>
+   <p class="noindent">with the include search path set to <samp><span class="file">QDP_HOME/include</span></samp>
+and <samp><span class="file">QDP_HOME</span></samp> set to the home directory for QDP. 
+With such a preamble the generic function names and datatypes are
+automatically mapped to the appropriate specific types. 
+Of course the precision and color macros can also be defined
+through a compiler flag, as in
+
+   <p><samp><span class="command">gcc -DQDP_Precision=\'D\' -DQDP_Nc=3 ...</span></samp>
+
+<p class="noindent">The single quotes are required and they must each be preceded by a
+backslash to keep them from being eaten by the shell.
+
+   <p>For SU(4) one might do
+
+<pre class="example">     #define QDP_Precision 'F'
+     #define QDP_Nc 4
+     #include &lt;qdp.h&gt;
+</pre>
+   <p class="noindent">The maximum number of colors is determined by the QLA library.
+
+<h3 class="section">2.2 Libraries</h3>
+
+<p>Normally, it is necessary to link five QDP libraries for a given
+choice of color and precision.  Other libraries may be required by the
+implementation.  Routines involving only integers and the random state
+are common to all choices.  Routines involving only real or complex
+numbers are common to all colors.  Thus for single precision SU(3)
+the required libraries are linked through
+
+   <p><samp><span class="command">-lqdp_common -lqdp_int -lqdp_f -lqdp_f3 -lm</span></samp>
+
+<p class="noindent">with the library search path set to <samp><span class="file">QDP_HOME/lib</span></samp>. 
+A complete list of the QDP libraries is given below. 
+Each library will depend on the corresponding QLA library. 
+Also since global sums are done in a higher precision, using them
+requires linking to QLA libraries of the next higher precision in
+addition to the corresponding conversion library.
+
+   <p><table summary="">
+<tr align="left"><td valign="top" width="25%">Name                      </td><td valign="top" width="45%">Purpose
+
+<p><br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_common.a</span></samp>    </td><td valign="top" width="45%">QDP utilities
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_int.a</span></samp>       </td><td valign="top" width="45%">integer and boolean
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_f.a</span></samp>         </td><td valign="top" width="45%">real and complex single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_d.a</span></samp>         </td><td valign="top" width="45%">real and complex double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_df.a</span></samp>        </td><td valign="top" width="45%">real and complex precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_f2.a</span></samp>        </td><td valign="top" width="45%">2 color single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_d2.a</span></samp>        </td><td valign="top" width="45%">2 color double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_df2.a</span></samp>       </td><td valign="top" width="45%">2 color precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_f3.a</span></samp>        </td><td valign="top" width="45%">3 color single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_d3.a</span></samp>        </td><td valign="top" width="45%">3 color double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_df3.a</span></samp>       </td><td valign="top" width="45%">3 color precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_fn.a</span></samp>        </td><td valign="top" width="45%">N color single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_dn.a</span></samp>        </td><td valign="top" width="45%">N color double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_dfn.a</span></samp>       </td><td valign="top" width="45%">N color precision conversion
+
+   <br></td></tr></table>
+
+<h3 class="section">2.3 Nonuniform color and precision</h3>
+
+<p>Users wishing to vary color and precision within a single calculation
+must use specific type names and function names whenever these types
+and names differ from the prevailing precision and color. 
+For example, if an SU(3) calculation is done primarly in single
+precision, but has double precision components, the following preamble
+is appropriate:
+
+<pre class="example">     #define QDP_Precision 'F'
+     #define QDP_Nc 3
+     #include &lt;qdp.h&gt;
+     #include &lt;qdp_d.h&gt;
+     #include &lt;qdp_df.h&gt;
+     #include &lt;qdp_d3.h&gt;
+     #include &lt;qdp_df3.h&gt;
+</pre>
+   <p class="noindent">and the following linkage to get the corresponding libraries:
+
+<p class="noindent"><samp><span class="command">-lqdp_common -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_df -lqdp_df3 -lm</span></samp>
+
+   <p>As in the previous example, the single precision components for
+SU(3) are automatically included through <samp><span class="file">qdp.h</span></samp>.  Then we need
+the corresponding double precision components.  And we also need the
+<code>DF</code> libraries to do conversions between single and double
+precision.  They, too have colored and noncolored members.
+
+   <p>The following table lists all the QDP headers.
+
+   <p><table summary="">
+<tr align="left"><td valign="top" width="30%">Name              </td><td valign="top" width="70%">Purpose
+
+<p><br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp.h</span></samp>      </td><td valign="top" width="70%">Master header and QDP utilities
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_int.h</span></samp>  </td><td valign="top" width="70%">integers, boolean
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_f.h</span></samp>    </td><td valign="top" width="70%">real, complex, single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_d.h</span></samp>    </td><td valign="top" width="70%">real, complex, double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_df.h</span></samp>   </td><td valign="top" width="70%">real, complex, precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_f2.h</span></samp>   </td><td valign="top" width="70%">SU(2), single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_d2.h</span></samp>   </td><td valign="top" width="70%">SU(2), double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_df2.h</span></samp>  </td><td valign="top" width="70%">SU(2), precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_f3.h</span></samp>   </td><td valign="top" width="70%">SU(3), single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_d3.h</span></samp>   </td><td valign="top" width="70%">SU(3), double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_df3.h</span></samp>  </td><td valign="top" width="70%">SU(3), precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_fn.h</span></samp>   </td><td valign="top" width="70%">SU(N), single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_dn.h</span></samp>   </td><td valign="top" width="70%">SU(N), double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_dfn.h</span></samp>  </td><td valign="top" width="70%">SU(N), precision conversion
+
+   <br></td></tr></table>
+
+<!-- ==================================================================== -->
+</body></html>
+

@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+<title>Specific Types for Color and Precision - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Datatypes.html#Datatypes" title="Datatypes">
+<link rel="prev" href="Generic-Names.html#Generic-Names" title="Generic Names">
+<link rel="next" href="Color-and-Precision-Uniformity.html#Color-and-Precision-Uniformity" title="Color and Precision Uniformity">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Specific-Types-for-Color-and-Precision"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Color-and-Precision-Uniformity.html#Color-and-Precision-Uniformity">Color and Precision Uniformity</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Generic-Names.html#Generic-Names">Generic Names</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Datatypes.html#Datatypes">Datatypes</a>
+<hr>
+</div>
+
+<h3 class="section">3.2 Specific Types for Color and Precision</h3>
+
+<p>According to the chosen color and precision, names for specific
+floating point types are constructed from names for generic types. 
+Thus QDP_ColorMatrix becomes <code>QDP_PC_ColorMatrix</code>, where the precision
+<code>P</code> is <code>F</code> or <code>D</code> according to the table below
+
+   <div class="float">
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="30%">Abbreviation </td><td valign="top" width="70%">Description
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="30%"><code>F</code>     </td><td valign="top" width="70%">single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>D</code>     </td><td valign="top" width="70%">double precision
+<br>
+
+   <br></td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+<p class="noindent">and <code>C</code> is <code>2</code>, <code>3</code>, or <code>N</code>, if color is a
+consideration, as listed below.
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="30%">Abbreviation </td><td valign="top" width="70%">Description
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="30%"><code>2</code>     </td><td valign="top" width="70%">SU(2)
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>3</code>     </td><td valign="top" width="70%">SU(3)
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>N</code>     </td><td valign="top" width="70%">SU(N)
+<br>
+
+   <br></td></tr></table>
+
+<p class="noindent">If the datatype carries no color, the color label is omitted. 
+Integers also have no precision label.  Likewise for functions, if
+none of the arguments carry color, the color label is omitted, and if
+all numeric arguments are integers, the precision label is omitted. 
+For example, the type <code>QDP_F3_DiracFermion</code>
+describes a single-precision four-spin, three-color spinor field. 
+The general color choice <code>N</code> can also be used for specialized
+SU(2) or SU(3) at the cost of degrading performance.
+
+   </body></html>
+

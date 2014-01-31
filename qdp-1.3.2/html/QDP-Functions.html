@@ -1,0 +1,697 @@
+<html lang="en">
+<head>
+<title>QDP Functions - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Datatypes.html#Datatypes" title="Datatypes">
+<link rel="next" href="Function-Details.html#Function-Details" title="Function Details">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="QDP-Functions"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Function-Details.html#Function-Details">Function Details</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Datatypes.html#Datatypes">Datatypes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">4 QDP Functions</h2>
+
+<!-- ==================================================================== -->
+<p>The QDP functions are grouped into the following categories:
+
+     <ul>
+<li>Entry and exit from QDP
+<li>Layout utilities
+<li>Data parallel functions
+<li>Data management utilities
+<li>Subset definition
+<li>Shift creation
+<li>I/O utilities
+<li>Temporary exit and reentry
+<li>Optimization calls
+</ul>
+
+<h3 class="section">4.1 Entry and exit from QDP</h3>
+
+<p>QDP can be started at any time, however field operations cannot be
+used until the layout is created. 
+In the mean time it will be possible for the user to read input parameters
+and broadcast them to all nodes. 
+It may also be possible to get parameters from the environment. 
+This procedure is stil under development so, for now, you're on your own.
+
+   <p><strong>[The startup procedure needs more thought - CD]</strong>
+
+<h4 class="subsection">4.1.1 Entry to QDP</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_initialize(int *argc, char ***argv);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Starts QDP. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_initialize(&amp;argc, &amp;argv);</code>
+<br></td></tr></table>
+
+   <p>The routine <code>QDP_initialize</code> is called once by all nodes and
+starts QDP operations. 
+It initialiazes message passing, but does not setup the site layout
+(see <code>QDP_create_layout</code> and related functions). 
+It also defines the global variable
+<code>int QDP_this_node;</code>
+specifying the logical node number of the current node.
+
+<h4 class="subsection">4.1.2 Exit from QDP</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_finalize(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Exits QDP. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_finalize();</code>
+<br></td></tr></table>
+
+   <p>This call provides for an orderly shutdown.  It is called by all
+nodes. It concludes all communications, does housekeeping, if needed
+and performs a barrier wait for all nodes.  Then it returns control to
+the calling process.
+
+<h4 class="subsection">4.1.3 Panic exit from QDP</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_abort(int status);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Panic shutdown of the process. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_abort(1);</code>
+<br></td></tr></table>
+
+   <p>This routine may be called by one or more nodes.  It sends kill
+signals to all nodes and exits with exit status <code>status</code>.
+
+<h4 class="subsection">4.1.4 Check for initialization</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_initialized(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Checks if QDP is initialized. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>if(!QDP_initialized()) QDP_initialize(&amp;argc, &amp;argv);</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.1.5 Control profiling</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_profcontrol(int new);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Controls profiling. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>old = QDP_profcontrol(new);</code>
+<br></td></tr></table>
+
+   <p>Profiling results are only available for code that is compiled with
+the macro <code>QDP_PROFILE</code> defined.  This must be defined before
+the qdp.h header is included.  When <code>QDP_finalize</code> is called
+a list of QDP function and call times will be sent to stdio on
+node 0.  This function toggles the accumulation of the profiling
+statistics within the profiled sections of code. 
+A value of zero turns the collection of timing info off and
+nonzero values turn it on.  It is on by default.
+
+<h4 class="subsection">4.1.6 Control checking communications</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_check_comm(int new);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Controls checking communications. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>old = QDP_check_comm(new);</code>
+<br></td></tr></table>
+
+   <p>A nonzero value turns the internal communications checksums on and
+zero turns it off.  It is off by default.
+
+<h3 class="section">4.2 Layout utilities</h3>
+
+<p>The layout routine determines which nodes get which lattice sites and
+in what linear order the sites are stored.  It has entry points that
+allow a user to access single site data extracted from a QDP lattice
+field.  The layout must be created before any operations on QDP field
+objects are allowed.  If a user removes data from a QDP lattice object
+(see <code>QDP_expose</code> or <code>QDP_extract</code>) and wishes to manipulate
+the data on a site-by-site basis, the global entry points provided
+here are needed to locate the site data.
+
+   <p>Some implementations may have a built-in tightly constrained layout. 
+In flexible implementations there may be several layout choices,
+thereby allowing the user the freedom to select one that works best
+with a given application.  Furthermore, such implementations may allow
+the user to create a custom layout to replace one of the standard
+layouts.  As long as the custom layout procedure provides the entry
+points and functionality described here, compatibility with the
+remainder of the QDP library is assured.
+
+<h4 class="subsection">4.2.1 Defining the layout</h4>
+
+<p>Prior to creating the layout the layout parameters must be defined. 
+This is done through function calls.
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_set_latsize(int nd, int size[]);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Sets number of spacetime dimensions and lattice size.<br>
+No default.  Must always be set. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_set_latsize(4, size);</code>
+   <br></td></tr></table>
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_create_layout(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Lays out the sites. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_create_layout();</code>
+   <br></td></tr></table>
+
+   <p>All layout parameters must be initialized through the <code>set</code> function
+calls prior to creating the layout.
+
+   <p>After creating the layout the following global variables are accessible. 
+The predefined lattice subsets for specifying even, odd, and
+global subsets of the lattice:
+
+   <p><code>QDP_Subset QDP_even, QDP_odd, QDP_all;</code>
+
+   <p>The even and odd subsets are elements of a two-element subset array
+<code>QDP_even_odd</code>, such that
+
+<pre class="example">     <code>QDP_even = QDP_even_odd[0];</code>
+     <code>QDP_odd  = QDP_even_odd[1];</code>
+</pre>
+   <p>It also creates the nearest-neighbor shifts
+
+   <p><code>QDP_shift QDP_neighbor[];</code>
+
+   <p>for each coordinate direction. 
+And finally the variable
+
+   <p><code>int QDP_sites_on_node;</code>
+
+   <p>gives the number of sites assigned to a node by the layout utility. 
+Note that this may vary between nodes.
+
+   <p>The following global entry points are provided by the
+<code>QDP_create_layout</code> procedure:
+
+<h4 class="subsection">4.2.2 Number of dimensions</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_ndim(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns the number of dimensions. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>ndim = QDP_ndim();</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.3 Length of lattice in a given direction</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_coord_size(int i);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns length of lattice in direction <code>i</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>nx = QDP_coord_size(0);</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.4 Length of lattice in all directions</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_latsize(int latsize[]);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns lattice dimensions into array <code>latsize</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_latsize(latsize);</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.5 Length of lattice in all directions</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>size_t QDP_volume(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns lattice volume. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>vol = QDP_volume();</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.6 Node number of site</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_node_number(int x[]);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns logical node number containing site <code>x</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>node = QDP_node_number(x);</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.7 Linear index of site</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_index(int x[]);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns the linearized index for the lattice site <code>x</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>k = QDP_index(x);</code>
+<br></td></tr></table>
+
+   <p>The linear index returned by <code>QDP_index</code> ranges from 0 to
+<code>QDP_sites_on_node</code> - 1.
+
+<h4 class="subsection">4.2.8 Number of sites on a node</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>int QDP_numsites(int node);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Return the number of sites on a node.  Same as <code>QDP_sites_on_node</code>
+if <code>node = QDP_this_node</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>k = QDP_numsites(i);</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.9 Map node and linear index to coordinate</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_get_coords(int x[], int node, int index);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Returns site coordinates <code>x</code> for the given node
+<code>node</code> and linear index <code>index</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_get_coords(x, 0, 31);</code>
+<br></td></tr></table>
+
+<h4 class="subsection">4.2.10 Defining the spacetime coordinate</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_I_eq_coord(QDP_Int *r, int i);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">The <code>i</code>th spacetime coordinate. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_Int *coord_z;<br>
+QDP_I_eq_coord(coord_z, 2);</code>
+<br></td></tr></table>
+
+   <p>The call <code>QDP_I_eq_coord(&amp;coord[i],i)</code> fills an integer lattice
+field <code>coord[i]</code> with a value on each site equal to the integer
+value of the <em>i</em>th space-time coordinate on that site.
+
+<h3 class="section">4.3 Naming Conventions for Data Parallel Functions</h3>
+
+<p>Data parallel functions are described in detail in <a href="Function-Details.html#Function-Details">Function Details</a>. 
+Here we desribe the naming conventions. 
+Data parallel function names are constructed with a pattern that suggests
+their functionality. 
+Thus the function
+
+   <p><code>QDP_V_eq_M_times_V(c, u, b, s);</code>
+
+   <p>carries out the product
+
+   <p><code>c[x] = u[x]*b[x];</code>
+
+   <p>for all lattice coordinates <code>x</code> belonging to the subset <code>s</code>. 
+where <em>c</em> and <em>b</em> are pointers to lattice staggered fermion vector
+fields and <em>u</em> is a pointer to a lattice color matrix field. 
+The elements of the function name are separated by an underscore
+(<code>_</code>) for readability. 
+All function names in this interface begin with <code>QDP</code>. 
+The specific name continues with a precision and color label
+as in <code>QDP_F3_V_eq_M_times_V</code> for single precision <em>SU(3)</em>. 
+Then comes a string of elements that mimics the algebraic expression. 
+The next character <code>V</code> abbreviates the type for the destination
+operand, in this case the argument <code>c</code>. 
+The abbreviations are listed in <a href="Datatypes.html#Datatypes">Datatypes</a>. 
+The next string <code>eq</code> specifies the assignment operator. 
+In this case it is a straight replacement, but modifications are also
+supported, as described below. 
+Then comes the first rhs operand type <code>M</code> followed by a string
+<code>times</code> specifying the operation and a character <code>V</code>
+specifying the second rhs operand type.
+
+   <p>Supported variants of the assignment operator are tabulated below.
+
+   <p><table summary="">
+<tr align="left"><td valign="top" width="20%">Abbreviation </td><td valign="top" width="13%">Meaning
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">eq           </td><td valign="top" width="13%">=
+<br></td></tr><tr align="left"><td valign="top" width="20%">peq          </td><td valign="top" width="13%">+=
+<br></td></tr><tr align="left"><td valign="top" width="20%">meq          </td><td valign="top" width="13%">-=
+<br></td></tr><tr align="left"><td valign="top" width="20%">eqm          </td><td valign="top" width="13%">=-
+
+   <br></td></tr></table>
+
+   <p>Some functions allow all of these and some take only a simple replacement (eq).
+
+<h4 class="subsection">4.3.1 Constant Arguments</h4>
+
+<p>In some cases it is desirable to keep an argument constant over the
+entire subset.  For example the function
+
+   <p><code>QDP_V_eq_c_times_V(c,z,b,s)</code>
+
+   <p>multiplies a lattice field of color vectors by a complex constant as in
+
+   <p><code>c[x] = z*b[x]</code>
+
+   <p>for <code>x</code> in subset <code>s</code>. 
+In this case we specify that the argument is constant (coordinate-independent)
+by writing the type abbreviation in lower case: <code>c</code>.
+
+<h4 class="subsection">4.3.2 Color argument for <em>SU(N)</em></h4>
+
+<p>For the general color case <em>SU(N)</em> the specific function requires an
+extra argument giving the number of colors.  It always comes first. 
+Thus in the above example we would write
+
+   <p><code>QDP_FN_V_eq_c_times_V(nc, c, z, b, s);</code>
+
+   <p>where <code>nc</code> specifies the number of colors.  In normal practice,
+the variable <code>nc</code> should be replaced by the required user-defined
+macro <code>QDP_Nc</code> specifying the prevailing number of colors.  The
+generic function is actually a macro and is automatically converted to
+this usage with <code>QDP_Nc</code> for the first argument.  However, if the
+specific name is used, the user must supply the argument.
+
+<h4 class="subsection">4.3.3 Adjoint</h4>
+
+<p>The adjoint of an operand is specified by a suffix <code>a</code> after the
+type abbreviation.  Thus
+
+   <p><code>QDP_V_eq_Ma_times_V(c, u, b, s);</code>
+
+   <p>carries out the product
+
+   <p><code>c[x] = adjoint(u[x])*b[x];</code>
+
+   <p>for all sites <code>x</code> in subset <code>s</code>.
+
+<h4 class="subsection">4.3.4 Shift</h4>
+
+<p>A shift in an operand is specified by a prefix lowercase <code>s</code> before
+the type abbreviation.  (See the discussion of shifts below.) Thus
+
+   <p><code>QDP_V_eq_sV(c, b, dir, sign, s);</code>
+
+   <p>shifts staggered fermion data along the direction specified by <code>dir</code>
+and <code>sign</code> for all sites <code>x</code> in destination subset <code>s</code>.
+
+<h4 class="subsection">4.3.5 Operations on arrays of fields</h4>
+
+<p>Some of the routines can operate on multiple fields at a time. 
+These functions are designated by placing a <code>v</code> in front of the
+<em>eqop</em> operator.  The allowed <em>eqop</em>'s are then
+<code>veq</code>, <code>vpeq</code>, <code>vmeq</code> and <code>veqm</code>. 
+All arguments to the function are then made into arrays of the type
+the original argument was <em>except</em> for the subset. 
+Even scalar values (QLA types) and other parameters are turned into arrays. 
+The length of the arrays is then given as the last argument. 
+For example the function
+
+   <p><code>QDP_F3_V_peq_M_times_V( QDP_F3_ColorVector *r, QDP_F3_ColorMatrix *a, <br>
+    QDP_F3_ColorVector *b, QDP_Subset s );</code>
+
+<p class="noindent">becomes
+
+   <p><code>QDP_F3_V_peq_M_times_V( QDP_F3_ColorVector *r[], QDP_F3_ColorMatrix *a[],
+<br>     QDP_F3_ColorVector *b[], QDP_Subset s, int n );</code>
+
+<p class="noindent">This has the same effect as the following code
+
+   <p><code>for(i=0; i&lt;n; i++)
+QDP_F3_V_peq_M_times_V( r[i], a[i], b[i], s );</code>
+
+<p class="noindent">however it may be implemented in a more efficient manner. 
+It is permissible to have multiple array elements point to the same field. 
+The result will always agree with that of the above <code>for</code> loop.
+
+<h3 class="section">4.4 Creating and destroying lattice fields</h3>
+
+<p>All QDP functions expect that lattice field arguments point to fields
+that have already been created.  The sole exception to this rule is
+the creation utility itself, which returns a pointer
+
+<h4 class="subsection">4.4.1 Creating a lattice field</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><var>Type</var><code> * QDP_create_</code><var>T</var><code>(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Creates lattice field of type <var>Type</var>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>u = QDP_create_M();</code>
+<br></td></tr></table>
+
+   <p>In prototype specifications throughout this document the notation
+<em>Type</em> specifies the generic or specific datatype name matching the
+abbreviation <em>T</em> according to the table in <a href="Datatypes.html#Datatypes">Datatypes</a>.
+
+<h4 class="subsection">4.4.2 Destroying a lattice field</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_destroy_</code><var>T</var><code>(</code><var>Type</var><code> *a);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Frees memory associated with field <code>a</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_destroy_M(u);</code>
+<br></td></tr></table>
+
+<h3 class="section">4.5 Subsets</h3>
+
+<p>All QDP linear algebra and shift operations require specifying the
+subset of the lattice on which the operation is performed.  The subset
+may be the entire lattice.  When defining subsets, it is often
+convenient to partition the lattice into multiple disjoint subsets
+(e.g. time slices or checkerboards).  Such subsets are defined through
+a user-supplied function that returns a range of integers
+0,1,2,...,n-1 so that if f(x) = i, then site <em>x</em> is in
+partition <em>i</em>.  A single subset may also be defined by limiting the
+range of return values to a single value (i.e. 0).  This procedure may
+be called more than once, and sites may be assigned to more than one
+subset.  Thus, for example an even site may also be assigned to a time
+slice subset and one of the subsets in a 32-level checkerboard scheme. 
+A subset definition remains valid until <code>QDP_destroy_subset</code> is
+called.
+
+<h4 class="subsection">4.5.1 Defining a subset</h4>
+
+<p>Subsets are defined through the data type <code>QDP_Subset</code>
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>QDP_Subset * QDP_create_subset(int (*func)(int x[], void *args), void *args,
+int argsize, int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Creates an array of <code>n</code> subsets based on <code>func</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_Subset ts[nt];<br>
+ts = QDP_create_subset(timeslice, NULL, 0, nt);</code>
+   <br></td></tr></table>
+
+<!-- where timeslice(x@comma{} NULL) = x[3]. -->
+<p>The extra arguments <code>args</code> are passed directly to the function and saved
+in case the subset function is needed again when doing shifts involving the
+subset.  Therefore the function should not depend on any other global
+parameters that may change later in the program. 
+It is permissible to call <code>QDP_create_subset</code> with n = 1. 
+In this case the function must return zero if the site is in the
+subset and nonzero if not.  (Note, this is opposite the <em>true</em>,
+<em>false</em> convention in C).
+
+<h4 class="subsection">4.5.2 Destroying subsets</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_destroy_subset(QDP_subset s[]);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Destroys all subsets created with <code>s</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_destroy_subset(ts);</code>
+<br></td></tr></table>
+
+   <p>This procedure frees all memory associated with the subset object <em>s</em>. 
+The <code>QDP_subset *</code> value <em>s</em> should be the object
+returned by <code>QDP_create_subset</code>.  All subsets in the array
+<em>s</em> are destroyed.
+
+<h4 class="subsection">4.5.3 Reductions on subsets</h4>
+
+<p>Reduction operations (norms, inner products, global sums) come in two
+variants according to whether the result is computed on a single
+subset of the lattice or on multiple subsets.  Thus the operation
+
+<pre class="example">       QLA_Complex z;
+       QDP_ColorVector *a, *b;
+       QDP_c_eq_V_dot_V(&amp;z, a, b, QDP_even);
+</pre>
+   <p>sums the dot product of the lattice staggered fermion fields <em>a</em>
+and <em>b</em> on the even sites and stores the result in <em>z</em>. 
+The operation
+
+<pre class="example">       QLA_Complex z[nt];
+       QDP_ColorVector *a, *b;
+       QDP_c_eq_V_dot_V_multi(z, a, b, ts, nt);
+</pre>
+   <p>with the timeslice subsets illustrated above computes the dot product
+summed separately on each timeslice and stores the sums in the array
+<em>z</em>, so that the value in <em>z[i]</em> results from the sum on the
+subset <em>ts[i]</em>.
+
+<h3 class="section">4.6 Shifts</h3>
+
+<p>Shifts are general communication operations specified by any
+permutation of sites.  Nearest neighbor shifts are a special case and
+are preinitialized by <code>QDP_initialize</code>. Arbitrary displacement
+shifts are an intermediate generalization and are created with
+<code>QDP_create_shift</code>.  Arbitrary permutations are created with
+<code>QDP_create_map</code>.  However they are created, all shifts are
+specified by a <em>direction</em> label <em>dir</em> of type <code>QDP_Shift</code>
+and a sign <em>sign</em> of type <code>QDP_ShiftDir</code> that takes one of two
+predefined values <code>QDP_forward</code> and <code>QDP_backward</code>.
+
+   <p>Shifts are treated syntactically as a modification of a QDP argument
+and are specified with a prefix <em>s</em> before the type abbreviation
+for the shifted field. Thus, for example,
+
+   <p><code>QDP_H_eq_sH(r, a, dir, sign, s);</code>
+
+<p class="noindent">shifts the half fermion field <em>a</em> along direction <em>dir</em>, forward or
+backward according to <em>sign</em>, placing the result in the field <em>r</em>. 
+Nearest neighbor shifts are specified by values of the global shift
+<code>QDP_neighbor[mu]</code> with <code>mu</code> in the range [0, Ndim-1]. 
+The sign is <code>QDP_forward</code> for shifts from the positive direction, and
+<code>QDP_backward</code> for shifts from the negative direction.  That is,
+for <code>QDP_forward</code> and <code>dir = QDP_neighbor[mu]</code>, r(x) = a(x+mu). 
+For more general shifts, the direction <em>dir</em> is specified by the object
+returned by <code>QDP_create_shift</code> or <code>QDP_create_map</code> and <em>sign</em>
+must be either <code>QDP_forward</code> or <code>QDP_backward</code> to specify the
+permutation or its inverse, respectively.
+
+   <p>The subset restriction applies to the destination field <em>r</em>. 
+Thus a nearest neighbor shift operation specifying the even subset shifts
+odd site values from the source <em>a</em> and places them on even site
+values on the destination field <em>r</em>.
+
+<h4 class="subsection">4.6.1 Creating displacement shifts</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>QDP_Shift QDP_create_shift(int d[]);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Creates a shift defined by the displacement vector <code>d</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>int d[4] = {0,1,2,0};<br>
+QDP_Shift knight[4][4];<br>
+knight[2][3] = QDP_create_shift(d);</code>
+<br></td></tr></table>
+
+   <p>Calling with a displacement vector {1,0,0,0} would reproduce
+the shift <code>QDP_neighbor[0]</code>.
+
+<h4 class="subsection">4.6.2 Creating arbitrary permutations</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>QDP_Shift QDP_create_map(int *(func*)(int coord[Nd], void *args),
+void *args, int argsize);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Creates a shift specified by the permutation map <code>func</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>int mu = 1;<br>
+QDP_Shift mirror[4];<br>
+mirror[mu] = QDP_create_map(reflect, &amp;mu, sizeof(mu));</code>
+<br></td></tr></table>
+
+<!-- where @{\tt reflect(x@comma{}mu)@} maps $x_\mu$ to $L_\mu - 1 - x_\mu$. -->
+<p>The return value is used in the various linear
+algebra calls involving shifts.  The arguments <em>args</em> are passed
+through to the calling function.  The <em>argsize</em> parameter
+specifies the byte length of the argument array or structure.
+
+   <p>The implementation may choose to postpone construction of a shift. 
+Thus it is required that the callback function <em>func</em> be static
+and invariant, i.e. a function call with the same arguments must give
+the same result, even if the call is postponed. 
+The parameters <em>args</em> are copied at the moment the shift is created,
+however, so they may be volatile. 
+The size argument <em>argsize</em> makes copying possible.
+
+<h4 class="subsection">4.6.3 Destroying a shift</h4>
+
+<p>The corresponding destruction function is <code>QDP_destroy_shift</code>.
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_destroy_shift(QDP_Shift dir);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Frees memory associated with the map <em>dir</em>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_destroy_shift(dir);</code>
+   <br></td></tr></table>
+
+<h3 class="section">4.7 I/O utilities</h3>
+
+<p><strong>[Under development.]</strong>
+
+<h3 class="section">4.8 Temporary entry and exit from QDP</h3>
+
+<p>For a variety of reasons it may be necessary to remove data from QDP
+structures.  Conversely, it may be necessary to reinsert data into QDP
+structures.  For example, a highly optimized linear solver may
+operate outside QDP.  The operands would need to be extracted from QDP
+fields and the eventual solution reinserted.  It may also be useful to
+suspend QDP communications temporarily to gain separate access to the
+communications layer.  For this purpose function calls are provided to
+put the QDP implementation and/or QDP objects into a known state,
+extract values, and reinsert them.
+
+<h4 class="subsection">4.8.1 Exposing QDP data</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><var>QLA_Type</var><code> * QDP_expose_</code><var>T</var><code>(</code><var>Type</var><code> *src);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Deliver data values from field <code>src</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>r = QDP_expose_M(a);</code>
+<br></td></tr></table>
+
+   <p>This function grants direct access to the data values contained in the
+QDP field <em>src</em>.  The return value is a pointer to an array of QLA
+data <em>dest</em> of type <em>T</em>.  The order of the data is given by
+<code>QDP_index</code>.  No QDP operations are permitted on exposed
+data until <code>QDP_reset</code> is called. (See next.)
+
+<h4 class="subsection">4.8.2 Returning control of QDP data</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_reset_</code><var>T</var><code>(</code><var>Type</var><code> *field);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Returns control of data values to QDP. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_reset_M(r);</code>
+<br></td></tr></table>
+
+   <p>This call signals to QDP that the user is ready to resume QDP
+operations with the data in the specified field.
+
+<h4 class="subsection">4.8.3 Extracting QDP data</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_extract_</code><var>T</var><code>(</code><var>QLA_Type</var><code> *dest, </code><var>Type</var><code> *src);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Copy data values from field <code>src</code> to array <code>dest</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_extract_M(r, a, QDP_even);</code>
+<br></td></tr></table>
+
+   <p>The user must allocate space of size
+<code>QDP_sites_on_node*sizeof(QLA_Type)</code> for the destination array
+before calling this function, regardless of the size of the subset. 
+This function copies the data values contained in the QDP field <em>src</em>
+to the destination field.  Only values belonging to the specified
+subset are copied.  Any values in the destination array not associated
+with the subset are left unmodified.  The order of the data is given
+by <code>QDP_index</code>.  Since a copy is made, QDP operations
+involving the source field may proceed without disruption.
+
+<h4 class="subsection">4.8.4 Inserting QDP data</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_insert_</code><var>T</var><code>(</code><var>Type</var><code> *dest, </code><var>QLA_Type</var><code> *src);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Inserts data values from QLA array <code>src</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_insert_M(a, r);</code>
+<br></td></tr></table>
+
+   <p>Only data associated with the specified subset are inserted. 
+Other values are unmodified.  The data order must conform to
+<code>QDP_index</code>.  This call, analogous to a fill operation, is
+permitted at any time and does not interfere with QDP operations.
+
+<h4 class="subsection">4.8.5 Suspending QDP communications</h4>
+
+<p>If a user wishes to suspend QDP communications temporarily and carry
+on communications by other means, it is first necessary to call
+<code>QDP_suspend_comm</code>.
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_suspend_comm(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Suspends QDP communications. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_suspend_comm();</code>
+   <br></td></tr></table>
+
+   <p>No QDP shifts can then be initiated until <code>QDP_resume</code> is called. 
+However QDP linear algebra operations without shifts may proceed.
+
+<h4 class="subsection">4.8.6 Resuming QDP communications</h4>
+
+<p>To resume QDP communications one uses
+
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax:  </td><td valign="top" width="85%"><code>void QDP_resume_comm(void);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning: </td><td valign="top" width="85%">Restores QDP communications. 
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example: </td><td valign="top" width="85%"><code>QDP_resume_comm();</code>
+   <br></td></tr></table>
+
+<h3 class="section">4.9 Optimization Calls</h3>
+
+<p>The following procedure is included to aid in optimization of the
+QDP implementation
+
+<h4 class="subsection">4.9.1 Marking discarded data</h4>
+
+<p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_discard_</code><var>T</var><code>(</code><var>Type</var><code> *a);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Indicates data in <code>a</code> is no longer needed. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_discard_M(utemp);</code>
+<br></td></tr></table>
+
+   <p>The field is not destroyed and memory is not released.  For that
+purpose, see <code>QDP_destroy</code>.  This call allows the implementation
+to cancel the deferred resolution of a lazy shift.  It is a runtime
+error to attempt to use discarded data as an rvalue (source operand or
+incremented destination) in any subsequent operation.  However, once
+the field is used as an lvalue (fully replaced destination), data
+integrity is automatically reinstated.
+
+<!-- ==================================================================== -->
+</body></html>
+

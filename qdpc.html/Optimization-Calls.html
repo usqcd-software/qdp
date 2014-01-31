@@ -1,0 +1,193 @@
+<html lang="en">
+<head>
+<title>Optimization Calls - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="Temporary-entry-and-exit-from-QDP.html#Temporary-entry-and-exit-from-QDP" title="Temporary entry and exit from QDP">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Optimization-Calls"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Temporary-entry-and-exit-from-QDP.html#Temporary-entry-and-exit-from-QDP">Temporary entry and exit from QDP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.9 Optimization Calls</h3>
+
+<p>The following procedures are included to aid in optimization of the
+QDP implementation
+
+<!-- @subheading Marking discarded data -->
+   <div class="float">
+
+<h4 class="subheading">Marking discarded data</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_discard_</code><var>T</var><code>(</code><var>Type</var><code> *a);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Indicates data in <code>a</code> is no longer needed. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_discard_M(utemp);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The field is not destroyed and memory is not released.  For that
+purpose, see <code>QDP_destroy</code>.  This call allows the implementation
+to ignore the data dependency that may have been created from a shift
+which allows the shift to be efficiently reused later. 
+It is a runtime error to attempt to use discarded data as an rvalue
+(source operand or incremented destination) in any subsequent operation. 
+However, once the field is used as an lvalue (fully replaced destination),
+data integrity is automatically reinstated.
+
+   <p>This should be called on the result of a shift once the result is no longer
+needed. 
+It is safe to call it for any field as long as the data is no longer needed. 
+It is highy recommended for the sake of efficiency that one always call
+this as soon as the result of a shift is no longer needed. 
+It can also be used to make sure that a field is not being used elsewhere
+without first being set since using a discarded field without first setting it
+produces an error.
+
+<!-- @subheading{Block size operations} -->
+   <div class="float">
+
+<h4 class="subheading">Block size operations</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_get_block_size(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Returns the block size.
+
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_set_block_size(int bs);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Sets the block size.
+
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>These functions allow one to set the block size used for the operations
+on arrays of QDP fields.  Instead of running over all sites of each field
+individually, it can run over a few sites for each field in turn and then
+move to the next few sites on each field and so on until all sites are done. 
+The number of sites done at a time is determined by the block size.
+
+<!-- @subheading{Memory alignment} -->
+   <div class="float">
+
+<h4 class="subheading">Memory alignment</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_get_mem_align(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Returns the default memory alignment.
+
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_set_mem_align(int align);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Sets the default memory alignment.
+
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>Some architectures might perform better for fields with certain alignments. 
+This allows one to set the default alignment used when fields are created. 
+It only affects newly created fields. 
+Currently the default is set to 16 bytes if not set by the user which
+should be sufficient for most current platforms. 
+It is expected that the QDP library will automatically use whatever value
+is necessary to utilize the optimized QLA routines for architectures
+which QLA has been optimized for. 
+Therefore the user normally would not need to set this and it is recommended
+that they don't unless they specifically find it useful for a platform
+not already optimized in QLA. 
+The user can also use the macro <code>QDP_ALIGN_DEFAULT</code> to specify the
+default alignment provided by QMP for that machine.
+
+<!-- @subheading{Memory attributes} -->
+   <div class="float">
+
+<h4 class="subheading">Memory attributes</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>int QDP_get_mem_flags(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Returns the default memory flags
+
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_set_mem_flags(int flags);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Sets the default memory flags
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_set_mem_flags(QDP_MEM_FAST|QDP_MEM_COMMS);
+</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>This allows the user to set the characteristics of the memory used for
+newly created fields if the architecture supports them. 
+The QDP memory flags have the same meaning as the corresponding QMP flags. 
+The integer value is the combination (bitwise or) of the flags given below. 
+The actual effect of each combination is specific to the implementation and
+the architecture.
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="30%">Memory Flag    </td><td valign="top" width="70%">Meaning
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="30%">QDP_MEM_NONCACHE </td><td valign="top" width="70%">Use noncached memory. 
+<br></td></tr><tr align="left"><td valign="top" width="30%">QDP_MEM_COMMS    </td><td valign="top" width="70%">Use memory that is optimized for communucations. 
+<br></td></tr><tr align="left"><td valign="top" width="30%">QDP_MEM_FAST     </td><td valign="top" width="70%">Use fastest memory available (such as EDRAM on QCDOC). 
+<br></td></tr><tr align="left"><td valign="top" width="30%">QDP_MEM_DEFAULT  </td><td valign="top" width="70%">Use default value for architecture (from QMP). 
+<br>
+
+   <br></td></tr></table>
+
+<!-- ==================================================================== -->
+   </body></html>
+

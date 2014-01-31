@@ -1,0 +1,94 @@
+<html lang="en">
+<head>
+<title>Naming Conventions for Data Parallel Functions - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="Layout-utilities.html#Layout-utilities" title="Layout utilities">
+<link rel="next" href="Creating-and-destroying-lattice-fields.html#Creating-and-destroying-lattice-fields" title="Creating and destroying lattice fields">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Naming-Conventions-for-Data-Parallel-Functions"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Creating-and-destroying-lattice-fields.html#Creating-and-destroying-lattice-fields">Creating and destroying lattice fields</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Layout-utilities.html#Layout-utilities">Layout utilities</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.3 Naming Conventions for Data Parallel Functions</h3>
+
+<p>Data parallel functions are described in detail in <a href="Function-Details.html#Function-Details">Function Details</a>. 
+Here we desribe the naming conventions. 
+Data parallel function names are constructed with a pattern that suggests
+their functionality. 
+Thus the function
+
+   <p><code>QDP_V_eq_M_times_V(c, u, b, s);</code>
+
+   <p>carries out the product
+
+   <p><code>c[x] = u[x]*b[x];</code>
+
+   <p>for all lattice coordinates <code>x</code> belonging to the subset <code>s</code>. 
+where <em>c</em> and <em>b</em> are pointers to lattice staggered fermion vector
+fields and <em>u</em> is a pointer to a lattice color matrix field. 
+The elements of the function name are separated by an underscore
+(<code>_</code>) for readability. 
+All function names in this interface begin with <code>QDP</code>. 
+The specific name continues with a precision and color label
+as in <code>QDP_F3_V_eq_M_times_V</code> for single precision <em>SU(3)</em>. 
+Then comes a string of elements that mimics the algebraic expression. 
+The next character <code>V</code> abbreviates the type for the destination
+operand, in this case the argument <code>c</code>. 
+The abbreviations are listed in <a href="Datatypes.html#Datatypes">Datatypes</a>. 
+The next string <code>eq</code> specifies the assignment operator. 
+In this case it is a straight replacement, but modifications are also
+supported, as described below. 
+Then comes the first rhs operand type <code>M</code> followed by a string
+<code>times</code> specifying the operation and a character <code>V</code>
+specifying the second rhs operand type.
+
+   <p>Supported variants of the assignment operator are tabulated below.
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="20%">Abbreviation </td><td valign="top" width="13%">Meaning
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">eq           </td><td valign="top" width="13%">=
+<br></td></tr><tr align="left"><td valign="top" width="20%">peq          </td><td valign="top" width="13%">+=
+<br></td></tr><tr align="left"><td valign="top" width="20%">meq          </td><td valign="top" width="13%">-=
+<br></td></tr><tr align="left"><td valign="top" width="20%">eqm          </td><td valign="top" width="13%">=-
+<br>
+
+   <br></td></tr></table>
+
+   <p>Some functions allow all of these and some take only a simple replacement (eq).
+
+<ul class="menu">
+<li><a accesskey="1" href="Constant-Arguments.html#Constant-Arguments">Constant Arguments</a>
+<li><a accesskey="2" href="Color-argument.html#Color-argument">Color argument</a>
+<li><a accesskey="3" href="Adjoint.html#Adjoint">Adjoint</a>
+<li><a accesskey="4" href="Shift.html#Shift">Shift</a>
+<li><a accesskey="5" href="Operations-on-arrays-of-fields.html#Operations-on-arrays-of-fields">Operations on arrays of fields</a>
+</ul>
+
+   </body></html>
+

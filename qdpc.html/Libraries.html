@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+<title>Libraries - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Compilation-with-QDP.html#Compilation-with-QDP" title="Compilation with QDP">
+<link rel="prev" href="Header-and-macros.html#Header-and-macros" title="Header and macros">
+<link rel="next" href="Nonuniform-color-and-precision.html#Nonuniform-color-and-precision" title="Nonuniform color and precision">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Libraries"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Nonuniform-color-and-precision.html#Nonuniform-color-and-precision">Nonuniform color and precision</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Header-and-macros.html#Header-and-macros">Header and macros</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>
+<hr>
+</div>
+
+<h3 class="section">2.2 Libraries</h3>
+
+<p>Normally, it is necessary to link four QDP libraries for a given
+choice of color and precision.  Other libraries may be required if mixing
+precisions or numbers of color. 
+Routines involving only integers and the random state
+are common to all choices.  Routines involving only real or complex
+numbers are common to all colors.  Thus for single precision SU(3)
+the required libraries are linked through
+
+   <p><samp><span class="command">-lqdp_f3 -lqdp_f -lqdp_int -lqdp_common</span></samp>
+
+<p class="noindent">with the library search path set to <samp><span class="file">QDP_HOME/lib</span></samp>. 
+Each library will depend on the corresponding QLA library. 
+Also since global sums are done in a higher precision, using them
+requires linking to QLA libraries of the next higher precision in
+addition to the corresponding conversion library. 
+For the above example one would also need
+
+   <p><samp><span class="command">-lqla_f3 -lqla_f -lqla_d3 -lqla_d -lqla_df3 -lqla_df -lqla_int -lqla_random -lqla_cmath -lm</span></samp>
+
+<p class="noindent">in addition to the QIO and QMP libraries which typically are
+
+   <p><samp><span class="command">-lqio -llime -lqmp</span></samp>
+
+<p class="noindent">and any other system dependent libraries such as MPI. 
+A complete list of the QDP libraries is given below.
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="25%">Name                      </td><td valign="top" width="45%">Purpose
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_common.a</span></samp>    </td><td valign="top" width="45%">QDP utilities
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_int.a</span></samp>       </td><td valign="top" width="45%">integer and boolean
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_f.a</span></samp>         </td><td valign="top" width="45%">real and complex single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_d.a</span></samp>         </td><td valign="top" width="45%">real and complex double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_df.a</span></samp>        </td><td valign="top" width="45%">real and complex precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_f2.a</span></samp>        </td><td valign="top" width="45%">2 color single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_d2.a</span></samp>        </td><td valign="top" width="45%">2 color double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_df2.a</span></samp>       </td><td valign="top" width="45%">2 color precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_f3.a</span></samp>        </td><td valign="top" width="45%">3 color single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_d3.a</span></samp>        </td><td valign="top" width="45%">3 color double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_df3.a</span></samp>       </td><td valign="top" width="45%">3 color precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_fn.a</span></samp>        </td><td valign="top" width="45%">N color single precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_dn.a</span></samp>        </td><td valign="top" width="45%">N color double precision
+<br></td></tr><tr align="left"><td valign="top" width="25%"><samp><span class="file">libqdp_dfn.a</span></samp>       </td><td valign="top" width="45%">N color precision conversion
+<br>
+
+   <br></td></tr></table>
+
+   </body></html>
+

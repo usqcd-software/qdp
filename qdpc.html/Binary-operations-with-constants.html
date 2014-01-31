@@ -1,0 +1,142 @@
+<html lang="en">
+<head>
+<title>Binary operations with constants - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Function-Details.html#Function-Details" title="Function Details">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Binary-operations-with-constants"></a>
+Up:&nbsp;<a rel="up" accesskey="u" href="Function-Details.html#Function-Details">Function Details</a>
+<hr>
+</div>
+
+   <div class="float">
+
+<h3 class="section">5.5 Binary operations with constants</h3>
+
+   <p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Multiplication by integer constant</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_I_</code><var>eqop</var><code>_i_times_I(QDP_Int *r, QLA_Int *a, QDP_Int *b, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Multiplication by real constant</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_r_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QLA_Real *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_r_times_</code><var>T</var><code>(</code><var>Type</var><code> *r[], QLA_Real a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Multiplication by complex constant</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_c_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, QLA_Complex *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_v</code><var>eqop</var><code>_c_times_</code><var>T</var><code>(</code><var>Type</var><code> *r[], QLA_Complex a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> a * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Multiplication by i</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_</code><var>eqop</var><code>_i_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r <var>eqop</var> i a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>eqop</var> </td><td valign="top" width="85%"><code>eq, peq, meq, eqm</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Left multiplication by gamma matrix</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>T</var><code>_eq_gamma_times_</code><var>T</var><code>(</code><var>Type</var><code> *r, </code><var>Type</var><code> *a, int i, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = gamma(i) * a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>D, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Right multiplication by gamma matrix</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_P_eq_P_times_gamma(QDP_DiracPropagator *r, QDP_DiracPropagator *a, int i, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = a * gamma(i)
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   </body></html>
+

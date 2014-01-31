@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+<title>Creating and destroying lattice fields - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link rel="next" href="Subsets.html#Subsets" title="Subsets">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Creating-and-destroying-lattice-fields"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Subsets.html#Subsets">Subsets</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.4 Creating and destroying lattice fields</h3>
+
+<p>All QDP fields are creted and destroyed with the following functions. 
+The alignment and type of memory (on architectures that support it)
+is detrmined by the default alignment and flags (see <a href="Optimization-Calls.html#Optimization-Calls">Optimization Calls</a>).
+
+<!-- @subheading Creating a lattice field -->
+   <div class="float">
+
+<h4 class="subheading">Creating a lattice field</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><var>Type</var><code> * QDP_create_</code><var>T</var><code>(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Creates lattice field of type <var>Type</var>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>u = QDP_create_M();</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>In prototype specifications throughout this document the notation
+<em>Type</em> specifies the generic or specific datatype name matching the
+abbreviation <em>T</em> according to the table in <a href="Datatypes.html#Datatypes">Datatypes</a>.
+
+<!-- @subheading Destroying a lattice field -->
+   <div class="float">
+
+<h4 class="subheading">Destroying a lattice field</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_destroy_</code><var>T</var><code>(</code><var>Type</var><code> *a);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Frees memory associated with field <code>a</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>S, I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_destroy_M(u);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   </body></html>
+

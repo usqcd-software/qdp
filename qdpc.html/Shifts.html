@@ -1,0 +1,77 @@
+<html lang="en">
+<head>
+<title>Shifts - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="Subsets.html#Subsets" title="Subsets">
+<link rel="next" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Shifts"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Subsets.html#Subsets">Subsets</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.6 Shifts</h3>
+
+<p>Shifts are general communication operations specified by any
+permutation of sites.  Nearest neighbor shifts are a special case and
+are preinitialized by <code>QDP_initialize</code>. Arbitrary displacement
+shifts are an intermediate generalization and are created with
+<code>QDP_create_shift</code>.  Arbitrary permutations are created with
+<code>QDP_create_map</code>.  However they are created, all shifts are
+specified by a <em>direction</em> label <em>dir</em> of type <code>QDP_Shift</code>
+and a sign <em>sign</em> of type <code>QDP_ShiftDir</code> that takes one of two
+predefined values <code>QDP_forward</code> and <code>QDP_backward</code>.
+
+   <p>Shifts are treated syntactically as a modification of a QDP argument
+and are specified with a prefix <em>s</em> before the type abbreviation
+for the shifted field. Thus, for example,
+
+   <p><code>QDP_H_eq_sH(r, a, dir, sign, s);</code>
+
+<p class="noindent">shifts the half fermion field <em>a</em> along direction <em>dir</em>, forward or
+backward according to <em>sign</em>, placing the result in the field <em>r</em>. 
+Nearest neighbor shifts are specified by values of the global shift
+<code>QDP_neighbor[mu]</code> with <code>mu</code> in the range [0, Ndim-1]. 
+The sign is <code>QDP_forward</code> for shifts from the positive direction, and
+<code>QDP_backward</code> for shifts from the negative direction.  That is,
+for <code>QDP_forward</code> and <code>dir = QDP_neighbor[mu]</code>, r(x) = a(x+mu). 
+For more general shifts, the direction <em>dir</em> is specified by the object
+returned by <code>QDP_create_shift</code> or <code>QDP_create_map</code> and <em>sign</em>
+must be either <code>QDP_forward</code> or <code>QDP_backward</code> to specify the
+permutation or its inverse, respectively.
+
+   <p>The subset restriction applies to the destination field <em>r</em>. 
+Thus a nearest neighbor shift operation specifying the even subset shifts
+odd site values from the source <em>a</em> and places them on even site
+values on the destination field <em>r</em>.
+
+<ul class="menu">
+<li><a accesskey="1" href="Creating-displacement-shifts.html#Creating-displacement-shifts">Creating displacement shifts</a>
+<li><a accesskey="2" href="Creating-arbitrary-permutations.html#Creating-arbitrary-permutations">Creating arbitrary permutations</a>
+<li><a accesskey="3" href="Destroying-a-shift.html#Destroying-a-shift">Destroying a shift</a>
+</ul>
+
+   </body></html>
+

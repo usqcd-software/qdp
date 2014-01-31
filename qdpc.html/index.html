@@ -1,0 +1,102 @@
+<html lang="en">
+<head>
+<title>QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="../index.html#dir" title="(dir)">
+<link rel="prev" href="../index.html#dir" title="(dir)">
+<link rel="next" href="Introduction.html#Introduction" title="Introduction">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<h1 class="settitle">QDP/C User Manual</h1>
+<div class="node">
+<p>
+<a name="Top"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Introduction.html#Introduction">Introduction</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="../index.html#dir">(dir)</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="../index.html#dir">(dir)</a>
+<hr>
+</div>
+
+<!-- @top QDP/C User Manual -->
+   <p>Version 1.8.0
+
+   <p>This document provides a detailed description of the C implementation of the<br>
+SciDAC Level 2 QDP Data Parallel interface.
+
+   <div class="contents">
+<h2>Table of Contents</h2>
+<ul>
+<li><a name="toc_Introduction" href="Introduction.html#Introduction">1 Introduction</a>
+<li><a name="toc_Compilation-with-QDP" href="Compilation-with-QDP.html#Compilation-with-QDP">2 Compilation with QDP</a>
+<ul>
+<li><a href="Header-and-macros.html#Header-and-macros">2.1 Header and macros</a>
+<li><a href="Libraries.html#Libraries">2.2 Libraries</a>
+<li><a href="Nonuniform-color-and-precision.html#Nonuniform-color-and-precision">2.3 Nonuniform color and precision</a>
+</li></ul>
+<li><a name="toc_Datatypes" href="Datatypes.html#Datatypes">3 Datatypes</a>
+<ul>
+<li><a href="Generic-Names.html#Generic-Names">3.1 Generic Names</a>
+<li><a href="Specific-Types-for-Color-and-Precision.html#Specific-Types-for-Color-and-Precision">3.2 Specific Types for Color and Precision</a>
+<li><a href="Color-and-Precision-Uniformity.html#Color-and-Precision-Uniformity">3.3 Color and Precision Uniformity</a>
+<li><a href="Breaking-Color-and-Precision-Uniformity.html#Breaking-Color-and-Precision-Uniformity">3.4 Breaking Color and Precision Uniformity</a>
+</li></ul>
+<li><a name="toc_QDP-Functions" href="QDP-Functions.html#QDP-Functions">4 QDP Functions</a>
+<ul>
+<li><a href="Entry-and-exit-from-QDP.html#Entry-and-exit-from-QDP">4.1 Entry and exit from QDP</a>
+<li><a href="Layout-utilities.html#Layout-utilities">4.2 Layout utilities</a>
+<li><a href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">4.3 Naming Conventions for Data Parallel Functions</a>
+<li><a href="Creating-and-destroying-lattice-fields.html#Creating-and-destroying-lattice-fields">4.4 Creating and destroying lattice fields</a>
+<li><a href="Subsets.html#Subsets">4.5 Subsets</a>
+<li><a href="Shifts.html#Shifts">4.6 Shifts</a>
+<li><a href="I_002fO-utilities.html#I_002fO-utilities">4.7 I/O utilities</a>
+<ul>
+<li><a href="Opening-and-closing-binary-files.html#Opening-and-closing-binary-files">4.7.1 Opening and closing binary files</a>
+<li><a href="Reading-and-writing-QDP-fields.html#Reading-and-writing-QDP-fields">4.7.2 Reading and writing QDP fields</a>
+<li><a href="Reading-and-writing-QLA-arrays.html#Reading-and-writing-QLA-arrays">4.7.3 Reading and writing QLA arrays</a>
+<li><a href="String-Handling.html#String-Handling">4.7.4 String Handling</a>
+</li></ul>
+<li><a href="Temporary-entry-and-exit-from-QDP.html#Temporary-entry-and-exit-from-QDP">4.8 Temporary entry and exit from QDP</a>
+<li><a href="Optimization-Calls.html#Optimization-Calls">4.9 Optimization Calls</a>
+</li></ul>
+<li><a name="toc_Function-Details" href="Function-Details.html#Function-Details">5 Function Details</a>
+<ul>
+<li><a href="Functions-involving-shifts.html#Functions-involving-shifts">5.1 Functions involving shifts</a>
+<li><a href="Fills-and-random-numbers.html#Fills-and-random-numbers">5.2 Fills and random numbers</a>
+<li><a href="Unary-Operations.html#Unary-Operations">5.3 Unary Operations</a>
+<li><a href="Type-conversion-and-component-extraction-and-insertion.html#Type-conversion-and-component-extraction-and-insertion">5.4 Type conversion and component extraction and insertion</a>
+<li><a href="Binary-operations-with-constants.html#Binary-operations-with-constants">5.5 Binary operations with constants</a>
+<li><a href="Binary-operations-with-fields.html#Binary-operations-with-fields">5.6 Binary operations with fields</a>
+<li><a href="Ternary-operations-with-fields.html#Ternary-operations-with-fields">5.7 Ternary operations with fields</a>
+<li><a href="Boolean-operations.html#Boolean-operations">5.8 Boolean operations</a>
+<li><a href="Reductions.html#Reductions">5.9 Reductions</a>
+</li></ul>
+</li></ul>
+</div>
+
+<ul class="menu">
+<li><a accesskey="1" href="Introduction.html#Introduction">Introduction</a>:                 Introduction to QDP/C. 
+<li><a accesskey="2" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>:         How to compile a program that uses QDP. 
+<li><a accesskey="3" href="Datatypes.html#Datatypes">Datatypes</a>:                    Datatypes. 
+<li><a accesskey="4" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>:                QDP Functions. 
+<li><a accesskey="5" href="Function-Details.html#Function-Details">Function Details</a>:             Function Details. 
+</ul>
+
+<!-- ==================================================================== -->
+   </body></html>
+

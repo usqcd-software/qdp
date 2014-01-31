@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+<title>Nonuniform color and precision - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Compilation-with-QDP.html#Compilation-with-QDP" title="Compilation with QDP">
+<link rel="prev" href="Libraries.html#Libraries" title="Libraries">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Nonuniform-color-and-precision"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Libraries.html#Libraries">Libraries</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Compilation-with-QDP.html#Compilation-with-QDP">Compilation with QDP</a>
+<hr>
+</div>
+
+<h3 class="section">2.3 Nonuniform color and precision</h3>
+
+<p>Users wishing to vary color and precision within a single calculation
+must use specific type names and function names whenever these types
+and names differ from the prevailing precision and color. 
+If using different colors that the specified value then one must also include
+the necessary headers. 
+For example, if a single precision SU(3) calculation also uses some
+SU(2) datatypes or operations, the following preamble is appropriate:
+
+<pre class="example">     #define QDP_Precision 'F'
+     #define QDP_Nc 3
+     #include &lt;qdp.h&gt;
+     #include &lt;qdp_f2.h&gt;
+</pre>
+   <p class="noindent">and the following linkage to get the corresponding libraries:
+
+<p class="noindent"><samp><span class="command">-lqdp_f2 -lqdp_f3 -lqdp_f -lqdp_int -lqdp_common</span></samp>
+
+   <p>Note that the single, double and conversion headers for the prevailing
+color are automatically included through <samp><span class="file">qdp.h</span></samp>. 
+Only when mixing colors does one need to specify individual headers.
+
+   <p>The following table lists all the QDP headers.
+
+   <p><table summary=""><br>
+
+   <p><tr align="left"><td valign="top" width="30%">Name              </td><td valign="top" width="70%">Purpose
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp.h</span></samp>      </td><td valign="top" width="70%">Master header and QDP utilities
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_int.h</span></samp>  </td><td valign="top" width="70%">integers, boolean
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_f.h</span></samp>    </td><td valign="top" width="70%">real, complex, single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_d.h</span></samp>    </td><td valign="top" width="70%">real, complex, double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_df.h</span></samp>   </td><td valign="top" width="70%">real, complex, precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_f2.h</span></samp>   </td><td valign="top" width="70%">SU(2), single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_d2.h</span></samp>   </td><td valign="top" width="70%">SU(2), double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_df2.h</span></samp>  </td><td valign="top" width="70%">SU(2), precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_f3.h</span></samp>   </td><td valign="top" width="70%">SU(3), single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_d3.h</span></samp>   </td><td valign="top" width="70%">SU(3), double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_df3.h</span></samp>  </td><td valign="top" width="70%">SU(3), precision conversion
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_fn.h</span></samp>   </td><td valign="top" width="70%">SU(N), single precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_dn.h</span></samp>   </td><td valign="top" width="70%">SU(N), double precision
+<br></td></tr><tr align="left"><td valign="top" width="30%"><samp><span class="file">qdp_dfn.h</span></samp>  </td><td valign="top" width="70%">SU(N), precision conversion
+<br>
+
+   <br></td></tr></table>
+
+<!-- ==================================================================== -->
+   </body></html>
+

@@ -1,0 +1,212 @@
+<html lang="en">
+<head>
+<title>Reductions - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Function-Details.html#Function-Details" title="Function Details">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Reductions"></a>
+Up:&nbsp;<a rel="up" accesskey="u" href="Function-Details.html#Function-Details">Function Details</a>
+<hr>
+</div>
+
+   <div class="float">
+
+<h3 class="section">5.9 Reductions</h3>
+
+   <p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Global squared norm: uniform precision</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_norm2_</code><var>T</var><code>(QLA_Real *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_norm2_</code><var>T</var><code>(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum norm2(a)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Global inner product</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Tr a * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_c_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Complex *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_c_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Complex r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Tr adjoint(a) * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <div class="float">
+
+<h4 class="subheading">Real part of global inner product</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real *r, </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, </code><var>subset</var><code>);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], </code><var>subset</var><code>, int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Re Tr adjoint(a) * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Global sums</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_sum_I(QLA_Real *r, QDP_Int *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum a
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>t</var><code>_eq_sum_</code><var>T</var><code>(</code><var>QLA_Type</var><code> *r, </code><var>Type</var><code> *a, </code><var>subset</var><code>);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <div class="float">
+
+<h4 class="subheading">Multisubset Norms</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_norm2_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_norm2_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a[], QDP_Subset subset[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] norm2(a)
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Multisubset inner products</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], QDP_Subset subset[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] a * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_c_eq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Complex r[], </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_c_veq_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Complex r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], QDP_Subset subset[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] adjoint(a) * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <div class="float">
+
+<h4 class="subheading">Multisubset real part of global inner product</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a, </code><var>Type</var><code> *b, QDP_Subset subset[], int n);</code>
+<br></td></tr><tr align="left"><td valign="top" width="15%"></td><td valign="top" width="85%"><code>QDP_r_veq_re_</code><var>T</var><code>_dot_</code><var>T</var><code>_multi(QLA_Real r[], </code><var>Type</var><code> *a[], </code><var>Type</var><code> *b[], QDP_Subset subset[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r = Sum Re Tr adjoint(a) * b
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <div class="float">
+
+<h4 class="subheading">Multisubset global sums</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_r_eq_sum_I_multi(QLA_Real r[], QDP_Int *a, QDP_Subset subset[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] a
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>QDP_</code><var>t</var><code>_eq_sum_</code><var>T</var><code>_multi(</code><var>QLA_Type</var><code> r[], </code><var>Type</var><code> *a, QDP_Subset subset[], int n);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">r[i] = Sum_subset[i] a
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>R, C, V, H, D, M, P</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+</body></html>
+

@@ -1,0 +1,242 @@
+<html lang="en">
+<head>
+<title>Temporary entry and exit from QDP - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="QDP-Functions.html#QDP-Functions" title="QDP Functions">
+<link rel="prev" href="I_002fO-utilities.html#I_002fO-utilities" title="I/O utilities">
+<link rel="next" href="Optimization-Calls.html#Optimization-Calls" title="Optimization Calls">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Temporary-entry-and-exit-from-QDP"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Optimization-Calls.html#Optimization-Calls">Optimization Calls</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="I_002fO-utilities.html#I_002fO-utilities">I/O utilities</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="QDP-Functions.html#QDP-Functions">QDP Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.8 Temporary entry and exit from QDP</h3>
+
+<p>For a variety of reasons it may be necessary to remove data from QDP
+structures.  Conversely, it may be necessary to reinsert data into QDP
+structures.  For example, a highly optimized linear solver may
+operate outside QDP.  The operands would need to be extracted from QDP
+fields and the eventual solution reinserted.  It may also be useful to
+suspend QDP communications temporarily to gain separate access to the
+communications layer.  For this purpose function calls are provided to
+put the QDP implementation and/or QDP objects into a known state,
+extract values, and reinsert them.
+
+<!-- @subheading Exposing QDP data -->
+   <div class="float">
+
+<h4 class="subheading">Exposing QDP data</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><var>QLA_Type</var><code> * QDP_expose_</code><var>T</var><code>(</code><var>Type</var><code> *src);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Deliver data values from field <code>src</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>r = QDP_expose_M(a);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>This function grants direct access to the data values contained in the
+QDP field <em>src</em>.  The return value is a pointer to an array of QLA
+data <em>dest</em> of type <em>T</em>.  The order of the data is given by
+<code>QDP_index</code>.  No QDP operations are permitted on exposed
+data until <code>QDP_reset</code> is called. (See next.)
+
+<!-- @subheading Returning control of QDP data -->
+   <div class="float">
+
+<h4 class="subheading">Returning control of QDP data</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_reset_</code><var>T</var><code>(</code><var>Type</var><code> *field);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Returns control of data values to QDP. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_reset_M(r);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>This call signals to QDP that the user is ready to resume QDP
+operations with the data in the specified field.
+
+<!-- @subheading Extracting QDP data -->
+   <div class="float">
+
+<h4 class="subheading">Extracting QDP data</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_extract_</code><var>T</var><code>(</code><var>QLA_Type</var><code> *dest, </code><var>Type</var><code> *src);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Copy data values from field <code>src</code> to array <code>dest</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_extract_M(r, a, QDP_even);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The user must allocate space of size
+<code>QDP_sites_on_node*sizeof(QLA_Type)</code> for the destination array
+before calling this function, regardless of the size of the subset. 
+This function copies the data values contained in the QDP field <em>src</em>
+to the destination field.  Only values belonging to the specified
+subset are copied.  Any values in the destination array not associated
+with the subset are left unmodified.  The order of the data is given
+by <code>QDP_index</code>.  Since a copy is made, QDP operations
+involving the source field may proceed without disruption.
+
+<!-- @subheading Inserting QDP data -->
+   <div class="float">
+
+<h4 class="subheading">Inserting QDP data</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_insert_</code><var>T</var><code>(</code><var>Type</var><code> *dest, </code><var>QLA_Type</var><code> *src);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Inserts data values from QLA array <code>src</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_insert_M(a, r);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>Only data associated with the specified subset are inserted. 
+Other values are unmodified.  The data order must conform to
+<code>QDP_index</code>.  This call, analogous to a fill operation, is
+permitted at any time and does not interfere with QDP operations.
+
+<!-- @subheading Extracting QDP data to a packed array -->
+   <div class="float">
+
+<h4 class="subheading">Extracting QDP data to a packed array</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_extract_packed_</code><var>T</var><code>(</code><var>QLA_Type</var><code> *dest, </code><var>Type</var><code> *src);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Copy data values from field <code>src</code> to array <code>dest</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_extract_M(r, a, QDP_even);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>The user must allocate space of size
+<code>QDP_subset_len(subset)*sizeof(QLA_Type)</code> for the destination array
+before calling this function. 
+This function copies the data values contained in the QDP field <em>src</em>
+to the destination field.  Only values belonging to the specified
+subset are copied and they are stored contiguously in the destination array. 
+The order of the data is given
+by <code>QDP_index</code>.  Since a copy is made, QDP operations
+involving the source field may proceed without disruption.
+
+<!-- @subheading Inserting QDP data from a packed array -->
+   <div class="float">
+
+<h4 class="subheading">Inserting QDP data from a packed array</h4>
+
+<p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax     </td><td valign="top" width="85%"><code>void QDP_insert_packed_</code><var>T</var><code>(</code><var>Type</var><code> *dest, </code><var>QLA_Type</var><code> *src);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning    </td><td valign="top" width="85%">Inserts data values from QLA array <code>src</code>. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>Type</var> </td><td valign="top" width="85%"><code>I, R, C, V, H, D, M, P</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example    </td><td valign="top" width="85%"><code>QDP_insert_M(a, r);</code>
+   <br></td></tr></table>
+</td></tr></table>
+<p><strong class="float-caption"></strong></p></div>
+
+   <p>Only data associated with the specified subset are inserted. 
+Other values are unmodified.  The data order must conform to
+<code>QDP_index</code>.  This call, analogous to a fill operation, is
+permitted at any time and does not interfere with QDP operations.
+
+<h4 class="subheading">Suspending QDP communications</h4>
+
+<p>If a user wishes to suspend QDP communications temporarily and carry
+on communications by other means, it is first necessary to call
+<code>QDP_suspend_comm</code>.
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_suspend_comm(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Suspends QDP communications. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_suspend_comm();</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   <p>No QDP shifts can then be initiated until <code>QDP_resume</code> is called. 
+However QDP linear algebra operations without shifts may proceed.
+
+<h4 class="subheading">Resuming QDP communications</h4>
+
+<p>To resume QDP communications one uses
+
+   <p><table class="cartouche" summary="cartouche" border="1"><tr><td>
+   <p><table summary=""><tr align="left"><td valign="top" width="15%">Syntax   </td><td valign="top" width="85%"><code>void QDP_resume_comm(void);</code>
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Meaning  </td><td valign="top" width="85%">Restores QDP communications. 
+<br>
+
+<p><br></td></tr><tr align="left"><td valign="top" width="15%">Example  </td><td valign="top" width="85%"><code>QDP_resume_comm();</code>
+   <br></td></tr></table>
+</td></tr></table>
+
+   </body></html>
+

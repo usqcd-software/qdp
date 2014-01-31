@@ -1,0 +1,49 @@
+<html lang="en">
+<head>
+<title>Adjoint - QDP/C User Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="QDP/C User Manual">
+<meta name="generator" content="makeinfo 4.11">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions" title="Naming Conventions for Data Parallel Functions">
+<link rel="prev" href="Color-argument.html#Color-argument" title="Color argument">
+<link rel="next" href="Shift.html#Shift" title="Shift">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Adjoint"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Shift.html#Shift">Shift</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Color-argument.html#Color-argument">Color argument</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Naming-Conventions-for-Data-Parallel-Functions.html#Naming-Conventions-for-Data-Parallel-Functions">Naming Conventions for Data Parallel Functions</a>
+<hr>
+</div>
+
+<h4 class="subheading">Adjoint</h4>
+
+<p>The adjoint of an operand is specified by a suffix <code>a</code> after the
+type abbreviation.  Thus
+
+   <p><code>QDP_V_eq_Ma_times_V(c, u, b, s);</code>
+
+   <p>carries out the product
+
+   <p><code>c[x] = adjoint(u[x])*b[x];</code>
+
+   <p>for all sites <code>x</code> in subset <code>s</code>.
+
+   </body></html>
+
