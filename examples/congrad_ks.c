@@ -4,7 +4,11 @@
 #include "congrad_ks.h"
 
 #define dclock QDP_time
+#ifdef HAVE_PTHREADS
 #define TINFO  QDP_ThreadInfo *tinfo = QDP_thread_info()
+#else
+#define TINFO  (void)0
+#endif
 #define TZERO  if(QDP_thread_num_info(tinfo)==0)
 #define MASTER if(QDP_this_node==0&&QDP_thread_num_info(tinfo)==0)
 

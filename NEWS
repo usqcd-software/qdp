@@ -1,3 +1,7 @@
+2014-01-30: James Osborn
+	Added test of inter-lattice shifts.
+	Fixed QIO_string_create calls.
+
 2014-01-15: James Osborn
         Now track shifts and subsets by id.
   	Fixed OpenMP bug in com_common.c.

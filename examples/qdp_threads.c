@@ -38,6 +38,7 @@ thread_func(void *args)
   printf0("QDP_thread_info time = %g us\n", 1e6*(t1-t0)/REPEAT);
   fflush(stdout);
   QDP_thread_barrier();
+  if(info==NULL) t1 = 0; // avoid warning for unused info
 
   printf0("testing split(1)...\n");
   if(QDP_thread_group_split(1)) {

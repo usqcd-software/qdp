@@ -295,7 +295,7 @@ QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
     QIO_Layout layout;
     QIO_Filesystem fs;
     QIO_Iflag iflag;
-    QIO_String *qio_md = QIO_string_create(0);
+    QIO_String *qio_md = QIO_string_create();
 
     qdpr = (QDP_Reader *)malloc(sizeof(struct QDP_Reader_struct));
     if(qdpr != NULL) {
@@ -457,7 +457,7 @@ QDP_read_record_info(QDP_Reader *qdpr, QDP_String *md)
   TGET;
   ONE {
     QIO_RecordInfo record_info;  /* Private data ignored */
-    QIO_String *qio_md = QIO_string_create(0);
+    QIO_String *qio_md = QIO_string_create();
     status = QIO_read_record_info(qdpr->qior, &record_info, qio_md);
     SHARE_SET(qio_md);
     TBARRIER;
@@ -488,7 +488,7 @@ QDP_read_qio_record_info(QDP_Reader *qdpr, QIO_RecordInfo *ri, QDP_String *md)
   TGET;
   ONE {
     QIO_RecordInfo ri0, *record_info;
-    QIO_String *qio_md = QIO_string_create(0);
+    QIO_String *qio_md = QIO_string_create();
     iolat = qdpr->lat;
     record_info = &ri0;
     if(ri) record_info = ri;
@@ -553,7 +553,7 @@ QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
 	       struct QDP_IO_field *qf, int count, QIO_RecordInfo *cmp_info)
 {
   QIO_RecordInfo *rec_info;
-  QIO_String *qio_md = QIO_string_create(0);
+  QIO_String *qio_md = QIO_string_create();
   int status;
 
   iolat = qdpr->lat;

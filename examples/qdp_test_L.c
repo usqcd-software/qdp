@@ -238,15 +238,16 @@ run_tests(void)
 }
 
 static int
-subIdent(QDP_Lattice *rlat, int x[], void *args)
+subCopyHyper(QDP_Lattice *rlat, int x[], void *args)
 {
   int color = 0;
   int nd = QDP_ndim_L(rlat);
-  int *rof = (int *)args;
-  int *sls = rof + nd;
+  int *sublen = (int *)args;
+  int *rof = sublen + nd;
+  int *rls = rof + nd;
   for(int i=0; i<nd; i++) {
-    int k = x[i] - rof[i];
-    if(k<0 || k>=sls[i]) color = 1;
+    int k = (x[i] - rof[i] + rls[i])%rls[i];
+    if(k>=sublen[i]) color = 1;
   }
 #if 0
   if(color==0) {
@@ -258,21 +259,26 @@ subIdent(QDP_Lattice *rlat, int x[], void *args)
   return color;
 }
 
+// shift map from slat into rlat with offsets passed in args
 static void
-mapIdent(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
-	 int *num, int idx, QDP_ShiftDir fb, void *args)
+mapCopyHyper(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
+	     int *num, int idx, QDP_ShiftDir fb, void *args)
 {
   int rnd = QDP_ndim_L(rlat);
   int snd = QDP_ndim_L(slat);
   if(fb==QDP_forward) {
     int *rof = (int *)args;
-    int *sls = rof + rnd;
+    int *rls = rof + rnd;
+    int *sd = rls + rnd;
+    int *sof = sd + rnd;
+    int *sls = sof + snd;
+    for(int j=0; j<snd; j++) sx[j] = sof[j];
     for(int i=0; i<rnd; i++) {
-      int k = rx[i] - rof[i];
-      if(k<0 || k>=sls[i]) *num = 0;
-      if(i<snd) sx[i] = k;
+      int k = (rx[i] - rof[i] + rls[i])%rls[i];
+      int j = sd[i];
+      sx[j] = (k + sx[j])%sls[j];
+      if(k>=sls[j]) *num = 0;
     }
-    for(int i=rnd; i<snd; i++) sx[i] = 0;
 #if 0
     if(*num) {
       printf("FWD:");
@@ -284,15 +290,17 @@ mapIdent(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
 #endif
   } else { // QDP_backward
     int *sof = (int *)args;
-    int *sls = sof + 2*snd;
-    for(int i=0; i<snd; i++) {
+    int *sls = sof + snd;
+    int *sd = sls + snd;
+    int *rof = sd + snd;
+    int *rls = rof + rnd;
+    for(int j=0; j<snd; j++) {
+      int i = sd[j];
       int k = 0;
-      if(i<rnd) k = rx[i];
-      k += sof[i];
-      if(k<0 || k>=sls[i]) *num = 0;
-      sx[i] = k;
+      if(i>=0&&i<rnd) k = (rx[i] - rof[i] + rls[i])%rls[i];
+      sx[j] = (k + sof[j])%sls[j];
+      if(k>=sls[j]) *num = 0;
     }
-    for(int i=snd; i<rnd; i++) if(rx[i]) *num = 0;
 #if 0
     if(*num) {
       printf("BCK:");
@@ -305,27 +313,80 @@ mapIdent(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
   }
 }
 
-QDP_Subset *
-getSubsIdent(QDP_Lattice *rlat, QDP_Lattice *slat, int roff[])
+// creates shifts and maps for copying hypercubic region of size rlen
+// from slat to rlat.
+// the point soff in slat will get copied to roff in rlat.
+// subsequent points in rlat will correspond to the permuted  starting at offset soff in lattice slat
+// to offset roff in lattice 
+// r[i] = ( roff[i] + (s[j]-soff[j]+sl[j])%ss[j] )%rs[i]
+// j = sdir[i]
+// s[j] = ( soff[j] + (r[i]-roff[i]+rl[i])%rs[i] )%ss[j]
+void
+getCopyHyper(QDP_Shift *map, QDP_Subset **subset,
+	     QDP_Lattice *rlat, int roff[], int rlen[], int sdir[],
+	     QDP_Lattice *slat, int soff[], int num)
 {
   int rnd = QDP_ndim_L(rlat);
   int snd = QDP_ndim_L(slat);
-  int rof[3*rnd], *sls, *rls;
-  sls = rof + rnd;
-  rls = sls + rnd;
+  //int sublen[rnd], rof[rnd], rs[rnd], sd[rnd], sof[snd], ss[snd];
+  int sublen[4*rnd+2*snd], *rof, *rs, *sd, *sof, *ss, nsub[rnd], nsubs=1;
+  rof = sublen + rnd;
+  rs = rof + rnd;
+  sd = rs + rnd;
+  sof = sd + rnd;
+  ss = sof + snd;
+  QDP_latsize_L(rlat, rs);
+  QDP_latsize_L(slat, ss);
+  // get subvolume size
   for(int i=0; i<rnd; i++) {
-    rof[i] = roff[i];
-    rls[i] = QDP_coord_size_L(rlat, i);
-    sls[i] = 1;
-    if(i<snd) sls[i] = QDP_coord_size_L(slat, i);
+    sd[i] = sdir[i];
+    int j = sdir[i];
+    sublen[i] = rlen[i];
+    if(sublen[i]>rs[i]) sublen[i] = rs[i];
+    if(j<0||j>=snd) sublen[i] = 1;
+    else if(sublen[i]>ss[j]) sublen[i] = ss[j];
+    nsub[i] = (rlen[i]+sublen[i]-1)/sublen[i];
+    nsubs *= nsub[i];
   }
-  QDP_Subset *sub = QDP_create_subset_L(rlat, subIdent, rof, sizeof(rof), 2);
-  return sub;
+  if(num<0||num>=nsubs) {
+    *map = NULL;
+    *subset = NULL;
+    return;
+  }
+  // calculate which subvolume we will work on and adjust size if necessary
+  int n = num;
+  for(int j=0; j<snd; j++) sof[j] = soff[j];
+  for(int i=0; i<rnd; i++) {
+    int j = sdir[i];
+    int k = n%nsub[i];
+    n = n/nsub[i];
+    int off = k*sublen[i];
+    rof[i] = (roff[i]+off)%rs[i];
+    sof[j] = (sof[j]+off)%ss[j];
+    if(sublen[i]>(rlen[i]-off)) sublen[i] = rlen[i]-off;
+  }
+#define printv(v,n) printf0(#v":"); for(int i=0; i<n; i++) printf0(" %i",v[i]); printf0("\n")
+  printv(sublen,rnd);
+  printv(rof,rnd);
+  printv(rs,rnd);
+  printv(sd,rnd);
+  printv(sof,snd);
+  printv(ss,snd);
+  *subset=QDP_create_subset_L(rlat,subCopyHyper,sublen,3*rnd*sizeof(int),2);
+  *map=QDP_create_map_L(rlat,slat,mapCopyHyper,rof,(3*rnd+2*snd)*sizeof(int));
 }
 
 void
 testShift(QDP_Lattice *rlat, QDP_Lattice *slat)
 {
+  int rnd = QDP_ndim_L(rlat);
+  int snd = QDP_ndim_L(slat);
+  printf0("rls:");
+  for(int i=0; i<rnd; i++) printf0(" %i", QDP_coord_size_L(rlat,i));
+  printf0("\n");
+  printf0("sls:");
+  for(int i=0; i<snd; i++) printf0(" %i", QDP_coord_size_L(slat,i));
+  printf0("\n");
   QDP_Real *rf = QDP_create_R_L(rlat);
   QDP_Real *sf = QDP_create_R_L(slat);
   QLA_Real rs=1, ss=2;
@@ -338,54 +399,37 @@ testShift(QDP_Lattice *rlat, QDP_Lattice *slat)
   printf0("recv V: %g\n", rn/rs2);
   printf0("send V: %g\n", sn/ss2);
 
-  int rnd = QDP_ndim_L(rlat);
-  int snd = QDP_ndim_L(slat);
-  int rof[3*rnd], *sls, *rls;
-  sls = rof + rnd;
-  rls = sls + rnd;
+  int roff[rnd], rlen[rnd], sdir[rnd], soff[snd];
   for(int i=0; i<rnd; i++) {
-    rof[i] = 0;
-    rls[i] = QDP_coord_size_L(rlat, i);
-    sls[i] = 1;
-    if(i<snd) sls[i] = QDP_coord_size_L(slat, i);
+    roff[i] = 0;
+    rlen[i] = QDP_coord_size_L(rlat,i);
+    sdir[i] = i;
   }
-  printf0("rls:");
-  for(int i=0; i<rnd; i++) printf0(" %i", rls[i]);
-  printf0("\n");
-  printf0("sls:");
-  for(int i=0; i<rnd; i++) printf0(" %i", sls[i]);
-  printf0("\n");
-  int done = 0;
-  do {
-    printf0("roffset:");
-    for(int i=0; i<rnd; i++) printf0(" %i", rof[i]);
-    printf0("\n");
-    //QDP_Subset *sub = QDP_create_subset_L(rlat,subIdent,rof,sizeof(rof),2);
-    QDP_Subset *sub = getSubsIdent(rlat, slat, rof);
-    printf0("created subset\n");
-    QDP_Shift map = QDP_create_map_L(rlat, slat, mapIdent, rof, sizeof(rof));
-    printf0("created map\n");
+  for(int i=0; i<snd; i++) {
+    soff[i] = 0;
+  }
+
+  for(int s=0; ; s++) {
+    printf0("s: %i\n", s);
+    QDP_Subset *sub;
+    QDP_Shift shift;
+    getCopyHyper(&shift, &sub, rlat, roff, rlen, sdir, slat, soff, s);
+    if(sub==NULL) break;
+    printf0("created subset and map\n");
     QDP_r_eq_norm2_R(&rn2, rf, sub[0]);
     printf0("subset V: %g\n", rn2/rs2);
     //QDP_R_eq_zero(rf, sub[0]);
-    QDP_R_eq_sR(rf, sf, map, QDP_forward, sub[0]);
+    QDP_R_eq_sR(rf, sf, shift, QDP_forward, sub[0]);
     printf0("finished shift\n");
     QDP_r_eq_norm2_R(&rn2, rf, sub[0]);
     printf0("subset V: %g\n", rn2/ss2);
     QDP_r_eq_norm2_R(&rn2, rf, QDP_all_L(rlat));
     printf0("diff V: %g\n", (rn2-rn)/(ss2-rs2));
-    QDP_destroy_shift(map);
+    QDP_destroy_shift(shift);
     printf0("destroyed map\n");
     QDP_destroy_subset(sub);
     printf0("destroyed subset\n");
-
-    for(int i=0; i<rnd; i++) {
-      rof[i] += sls[i];
-      if(rof[i]<rls[i]) break;
-      rof[i] = 0;
-      if(i==rnd-1) done = 1;
-    }
-  } while(!done);
+  }
 }
 
 int

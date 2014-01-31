@@ -144,6 +144,12 @@ run_tests(void)
   rs = QDP_create_S();
   QDP_destroy_R(r);
   r = QDP_create_R();
+  QDP_destroy_C(c);
+  c = QDP_create_C();
+  QDP_destroy_V(v);
+  v = QDP_create_V();
+  QDP_destroy_H(hf);
+  hf = QDP_create_H();
   QDP_destroy_M(m);
   m = QDP_create_M();
   printf0("done\n");
