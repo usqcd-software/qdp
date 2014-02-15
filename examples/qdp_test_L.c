@@ -266,6 +266,7 @@ mapCopyHyper(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
 {
   int rnd = QDP_ndim_L(rlat);
   int snd = QDP_ndim_L(slat);
+  *num = 1;
   if(fb==QDP_forward) {
     int *rof = (int *)args;
     int *rls = rof + rnd;
@@ -316,11 +317,11 @@ mapCopyHyper(QDP_Lattice *rlat, QDP_Lattice *slat, int rx[], int sx[],
 // creates shifts and maps for copying hypercubic region of size rlen
 // from slat to rlat.
 // the point soff in slat will get copied to roff in rlat.
-// subsequent points in rlat will correspond to the permuted  starting at offset soff in lattice slat
-// to offset roff in lattice 
-// r[i] = ( roff[i] + (s[j]-soff[j]+sl[j])%ss[j] )%rs[i]
+// subsequent points in rlat will correspond to the permuted directions
+// in slat given by sdir
 // j = sdir[i]
-// s[j] = ( soff[j] + (r[i]-roff[i]+rl[i])%rs[i] )%ss[j]
+// r[i] = ( roff[i] + (s[j]-soff[j]+ss[j])%ss[j] )%rs[i]
+// s[j] = ( soff[j] + (r[i]-roff[i]+rs[i])%rs[i] )%ss[j]
 void
 getCopyHyper(QDP_Shift *map, QDP_Subset **subset,
 	     QDP_Lattice *rlat, int roff[], int rlen[], int sdir[],
