@@ -91,7 +91,11 @@
 static int do_checksum = 0;
 static int crc32(int crc, const unsigned char *buf, size_t len);
 
+#if defined(USE_STRIDED) && (USE_STRIDED==0)
+#undef USE_STRIDED
+#else
 #define USE_STRIDED
+#endif
 #define USE_PAIRS
 
 /**********************************************************************
@@ -884,7 +888,7 @@ void
 QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 {
   TRACE;
-  if(QDP_keep_time) QDP_comm_time -= QDP_time();
+  //if(QDP_keep_time) QDP_comm_time -= QDP_time();
   //double t0 = 1e6*QDP_time();
   if(!mtag->prepared) prepare_gather(mtag);
 
@@ -897,9 +901,9 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
       rm = rm->next;
     }
   }
-  //if(QDP_keep_time) QDP_comm_time -= QDP_time();
+  if(QDP_keep_time) QDP_comm_time -= QDP_time();
   QDP_start_recv(mtag, gather_number);
-  //if(QDP_keep_time) QDP_comm_time += QDP_time();
+  if(QDP_keep_time) QDP_comm_time += QDP_time();
 
   // copy data to buffers
   //double t2 = 1e6*QDP_time();
@@ -963,9 +967,9 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
 
   //double t3 = 1e6*QDP_time();
   // start sends
-  //if(QDP_keep_time) QDP_comm_time -= QDP_time();
+  if(QDP_keep_time) QDP_comm_time -= QDP_time();
   QDP_start_send(mtag, gather_number);
-  //if(QDP_keep_time) QDP_comm_time += QDP_time();
+  if(QDP_keep_time) QDP_comm_time += QDP_time();
 
   //double t4 = 1e6*QDP_time();
   if(!mtag->pointers) prepare_pointers(mtag);
@@ -975,7 +979,7 @@ QDP_do_gather(QDP_msg_tag *mtag)  /* previously returned by start_gather */
   //if(QDP_this_node==0) {
   //printf("prep: %g  recv: %g  copy: %g  send: %g  ptrs: %g  tot: %g\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t5-t0);
   //}
-  if(QDP_keep_time) QDP_comm_time += QDP_time();
+  //if(QDP_keep_time) QDP_comm_time += QDP_time();
   TRACE;
 }
 

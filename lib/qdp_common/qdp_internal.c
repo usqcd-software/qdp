@@ -339,6 +339,17 @@ QDP_clear_shift_list(void)
   LEAVE;
 }
 
+void
+QDP_discard(QDP_data_common_t *dc)
+{
+  ENTER;
+  QDP_shift_src_t *ss = dc->shift_src;
+  if(ss!=NULL) {
+    QDP_clear_to_send(ss->st->msgtag);
+  }
+  LEAVE;
+}
+
 /* free all shift structures from a field */
 void
 QDP_prepare_destroy(QDP_data_common_t *dc)

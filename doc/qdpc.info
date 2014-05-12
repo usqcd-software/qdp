@@ -1,4 +1,4 @@
-This is /Users/osborn/lqcd/src/qdp-cvs/doc/qdpc.info, produced by makeinfo version 4.13 from /Users/osborn/lqcd/src/qdp-cvs/doc/qdpc.texi.
+This is /home/osborn/lqcd/src/qdp-git/doc/qdpc.info, produced by makeinfo version 4.13 from /home/osborn/lqcd/src/qdp-git/doc/qdpc.texi.
 
 
 File: qdpc.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
@@ -2328,49 +2328,49 @@ TYPE        `R, C, V, H, D, M, P'
 
 Tag Table:
 Node: Top0
-Node: Introduction638
-Node: Compilation with QDP2528
-Node: Header and macros2753
-Node: Libraries5118
-Node: Nonuniform color and precision7087
-Node: Datatypes8894
-Node: Generic Names9528
-Node: Specific Types for Color and Precision11404
-Node: Color and Precision Uniformity12695
-Node: Breaking Color and Precision Uniformity14039
-Node: QDP Functions14551
-Node: Entry and exit from QDP15233
-Node: Layout utilities18116
-Node: Naming Conventions for Data Parallel Functions22538
-Node: Constant Arguments24493
-Node: Color argument25109
-Node: Adjoint25919
-Node: Shift26289
-Node: Operations on arrays of fields26747
-Node: Creating and destroying lattice fields28031
-Node: Subsets29127
-Node: Defining a subset30203
-Node: Reductions on subsets31762
-Node: Shifts32663
-Node: Creating displacement shifts34592
-Node: Creating arbitrary permutations35248
-Node: Destroying a shift36564
-Node: I/O utilities36920
-Node: Opening and closing binary files37446
-Node: Reading and writing QDP fields39987
-Node: Reading and writing QLA arrays43657
-Node: String Handling45993
-Node: Temporary entry and exit from QDP47727
-Node: Optimization Calls52640
-Node: Function Details56664
-Node: Functions involving shifts57948
-Node: Fills and random numbers59231
-Node: Unary Operations60970
-Node: Type conversion and component extraction and insertion63246
-Node: Binary operations with constants71727
-Node: Binary operations with fields73398
-Node: Ternary operations with fields77605
-Node: Boolean operations78887
-Node: Reductions79405
+Node: Introduction636
+Node: Compilation with QDP2526
+Node: Header and macros2751
+Node: Libraries5116
+Node: Nonuniform color and precision7085
+Node: Datatypes8892
+Node: Generic Names9526
+Node: Specific Types for Color and Precision11402
+Node: Color and Precision Uniformity12693
+Node: Breaking Color and Precision Uniformity14037
+Node: QDP Functions14549
+Node: Entry and exit from QDP15231
+Node: Layout utilities18114
+Node: Naming Conventions for Data Parallel Functions22536
+Node: Constant Arguments24491
+Node: Color argument25107
+Node: Adjoint25917
+Node: Shift26287
+Node: Operations on arrays of fields26745
+Node: Creating and destroying lattice fields28029
+Node: Subsets29125
+Node: Defining a subset30201
+Node: Reductions on subsets31760
+Node: Shifts32661
+Node: Creating displacement shifts34590
+Node: Creating arbitrary permutations35246
+Node: Destroying a shift36562
+Node: I/O utilities36918
+Node: Opening and closing binary files37444
+Node: Reading and writing QDP fields39985
+Node: Reading and writing QLA arrays43655
+Node: String Handling45991
+Node: Temporary entry and exit from QDP47725
+Node: Optimization Calls52638
+Node: Function Details56662
+Node: Functions involving shifts57946
+Node: Fills and random numbers59229
+Node: Unary Operations60968
+Node: Type conversion and component extraction and insertion63244
+Node: Binary operations with constants71725
+Node: Binary operations with fields73396
+Node: Ternary operations with fields77603
+Node: Boolean operations78885
+Node: Reductions79403
 
 End Tag Table
