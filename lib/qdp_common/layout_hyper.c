@@ -213,15 +213,17 @@ layout_hyper_eo_setup(QDP_Lattice *lat, void *args)
   }
   p->numsites = numsites;
 
-  if(QDP_this_node==0) {
-    printf("ndim = %i\n", p->ndim);
-    printf("numsites = %i\n", p->numsites);
-    printf("len =");
-    for(int i=0; i<p->ndim; i++) printf(" %i", p->len[i]);
-    printf("\n");
-    printf("nsquares =");
-    for(int i=0; i<p->ndim; i++) printf(" %i", p->nsquares[i]);
-    printf("\n");
+  IFVERB(1) {
+    if(QDP_this_node==0) {
+      printf("ndim = %i\n", p->ndim);
+      printf("numsites = %i\n", p->numsites);
+      printf("len =");
+      for(int i=0; i<p->ndim; i++) printf(" %i", p->len[i]);
+      printf("\n");
+      printf("nsquares =");
+      for(int i=0; i<p->ndim; i++) printf(" %i", p->nsquares[i]);
+      printf("\n");
+    }
   }
 }
 

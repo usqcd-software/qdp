@@ -17,6 +17,10 @@ $lib = uc $lib;
 $llib = lc $lib;
 if(($llib=~/df/)||($llib=~/int/)) {
   $elib = $clib = '';
+  if($llib=~/df/) {
+    ($elib=$llib) =~ s/^df/d/;
+    $clib = $llib;
+  }
 } else {
   ($elib=$llib) =~ s/^f/d/ || $elib =~ s/^d/q/;
   ($clib=$llib) =~ s/^f/df/ || $clib =~ s/^d/dq/;

@@ -327,6 +327,7 @@ getCopyHyper(QDP_Shift *map, QDP_Subset **subset,
 	     QDP_Lattice *rlat, int roff[], int rlen[], int sdir[],
 	     QDP_Lattice *slat, int soff[], int num)
 {
+#define printv(v,n) printf0(#v":"); for(int i=0; i<n; i++) printf0(" %i",v[i]); printf0("\n")
   int rnd = QDP_ndim_L(rlat);
   int snd = QDP_ndim_L(slat);
   //int sublen[rnd], rof[rnd], rs[rnd], sd[rnd], sof[snd], ss[snd];
@@ -338,6 +339,8 @@ getCopyHyper(QDP_Shift *map, QDP_Subset **subset,
   ss = sof + snd;
   QDP_latsize_L(rlat, rs);
   QDP_latsize_L(slat, ss);
+  //printv(rs,rnd);
+  //printv(ss,snd);
   // get subvolume size
   for(int i=0; i<rnd; i++) {
     sd[i] = sdir[i];
@@ -346,6 +349,7 @@ getCopyHyper(QDP_Shift *map, QDP_Subset **subset,
     if(sublen[i]>rs[i]) sublen[i] = rs[i];
     if(j<0||j>=snd) sublen[i] = 1;
     else if(sublen[i]>ss[j]) sublen[i] = ss[j];
+    //printf("sublen[%i]: %i\n", i, sublen[i]);
     nsub[i] = (rlen[i]+sublen[i]-1)/sublen[i];
     nsubs *= nsub[i];
   }
@@ -363,10 +367,9 @@ getCopyHyper(QDP_Shift *map, QDP_Subset **subset,
     n = n/nsub[i];
     int off = k*sublen[i];
     rof[i] = (roff[i]+off)%rs[i];
-    sof[j] = (sof[j]+off)%ss[j];
+    if(j>=0&&j<snd) sof[j] = (sof[j]+off)%ss[j];
     if(sublen[i]>(rlen[i]-off)) sublen[i] = rlen[i]-off;
   }
-#define printv(v,n) printf0(#v":"); for(int i=0; i<n; i++) printf0(" %i",v[i]); printf0("\n")
   printv(sublen,rnd);
   printv(rof,rnd);
   printv(rs,rnd);

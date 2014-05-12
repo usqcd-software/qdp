@@ -89,11 +89,14 @@ sub get_arg_lists($$) {
       $pl += $op - $cp;
     }
   }
-#  if($pc=~/.*N/) {
   if($list[0] eq 'nc') {
-    shift @list;
-    @glist = @list;
-    unshift @list, 'QDP_Nc';
+    if($gcp eq 'p' && $pc=~/.*N/) {
+      @glist = @list;
+    } else {
+      shift @list;
+      @glist = @list;
+      unshift @list, 'QDP_Nc';
+    }
   } else {
     @glist = @list;
   }

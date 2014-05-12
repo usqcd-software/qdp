@@ -1106,3 +1106,143 @@ make_functions(%{{
    FUNCS       => [ 'sum' ],
    SRC2_TYPES  => [ 'DEST' ],
   )}});
+
+
+comment1("Global squared norm: mixed precision");
+comment2("r = Sum norm2(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Real' ],
+   DEST_SCALAR => 1,
+   EQ_OPS      => [ 'eq','veq' ],
+   FUNCS       => [ 'norm2' ],
+   SRC2_TYPES  => [ @float_types ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Global inner product: mixed precision");
+comment2("r = Sum Tr a * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Real' ],
+   DEST_SCALAR => 1,
+   EQ_OPS      => [ 'eq','veq' ],
+   SRC1_TYPES  => [ 'Real' ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   DO_DF       => 1,
+  )}});
+
+comment2("r = Sum Tr adjoint(a) * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Complex' ],
+   DEST_SCALAR => 1,
+   EQ_OPS      => [ 'eq','veq' ],
+   SRC1_TYPES  => [ @complex_types ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Real part of global inner product: mixed precision");
+comment2("r = Sum Re Tr adjoint(a) * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Real' ],
+   DEST_SCALAR => 1,
+   EQ_OPS      => [ 'eq_re','veq_re' ],
+   SRC1_TYPES  => [ @complex_types ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Global sums: mixed precision");
+comment2("r = Sum a");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ @float_types ],
+   DEST_SCALAR => 1,
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'sum' ],
+   SRC2_TYPES  => [ 'DEST' ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Multisubset Norms: mixed precision");
+comment2("r[i] = Sum_subset[i] norm2(a)");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Real' ],
+   DEST_SCALAR => 1,
+   DEST_MULTI  => 1,
+   EQ_OPS      => [ 'eq','veq' ],
+   FUNCS       => [ 'norm2' ],
+   SRC2_TYPES  => [ @float_types ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Multisubset inner products: mixed precision");
+comment2("r[i] = Sum_subset[i] a * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Real' ],
+   DEST_SCALAR => 1,
+   DEST_MULTI  => 1,
+   EQ_OPS      => [ 'eq','veq' ],
+   SRC1_TYPES  => [ 'Real' ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   DO_DF       => 1,
+  )}});
+
+comment2("r[i] = Sum_subset[i] adjoint(a) * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Complex' ],
+   DEST_SCALAR => 1,
+   DEST_MULTI  => 1,
+   EQ_OPS      => [ 'eq','veq' ],
+   SRC1_TYPES  => [ @complex_types ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Multisubset real part of global inner product: mixed precision");
+comment2("r = Sum Re Tr adjoint(a) * b");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Real' ],
+   DEST_SCALAR => 1,
+   DEST_MULTI  => 1,
+   EQ_OPS      => [ 'eq_re','veq_re' ],
+   SRC1_TYPES  => [ @complex_types ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   DO_DF       => 1,
+  )}});
+
+comment1("Multisubset global sums: mixed precision");
+comment2("r[i] = Sum_subset[i] a");
+
+make_functions(%{{
+  (
+   DEST_TYPES  => [ @float_types ],
+   DEST_SCALAR => 1,
+   DEST_MULTI  => 1,
+   EQ_OPS      => [ 'eq' ],
+   FUNCS       => [ 'sum' ],
+   SRC2_TYPES  => [ 'DEST' ],
+   DO_DF       => 1,
+  )}});

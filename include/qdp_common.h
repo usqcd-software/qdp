@@ -21,34 +21,36 @@ extern "C" {
 #define QDP_time() QMP_time()
 
   extern int QDP_restart;
+  extern int QDP_verbose_level;
   extern int QDP_prof_level;
   extern int QDP_keep_time;
   extern double QDP_comm_time;
   extern double QDP_math_time;
 
-  extern int QDP_initialize(int *argc, char **argv[]);
-  extern void QDP_finalize(void);
-  extern void QDP_abort(int status);
-  extern int QDP_is_initialized(void);
+  int QDP_initialize(int *argc, char **argv[]);
+  void QDP_finalize(void);
+  void QDP_abort(int status);
+  int QDP_is_initialized(void);
 
-  extern const char *QDP_version_str(void);
-  extern int QDP_version_int(void);
+  const char *QDP_version_str(void);
+  int QDP_version_int(void);
 
-  extern int QDP_check_comm(int newval);
-  extern int QDP_profcontrol(int newval);
-  //extern double QDP_time(void);
-  extern void QDP_register_prof(QDP_prof *qp);
+  int QDP_verbose(int level);
+  int QDP_check_comm(int newval);
+  int QDP_profcontrol(int newval);
+  //double QDP_time(void);
+  void QDP_register_prof(QDP_prof *qp);
 
-  extern void QDP_suspend_comm(void);
-  extern void QDP_resume_comm(void);
+  void QDP_suspend_comm(void);
+  void QDP_resume_comm(void);
 
-  extern int QDP_get_block_size(void);
-  extern void QDP_set_block_size(int bs);
+  int QDP_get_block_size(void);
+  void QDP_set_block_size(int bs);
 
-  extern int QDP_get_mem_align(void);
-  extern void QDP_set_mem_align(int align);
-  extern int QDP_get_mem_flags(void);
-  extern void QDP_set_mem_flags(int flags);
+  int QDP_get_mem_align(void);
+  void QDP_set_mem_align(int align);
+  int QDP_get_mem_flags(void);
+  void QDP_set_mem_flags(int flags);
 
 #ifdef __cplusplus
 }

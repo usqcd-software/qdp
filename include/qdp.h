@@ -105,6 +105,7 @@
 #include <qdp_int.h>
 #include <qdp_f.h>
 #include <qdp_d.h>
+#include <qdp_df.h>
 
 #if QDP_Colors == 1
 #  include <qdp_f1.h>

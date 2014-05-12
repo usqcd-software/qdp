@@ -14,6 +14,7 @@ int QDP_suspended = 0;
 int QDP_block_size = 256;
 int QDP_mem_align = 64;
 int QDP_mem_flags = QDP_MEM_FAST | QDP_MEM_COMMS;
+int QDP_verbose_level = 1;
 
 /* Private Globals */
 
@@ -35,6 +36,19 @@ QDP_version_int(void)
   int maj, min, bug;
   sscanf(vs, "%i.%i.%i", &maj, &min, &bug);
   return ((maj*1000)+min)*1000 + bug;
+}
+
+int
+QDP_verbose(int new)
+{
+  int old = QDP_verbose_level;
+  TGET;
+  TBARRIER;
+  ONE {
+    QDP_verbose_level = new;
+  }
+  TBARRIER;
+  return old;
 }
 
 int

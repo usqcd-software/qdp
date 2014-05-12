@@ -49,22 +49,24 @@ function vsort(a) {
   }
 }
 END{
-  mfa["V_meq_V"] = 6;
-  mfa["M_peq_M"] = 18;
-  mfa["r_eq_norm2_V"] = 12;
-  mfa["r_eq_re_V_dot_V"] = 12;
-  mfa["V_peq_r_times_V"] = 12;
-  mfa["V_meq_r_times_V"] = 12;
-  mfa["M_eq_r_times_M"] = 18;
-  mfa["M_peq_r_times_M"] = 36;
-  mfa["V_eq_r_times_V_plus_V"] = 12;
-  mfa["V_eq_r_times_V_minus_V"] = 12;
-  mfa["V_vpeq_M_times_V"] = 72;
-  mfa["M_peq_C_times_M"] = 72;
-  mfa["C_peq_M_dot_M"] = 72;
-  mfa["M_eq_M_times_M"] = 198;
-  mfa["M_eq_Ma_times_M"] = 198;
-  mfa["M_eq_M_times_Ma"] = 198;
+  mfa["3_V_meq_V"] = 6;
+  mfa["3_M_peq_M"] = 18;
+  mfa["3_r_eq_norm2_V"] = 12;
+  mfa["3_r_eq_re_V_dot_V"] = 12;
+  mfa["3_V_peq_r_times_V"] = 12;
+  mfa["3_V_meq_r_times_V"] = 12;
+  mfa["3_M_eq_r_times_M"] = 18;
+  mfa["3_M_peq_r_times_M"] = 36;
+  mfa["3_V_eq_r_times_V_plus_V"] = 12;
+  mfa["3_V_eq_r_times_V_minus_V"] = 12;
+  mfa["3_V_vpeq_M_times_V"] = 72;
+  mfa["3_M_peq_C_times_M"] = 72;
+  mfa["3_C_peq_M_dot_M"] = 72;
+  mfa["3_M_eq_M_times_M"] = 198;
+  mfa["3_M_eq_Ma_times_M"] = 198;
+  mfa["3_M_eq_M_times_Ma"] = 198;
+  mfa["2_D_vpeq_spproj_M_times_D"] = 80;
+  mfa["3_D_vpeq_spproj_M_times_D"] = 168;
   printf("%-40s %10s %10s %10s %10s\n",
          "QDP functions", "seconds", "cum. %", "ns/site", "Mflops");
   vsort(qms);

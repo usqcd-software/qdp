@@ -15,6 +15,9 @@
 
 #define printf0(...) do { if(QDP_this_node==0) printf(__VA_ARGS__); } while(0)
 
+#define IFVERB(PRI) if(QDP_verbose_level>=PRI)
+#define VERB(PRI, ...) IFVERB(PRI) printf0(__VA_ARGS__)
+
 #define QDP_error(...) \
   fprintf(stderr, "error on %i/%i: %s %s %i: ", QDP_this_node, QMP_get_number_of_nodes(), __FILE__, __func__, __LINE__); \
   fprintf(stderr, __VA_ARGS__); \

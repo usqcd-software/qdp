@@ -1,5 +1,9 @@
 2014-05-12: James Osborn
 	Made USE_STRIDED selectable at compile time.
+	Added QDP_verbose().
+
+2014-04-14: James Osborn
+	Added mixed precision reductions.
 
 ===========================================================================
 2014-02-14      version 1.10.1

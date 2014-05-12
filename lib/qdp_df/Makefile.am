@@ -3,13 +3,61 @@
 AUTOMAKE_OPTIONS = no-dependencies
 
 QDPSRC1 = \
+QDP_DF_c1_eq_C_dot_C.c \
+QDP_DF_c1_eq_C_dot_C_multi.c \
+QDP_DF_c1_eq_sum_C.c \
+QDP_DF_c1_eq_sum_C_multi.c \
+QDP_DF_c1_veq_C_dot_C.c \
+QDP_DF_c1_veq_C_dot_C_multi.c \
 QDP_DF_C_eq_C.c \
+QDP_DF_r1_eq_norm2_C.c \
+QDP_DF_r1_eq_norm2_C_multi.c \
+QDP_DF_r1_eq_norm2_R.c \
+QDP_DF_r1_eq_norm2_R_multi.c \
+QDP_DF_r1_eq_R_dot_R.c \
+QDP_DF_r1_eq_R_dot_R_multi.c \
+QDP_DF_r1_eq_re_C_dot_C.c \
+QDP_DF_r1_eq_re_C_dot_C_multi.c \
+QDP_DF_r1_eq_sum_R.c \
+QDP_DF_r1_eq_sum_R_multi.c \
+QDP_DF_r1_veq_norm2_C.c \
+QDP_DF_r1_veq_norm2_C_multi.c \
+QDP_DF_r1_veq_norm2_R.c \
+QDP_DF_r1_veq_norm2_R_multi.c \
+QDP_DF_r1_veq_R_dot_R.c \
+QDP_DF_r1_veq_R_dot_R_multi.c \
+QDP_DF_r1_veq_re_C_dot_C.c \
+QDP_DF_r1_veq_re_C_dot_C_multi.c \
 QDP_DF_R_eq_R.c \
 QDP_FD_C_eq_C.c \
 QDP_FD_R_eq_R.c
 
 QDPOBJ1 = \
+QDP_DF_c1_eq_C_dot_C.o \
+QDP_DF_c1_eq_C_dot_C_multi.o \
+QDP_DF_c1_eq_sum_C.o \
+QDP_DF_c1_eq_sum_C_multi.o \
+QDP_DF_c1_veq_C_dot_C.o \
+QDP_DF_c1_veq_C_dot_C_multi.o \
 QDP_DF_C_eq_C.o \
+QDP_DF_r1_eq_norm2_C.o \
+QDP_DF_r1_eq_norm2_C_multi.o \
+QDP_DF_r1_eq_norm2_R.o \
+QDP_DF_r1_eq_norm2_R_multi.o \
+QDP_DF_r1_eq_R_dot_R.o \
+QDP_DF_r1_eq_R_dot_R_multi.o \
+QDP_DF_r1_eq_re_C_dot_C.o \
+QDP_DF_r1_eq_re_C_dot_C_multi.o \
+QDP_DF_r1_eq_sum_R.o \
+QDP_DF_r1_eq_sum_R_multi.o \
+QDP_DF_r1_veq_norm2_C.o \
+QDP_DF_r1_veq_norm2_C_multi.o \
+QDP_DF_r1_veq_norm2_R.o \
+QDP_DF_r1_veq_norm2_R_multi.o \
+QDP_DF_r1_veq_R_dot_R.o \
+QDP_DF_r1_veq_R_dot_R_multi.o \
+QDP_DF_r1_veq_re_C_dot_C.o \
+QDP_DF_r1_veq_re_C_dot_C_multi.o \
 QDP_DF_R_eq_R.o \
 QDP_FD_C_eq_C.o \
 QDP_FD_R_eq_R.o
@@ -36,7 +84,7 @@ lib_LIBRARIES = ../libqdp_df.a
 AM_CFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include -I$(QLADIR)/include -I$(QIODIR)/include -I$(QMPDIR)/include
 
 # this is just to force automake to include the .c.o rule
-nodist____libqdp_df_a_SOURCES = QDP_DF_C_eq_C.c
+nodist____libqdp_df_a_SOURCES = QDP_DF_c1_eq_C_dot_C.c
 
 nodist_include_HEADERS = $(QDPHDR)
 
