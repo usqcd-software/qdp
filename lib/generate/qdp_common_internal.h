@@ -70,28 +70,29 @@ extern int QDP_block_size;
 extern int QDP_mem_align;
 extern int QDP_mem_flags;
 
-extern QDP_msg_tag *QDP_declare_shift(char **dest, char *src, int size, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
-extern void QDP_declare_accumulate_shift(QDP_msg_tag **mt, char **dest, char *src, int size, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
-extern void QDP_binary_reduce(void func(), int size, void *data);
-extern void QDP_binary_reduce_multi(void func(), int size, void *data, int ns);
-extern void QDP_N_binary_reduce(int nc, void func(), int size, void *data);
-extern void QDP_N_binary_reduce_multi(int nc, void func(), int size, void *data, int ns);
+QDP_msg_tag *QDP_declare_shift(char **dest, char *src, int size, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP_declare_accumulate_shift(QDP_msg_tag **mt, char **dest, char *src, int size, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP_binary_reduce(void func(), int size, void *data);
+void QDP_binary_reduce_multi(void func(), int size, void *data, int ns);
+void QDP_N_binary_reduce(int nc, void func(), int size, void *data);
+void QDP_N_binary_reduce_multi(int nc, void func(), int size, void *data, int ns);
 
-extern struct QDP_shift_tag_t *QDP_alloc_shift_tag(int nv);
-extern void QDP_remove_shift_tag_reference(struct QDP_shift_tag_t *st);
-extern void QDP_clear_shift_list(void);
-extern void QDP_prepare_expose(QDP_data_common_t *dc);
-extern void QDP_prepare_destroy(QDP_data_common_t *dc);
-extern int QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
-extern void QDP_switch_ptr_to_data(QDP_data_common_t *dc);
+struct QDP_shift_tag_t *QDP_alloc_shift_tag(int nv);
+void QDP_remove_shift_tag_reference(struct QDP_shift_tag_t *st);
+void QDP_clear_shift_list(void);
+void QDP_prepare_expose(QDP_data_common_t *dc);
+void QDP_prepare_destroy(QDP_data_common_t *dc);
+int QDP_prepare_shift(QDP_data_common_t *dest_dc, QDP_data_common_t *src_dc, QDP_Shift shift, QDP_ShiftDir fb, QDP_Subset subset);
+void QDP_switch_ptr_to_data(QDP_data_common_t *dc);
+void QDP_discard(QDP_data_common_t *dc);
 
-extern int QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
+int QDP_read_check(QDP_Reader *qdpr, QDP_String *md, int globaldata,
 	     void (* put)(char *buf, size_t index, int count, void *qfin),
 	     struct QDP_IO_field *qf, int count, QIO_RecordInfo *cmp_info);
-extern int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
+int QDP_write_check(QDP_Writer *qdpw, QDP_String *md, int globaldata,
 	     void (*get)(char *buf, size_t index, int count, void *qfin),
 	     struct QDP_IO_field *qf, int count, QIO_RecordInfo *rec_info);
-extern void QDP_set_iolat(QDP_Lattice *lat);
+void QDP_set_iolat(QDP_Lattice *lat);
 
 
 #define QDPIO_nc_S(x) 0

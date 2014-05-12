@@ -17,9 +17,9 @@ sub comment0($) {
     print OUTFILE "\@functionhook$tag \n\n";
   }
   print OUTFILE "\@node @_,,,Function Details\n";
-  print OUTFILE "\@float\n";
+  #print OUTFILE "\@float\n";
   print OUTFILE "\@section @_\n\n";
-  print OUTFILE "\@end float\n\n";
+  #print OUTFILE "\@end float\n\n";
   ($last_section) = @_;
 }
 

@@ -423,6 +423,24 @@ I, R, C, V, H, D, M, P
 @end float
 @end macro
 
+@macro sfuncvot {subheading, func, args, funcv, argsv, def, types, eqops}
+@float
+@subheading \subheading\
+@cartouche
+@multitable @columnfractions .15 .85
+@item Syntax     @tab @code{\func\(\args\);}
+@item            @tab @code{\funcv\(\argsv\);}
+@hline
+@item Meaning    @tab \def\
+@hline
+@item @var{eqop} @tab @code{\eqops\}
+@hline
+@item @var{Type} @tab @code{\types\}
+@end multitable
+@end cartouche
+@end float
+@end macro
+
 @macro sfuncvtf {subheading, func, args, funcv, argsv, def, types, funcs}
 @float
 @subheading \subheading\
