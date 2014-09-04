@@ -3,20 +3,26 @@
 AUTOMAKE_OPTIONS = no-dependencies
 
 QDPSRC1 = \
+QDP_F_c1_eq_Ca_dot_C.c \
+QDP_F_c1_eq_Ca_dot_C_multi.c \
 QDP_F_c1_eq_C_dot_C.c \
 QDP_F_c1_eq_C_dot_C_multi.c \
 QDP_F_c1_eq_sum_C.c \
 QDP_F_c1_eq_sum_C_multi.c \
+QDP_F_c1_veq_Ca_dot_C.c \
+QDP_F_c1_veq_Ca_dot_C_multi.c \
 QDP_F_c1_veq_C_dot_C.c \
 QDP_F_c1_veq_C_dot_C_multi.c \
 QDP_F_C_eq_c1.c \
 QDP_F_C_eq_c1_times_Ca.c \
 QDP_F_C_eq_c1_times_C.c \
 QDP_F_C_eq_Ca.c \
+QDP_F_C_eq_Ca_dot_C.c \
 QDP_F_C_eq_Ca_times_Ca.c \
 QDP_F_C_eq_Ca_times_C.c \
 QDP_F_C_eq_C.c \
 QDP_F_C_eq_C_divide_C.c \
+QDP_F_C_eq_C_dot_Ca.c \
 QDP_F_C_eq_C_dot_C.c \
 QDP_F_C_eq_cexp_C.c \
 QDP_F_C_eq_cexpi_R.c \
@@ -36,9 +42,11 @@ QDP_F_C_eq_i_C.c \
 QDP_F_C_eqm_c1_times_Ca.c \
 QDP_F_C_eqm_c1_times_C.c \
 QDP_F_C_eqm_Ca.c \
+QDP_F_C_eqm_Ca_dot_C.c \
 QDP_F_C_eqm_Ca_times_Ca.c \
 QDP_F_C_eqm_Ca_times_C.c \
 QDP_F_C_eqm_C.c \
+QDP_F_C_eqm_C_dot_Ca.c \
 QDP_F_C_eqm_C_dot_C.c \
 QDP_F_C_eqm_C_times_Ca.c \
 QDP_F_C_eqm_C_times_C.c \
@@ -60,9 +68,11 @@ QDP_F_C_eq_zero.c \
 QDP_F_C_meq_c1_times_Ca.c \
 QDP_F_C_meq_c1_times_C.c \
 QDP_F_C_meq_Ca.c \
+QDP_F_C_meq_Ca_dot_C.c \
 QDP_F_C_meq_Ca_times_Ca.c \
 QDP_F_C_meq_Ca_times_C.c \
 QDP_F_C_meq_C.c \
+QDP_F_C_meq_C_dot_Ca.c \
 QDP_F_C_meq_C_dot_C.c \
 QDP_F_C_meq_C_times_Ca.c \
 QDP_F_C_meq_C_times_C.c \
@@ -74,9 +84,11 @@ QDP_F_C_meq_R_times_C.c \
 QDP_F_C_peq_c1_times_Ca.c \
 QDP_F_C_peq_c1_times_C.c \
 QDP_F_C_peq_Ca.c \
+QDP_F_C_peq_Ca_dot_C.c \
 QDP_F_C_peq_Ca_times_Ca.c \
 QDP_F_C_peq_Ca_times_C.c \
 QDP_F_C_peq_C.c \
+QDP_F_C_peq_C_dot_Ca.c \
 QDP_F_C_peq_C_dot_C.c \
 QDP_F_C_peq_C_times_Ca.c \
 QDP_F_C_peq_C_times_C.c \
@@ -263,20 +275,26 @@ QDP_F_write_C.c \
 QDP_F_write_R.c
 
 QDPOBJ1 = \
+QDP_F_c1_eq_Ca_dot_C.o \
+QDP_F_c1_eq_Ca_dot_C_multi.o \
 QDP_F_c1_eq_C_dot_C.o \
 QDP_F_c1_eq_C_dot_C_multi.o \
 QDP_F_c1_eq_sum_C.o \
 QDP_F_c1_eq_sum_C_multi.o \
+QDP_F_c1_veq_Ca_dot_C.o \
+QDP_F_c1_veq_Ca_dot_C_multi.o \
 QDP_F_c1_veq_C_dot_C.o \
 QDP_F_c1_veq_C_dot_C_multi.o \
 QDP_F_C_eq_c1.o \
 QDP_F_C_eq_c1_times_Ca.o \
 QDP_F_C_eq_c1_times_C.o \
 QDP_F_C_eq_Ca.o \
+QDP_F_C_eq_Ca_dot_C.o \
 QDP_F_C_eq_Ca_times_Ca.o \
 QDP_F_C_eq_Ca_times_C.o \
 QDP_F_C_eq_C.o \
 QDP_F_C_eq_C_divide_C.o \
+QDP_F_C_eq_C_dot_Ca.o \
 QDP_F_C_eq_C_dot_C.o \
 QDP_F_C_eq_cexp_C.o \
 QDP_F_C_eq_cexpi_R.o \
@@ -296,9 +314,11 @@ QDP_F_C_eq_i_C.o \
 QDP_F_C_eqm_c1_times_Ca.o \
 QDP_F_C_eqm_c1_times_C.o \
 QDP_F_C_eqm_Ca.o \
+QDP_F_C_eqm_Ca_dot_C.o \
 QDP_F_C_eqm_Ca_times_Ca.o \
 QDP_F_C_eqm_Ca_times_C.o \
 QDP_F_C_eqm_C.o \
+QDP_F_C_eqm_C_dot_Ca.o \
 QDP_F_C_eqm_C_dot_C.o \
 QDP_F_C_eqm_C_times_Ca.o \
 QDP_F_C_eqm_C_times_C.o \
@@ -320,9 +340,11 @@ QDP_F_C_eq_zero.o \
 QDP_F_C_meq_c1_times_Ca.o \
 QDP_F_C_meq_c1_times_C.o \
 QDP_F_C_meq_Ca.o \
+QDP_F_C_meq_Ca_dot_C.o \
 QDP_F_C_meq_Ca_times_Ca.o \
 QDP_F_C_meq_Ca_times_C.o \
 QDP_F_C_meq_C.o \
+QDP_F_C_meq_C_dot_Ca.o \
 QDP_F_C_meq_C_dot_C.o \
 QDP_F_C_meq_C_times_Ca.o \
 QDP_F_C_meq_C_times_C.o \
@@ -334,9 +356,11 @@ QDP_F_C_meq_R_times_C.o \
 QDP_F_C_peq_c1_times_Ca.o \
 QDP_F_C_peq_c1_times_C.o \
 QDP_F_C_peq_Ca.o \
+QDP_F_C_peq_Ca_dot_C.o \
 QDP_F_C_peq_Ca_times_Ca.o \
 QDP_F_C_peq_Ca_times_C.o \
 QDP_F_C_peq_C.o \
+QDP_F_C_peq_C_dot_Ca.o \
 QDP_F_C_peq_C_dot_C.o \
 QDP_F_C_peq_C_times_Ca.o \
 QDP_F_C_peq_C_times_C.o \
@@ -544,7 +568,7 @@ lib_LIBRARIES = ../libqdp_f.a
 AM_CFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include -I$(QLADIR)/include -I$(QIODIR)/include -I$(QMPDIR)/include
 
 # this is just to force automake to include the .c.o rule
-nodist____libqdp_f_a_SOURCES = QDP_F_c1_eq_C_dot_C.c
+nodist____libqdp_f_a_SOURCES = QDP_F_c1_eq_Ca_dot_C.c
 
 nodist_include_HEADERS = $(QDPHDR)
 

@@ -1305,6 +1305,9 @@ sub make_functions(\%) {
 	  my(@src1_adjs);
 	  if( ($arg->{SRC1_DO_ADJ}) && ($s1t ne '') &&
 	      (!$datatypes{$s1t}{NO_ADJ}) ) { @src1_adjs = ( '', 'a' ); }
+	  elsif( ($arg->{SRC1_SQ_ADJ}) && ($s1t ne '') &&
+		 (!$datatypes{$s1t}{NO_ADJ}) &&
+		 ($datatypes{$s1t}{SQUARE}) ) {@src1_adjs=('','a');}
 	  elsif( ($arg->{SRC1_ADJ}) && ($s1t ne '') &&
 		 (!$datatypes{$s1t}{NO_ADJ}) ) { @src1_adjs = ( 'a' ); }
 	  else { @src1_adjs = ( '' ); }

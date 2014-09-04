@@ -853,15 +853,27 @@ make_functions(%{{
   )}});
 
 comment1("Local inner product");
-comment2("r <eqop> Tr adjoint(a) * b");
+comment2("r <eqop> Tr (adjoint/noadjoint)(a) * b");
 
 make_functions(%{{
   (
    DEST_TYPES  => [ 'Complex' ],
    EQ_OPS      => [ @eqops ],
    SRC1_TYPES  => [ @complex_types ],
+   SRC1_SQ_ADJ => 1,
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],
+  )}});
+
+comment2("r <eqop> Tr a * adjoint(b)");
+make_functions(%{{
+  (
+   DEST_TYPES  => [ 'Complex' ],
+   EQ_OPS      => [ @eqops ],
+   SRC1_TYPES  => [ 'Complex','ColorMatrix','DiracPropagator' ],
+   FUNCS       => [ 'dot' ],
+   SRC2_TYPES  => [ 'SRC1' ],
+   SRC2_ADJ    => 1,
   )}});
 
 comment1("Real part of local inner product");
@@ -984,7 +996,7 @@ make_functions(%{{
    SRC2_TYPES  => [ 'SRC1' ],
   )}});
 
-comment2("r = Sum Tr adjoint(a) * b");
+comment2("r = Sum Tr (adjoint/noadjoint)(a) * b");
 
 make_functions(%{{
   (
@@ -992,6 +1004,7 @@ make_functions(%{{
    DEST_SCALAR => 1,
    EQ_OPS      => [ 'eq','veq' ],
    SRC1_TYPES  => [ @complex_types ],
+   SRC1_SQ_ADJ => 1,
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],
   )}});
@@ -1057,7 +1070,7 @@ make_functions(%{{
    SRC2_TYPES  => [ 'SRC1' ],
   )}});
 
-comment2("r[i] = Sum_subset[i] adjoint(a) * b");
+comment2("r[i] = Sum_subset[i] (adjoint/noadjoint)(a) * b");
 
 make_functions(%{{
   (
@@ -1066,6 +1079,7 @@ make_functions(%{{
    DEST_MULTI  => 1,
    EQ_OPS      => [ 'eq','veq' ],
    SRC1_TYPES  => [ @complex_types ],
+   SRC1_SQ_ADJ => 1,
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],
   )}});
@@ -1135,7 +1149,7 @@ make_functions(%{{
    DO_DF       => 1,
   )}});
 
-comment2("r = Sum Tr adjoint(a) * b");
+comment2("r = Sum Tr (adjoint/noadjoint)(a) * b");
 
 make_functions(%{{
   (
@@ -1143,6 +1157,7 @@ make_functions(%{{
    DEST_SCALAR => 1,
    EQ_OPS      => [ 'eq','veq' ],
    SRC1_TYPES  => [ @complex_types ],
+   SRC1_SQ_ADJ => 1,
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],
    DO_DF       => 1,
@@ -1204,7 +1219,7 @@ make_functions(%{{
    DO_DF       => 1,
   )}});
 
-comment2("r[i] = Sum_subset[i] adjoint(a) * b");
+comment2("r[i] = Sum_subset[i] (adjoint/noadjoint)(a) * b");
 
 make_functions(%{{
   (
@@ -1213,6 +1228,7 @@ make_functions(%{{
    DEST_MULTI  => 1,
    EQ_OPS      => [ 'eq','veq' ],
    SRC1_TYPES  => [ @complex_types ],
+   SRC1_SQ_ADJ => 1,
    FUNCS       => [ 'dot' ],
    SRC2_TYPES  => [ 'SRC1' ],
    DO_DF       => 1,
