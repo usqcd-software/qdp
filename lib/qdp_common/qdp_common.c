@@ -11,7 +11,11 @@
 /*  Exported Globals  */
 
 int QDP_suspended = 0;
+#ifdef _OPENMP
+int QDP_block_size = (1024*1024*1024);
+#else
 int QDP_block_size = 256;
+#endif
 int QDP_mem_align = 64;
 int QDP_mem_flags = QDP_MEM_FAST | QDP_MEM_COMMS;
 int QDP_verbose_level = 1;
