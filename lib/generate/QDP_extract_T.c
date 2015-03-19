@@ -1,4 +1,7 @@
 #include "qdp_$lib_internal.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #define OFF(x,o,s) ((void *)(((char *)(x))+(o)*(s)))
 
@@ -11,7 +14,24 @@ QDP$PC_extract_$ABBR(void *dest, $QDPPCTYPE *src, QDP_Subset subset)
 
     if(src->ptr==NULL) {
       if(subset->indexed==0) {
-	memcpy(OFF(dest,subset->offset,src->dc.size), QDP_offset_data(src,subset->offset), src->dc.size*subset->len);
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+	{
+	  char *from = QDP_offset_data(src,subset->offset);
+	  char *to = OFF(dest,subset->offset,src->dc.size);
+	  size_t bytes = src->dc.size*subset->len;
+#ifdef _OPENMP
+	  int nid = omp_get_num_threads();
+	  int tid = omp_get_thread_num();
+	  size_t offset = ((tid*bytes)/nid);
+	  size_t end = (((tid+1)*bytes)/nid);
+	  from += offset;
+	  to += offset;
+	  bytes = end - offset;
+#endif
+	  memcpy(to, from, bytes);
+	}
       } else {
 	int i,j;
 	for(i=0; i<subset->len; ++i) {
@@ -46,7 +66,24 @@ QDP$PC_insert_$ABBR($QDPPCTYPE *dest, void *src, QDP_Subset subset)
     QDP_prepare_dest(&dest->dc);
 
     if(subset->indexed==0) {
-      memcpy(QDP_offset_data(dest,subset->offset), OFF(src,subset->offset,dest->dc.size), dest->dc.size*subset->len);
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+	{
+	  char *from = OFF(src,subset->offset,dest->dc.size);
+	  char *to = QDP_offset_data(dest,subset->offset);
+	  size_t bytes = dest->dc.size*subset->len;
+#ifdef _OPENMP
+	  int nid = omp_get_num_threads();
+	  int tid = omp_get_thread_num();
+	  size_t offset = ((tid*bytes)/nid);
+	  size_t end = (((tid+1)*bytes)/nid);
+	  from += offset;
+	  to += offset;
+	  bytes = end - offset;
+#endif
+	  memcpy(to, from, bytes);
+	}
     } else {
       int i,j;
       for(i=0; i<subset->len; ++i) {
