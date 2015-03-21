@@ -61,6 +61,10 @@ static inline void *QDP$PC_site_ptr_readwrite_$ABBR($QDPPCTYPE *src, int i);
   void QDP$PC_$ABBR_eq_funci($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int index), QDP_Subset subset);
   void QDP$PC_$ABBR_eq_funca($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int coords[], void *args), void *args, QDP_Subset subset);
   void QDP$PC_$ABBR_eq_funcia($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int index, void *args), void *args, QDP_Subset subset);
+  void QDP$PC_$ABBR_eq_funct($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int coords[]), QDP_Subset subset);
+  void QDP$PC_$ABBR_eq_funcit($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int index), QDP_Subset subset);
+  void QDP$PC_$ABBR_eq_funcat($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int coords[], void *args), void *args, QDP_Subset subset);
+  void QDP$PC_$ABBR_eq_funciat($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int index, void *args), void *args, QDP_Subset subset);
 !END
 
 /* shift */
