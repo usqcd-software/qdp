@@ -96,7 +96,11 @@ static int crc32(int crc, const unsigned char *buf, size_t len);
 #else
 #define USE_STRIDED
 #endif
+#if defined(USE_PAIRS) && (USE_PAIRS==0)
+#undef USE_PAIRS
+#else
 #define USE_PAIRS
+#endif
 
 /**********************************************************************
  *                      INTERNAL DATA TYPES                           *
