@@ -293,18 +293,17 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
 				   int idx, QDP_ShiftDir fb, void *args),
 		      void *args, QDP_ShiftDir dir)
 {
-  int *xr, *xs;		/* coordinates */
-  int *ls, *ns, **sl, **dl;
-
   TRACE;
-  xs = (int *) malloc(QDP_ndim_L(slat)*sizeof(int));
-  xr = (int *) malloc(QDP_ndim_L(rlat)*sizeof(int));
+  int nds = QDP_ndim_L(slat);
+  int ndr = QDP_ndim_L(rlat);
+  int nn = QDP_numnodes();
 
-  ls = (int *) malloc(QDP_numnodes()*sizeof(int));
-  ns = (int *) malloc(QDP_numnodes()*sizeof(int));
-  sl = (int **) malloc(QDP_numnodes()*sizeof(int *));
-  dl = (int **) malloc(QDP_numnodes()*sizeof(int *));
-  for(int i=0; i<QDP_numnodes(); ++i) {
+  int *ls = (int *) malloc(nn*sizeof(int));
+  int *ns = (int *) malloc(nn*sizeof(int));
+  int **sl = (int **) malloc(nn*sizeof(int *));
+  int **dl = (int **) malloc(nn*sizeof(int *));
+#pragma omp parallel for
+  for(int i=0; i<nn; ++i) {
     ls[i] = 0;
     ns[i] = 0;
     sl[i] = NULL;
@@ -321,7 +320,9 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
   TRACE;
   /* RECEIVE LISTS */
   gt->nrecvs = 0;
+  //#pragma omp parallel for
   for(int i=0; i<QDP_sites_on_node_L(rlat); ++i) {
+    int xr[ndr], xs[nds];
     TRACE;
     QDP_get_coords_L(rlat, xr, QDP_this_node, i);
     TRACE;
@@ -335,15 +336,18 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
       if( j==QDP_this_node ) {
 	gt->fromlist[i] = QDP_index_L(slat, xs);
       } else {
-	if(ns[j]==0) ++gt->nrecvs;
-	if(ns[j]>=ls[j]) {
-	  ls[j] += 16;
-	  sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
-	  dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+	//#pragma omp critical
+	{
+	  if(ns[j]==0) gt->nrecvs++;
+	  if(ns[j]>=ls[j]) {
+	    ls[j] += 16;
+	    sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
+	    dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+	  }
+	  sl[j][ns[j]] = i;
+	  dl[j][ns[j]] = QDP_index_L(slat, xs);
+	  ns[j]++;
 	}
-	sl[j][ns[j]] = i;
-	dl[j][ns[j]] = QDP_index_L(slat, xs);
-	++ns[j];
       }
     }
   }
@@ -352,7 +356,7 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
   if(gt->nrecvs) {
     gt->recvlist = (recvlist_t *) malloc(gt->nrecvs*sizeof(recvlist_t));
     int j = 0;
-    for(int i=0; i<QDP_numnodes(); ++i) {
+    for(int i=0; i<nn; ++i) {
       if(ns[i]) {
 	gt->recvlist[j].node = i;
 	gt->recvlist[j].nsites = ns[i];
@@ -367,7 +371,8 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
 
   TRACE;
   /* SEND LISTS: */
-  for(int i=0; i<QDP_numnodes(); ++i) {
+#pragma omp parallel for
+  for(int i=0; i<nn; ++i) {
     ls[i] = 0;
     ns[i] = 0;
     sl[i] = NULL;
@@ -375,7 +380,9 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
   }
   dir = (QDP_forward+QDP_backward) - dir;
   gt->nsends = 0;
+  //#pragma omp parallel for
   for(int i=0; i<QDP_sites_on_node_L(slat); ++i) {
+    int xr[ndr], xs[nds];
     QDP_get_coords_L(slat, xs, QDP_this_node, i);
     int num=1, idx=0;
     func(slat, rlat, xs, xr, &num, idx, dir, args);
@@ -384,15 +391,18 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
       // maybe store an recv buffer index for the recv lists
       int j = QDP_node_number_L(rlat, xr);
       if( j!=QDP_mynode() ) {
-	if(ns[j]==0) ++gt->nsends;
-	if(ns[j]>=ls[j]) {
-	  ls[j] += 16;
-	  sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
-	  dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+	//#pragma omp critical
+	{
+	  if(ns[j]==0) ++gt->nsends;
+	  if(ns[j]>=ls[j]) {
+	    ls[j] += 16;
+	    sl[j] = (int *) realloc(sl[j], ls[j]*sizeof(int));
+	    dl[j] = (int *) realloc(dl[j], ls[j]*sizeof(int));
+	  }
+	  sl[j][ns[j]] = i;
+	  dl[j][ns[j]] = QDP_index_L(rlat, xr);
+	  ++ns[j];
 	}
-	sl[j][ns[j]] = i;
-	dl[j][ns[j]] = QDP_index_L(rlat, xr);
-	++ns[j];
       }
     }
   }
@@ -401,7 +411,7 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
   if(gt->nsends) {
     gt->sendlist = (sendlist_t *) malloc(gt->nsends*sizeof(sendlist_t));
     int j = 0;
-    for(int i=0; i<QDP_numnodes(); ++i) {
+    for(int i=0; i<nn; ++i) {
       if(ns[i]) {
 	sort_sendlist(sl[i], dl[i], ns[i]);
 	gt->sendlist[j].node = i;
@@ -421,8 +431,6 @@ make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
   free((void*)sl);
   free(ns);
   free(ls);
-  free(xr);
-  free(xs);
   TRACE;
 }
 
@@ -546,17 +554,17 @@ resort(gmem_t *gmem, int issend)
   while(gmem!=NULL) {
     if(gmem->sitelist_allocated==0) {
       int n = gmem->end - gmem->begin;
-
       int *sl = (int *) malloc(n*sizeof(int));
-      for(int i=0; i<n; i++) sl[i] = gmem->sitelist[gmem->begin+i];
+      int *ol = (int *) malloc(n*sizeof(int));
+#pragma omp parallel for
+      for(int i=0; i<n; i++) {
+	sl[i] = gmem->sitelist[gmem->begin+i];
+	ol[i] = gmem->otherlist[gmem->begin+i];
+      }
       gmem->sitelist = sl;
       gmem->sitelist_allocated = 1;
-
-      int *ol = (int *) malloc(n*sizeof(int));
-      for(int i=0; i<n; i++) ol[i] = gmem->otherlist[gmem->begin+i];
       gmem->otherlist = ol;
       gmem->otherlist_allocated = 1;
-
       gmem->begin = 0;
       gmem->end = n;
     }
@@ -757,6 +765,7 @@ QDP_declare_strided_gather(
 
   /* set pointers in sites whose neighbors are on this node */
   if(subset->indexed) {
+#pragma omp parallel for
     for(int i=0; i<subset->len; ++i) {
       int j = subset->index[i];
       if(gt->fromlist[j] != NOWHERE) {
@@ -765,6 +774,7 @@ QDP_declare_strided_gather(
     }
   } else {
     int i = subset->offset + subset->len;
+#pragma omp parallel for
     for(int j=subset->offset; j<i; ++j) {
       if(gt->fromlist[j] != NOWHERE) {
 	dest[j] = src + gt->fromlist[j]*stride;
@@ -1213,6 +1223,7 @@ merge_recv_gmem(gmem_t *dest, gmem_t *src)
     if(!src->sitelist_allocated) {
       int *sl;
       sl = malloc(ns*sizeof(int));
+#pragma omp parallel for
       for(i=0; i<ns; i++) {
 	sl[i] = src->sitelist[src->begin+i];
       }
@@ -1222,6 +1233,7 @@ merge_recv_gmem(gmem_t *dest, gmem_t *src)
     if(!src->otherlist_allocated) {
       int *sl;
       sl = malloc(ns*sizeof(int));
+#pragma omp parallel for
       for(i=0; i<ns; i++) {
 	sl[i] = src->otherlist[src->begin+i];
       }
@@ -1353,6 +1365,7 @@ merge_send_gmem(gmem_t *dest, gmem_t *src)
     } else {
       int *sl;
       sl = malloc(nt*sizeof(int));
+#pragma omp parallel for
       for(i=0; i<nd; i++) {
 	sl[i] = dest->sitelist[dest->begin+i];
       }
@@ -1364,6 +1377,7 @@ merge_send_gmem(gmem_t *dest, gmem_t *src)
     } else {
       int *sl;
       sl = malloc(nt*sizeof(int));
+#pragma omp parallel for
       for(i=0; i<nd; i++) {
 	sl[i] = dest->otherlist[dest->begin+i];
       }

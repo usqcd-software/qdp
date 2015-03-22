@@ -51,7 +51,9 @@ QDP_create_layout(void)
   QDP_assert(def_layout!=NULL);
   QDP_Lattice *lat = QDP_create_lattice(def_layout, NULL, def_ndim, def_latsize);
   QDP_assert(lat!=NULL);
+  TRACE;
   QDP_set_default_lattice(lat);
+  TRACE;
   return 0;
 }
 
@@ -141,15 +143,24 @@ QDP1_set_default_lattice(QDP_Lattice *lat)
 {
   QDP_assert(lat!=NULL);
   def_lattice = lat;
+  TRACE;
   QDP_sites_on_node = QDP_sites_on_node_L(lat);
+  TRACE;
   ndim = QDP_ndim_L(lat);
+  TRACE;
   latsize = lat->dims;
   vol = lat->vol;
+  TRACE;
   QDP_neighbor = QDP_neighbor_L(lat);
+  TRACE;
   QDP_all = QDP_all_L(lat);
+  TRACE;
   QDP_even_and_odd = QDP_even_and_odd_L(lat);
+  TRACE;
   QDP_even = QDP_even_L(lat);
+  TRACE;
   QDP_odd = QDP_odd_L(lat);
+  TRACE;
 }
 
 void
@@ -167,18 +178,22 @@ QDP1_create_lattice(QDP_Layout *layout, void *args, int nd, int size[])
 {
   QDP_Lattice *lat;
   QDP_malloc(lat, QDP_Lattice, 1);
+  TRACE;
   if(layout==NULL) {
     QDP_assert(def_layout!=NULL);
     layout = def_layout;
   }
+  TRACE;
   lat->layout = layout;
   lat->ndim = nd;
   QDP_malloc(lat->dims, int, nd);
+  TRACE;
   int vol=1;
   for(int i=0; i<nd; ++i) {
     lat->dims[i] = size[i];
     vol *= size[i];
   }
+  TRACE;
   lat->vol = vol;
   lat->params = NULL;
   lat->all = NULL;
@@ -207,6 +222,7 @@ QDP_create_lattice(QDP_Layout *layout, void *args, int nd, int size[])
     SHARE_GET(lat);
   }
   TBARRIER;
+  TRACE;
   return lat;
 }
 

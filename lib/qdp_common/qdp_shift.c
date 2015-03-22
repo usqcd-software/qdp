@@ -1,3 +1,4 @@
+//#define DO_TRACE
 #include <stdlib.h>
 #include <string.h>
 #include "qdp_internal.h"
