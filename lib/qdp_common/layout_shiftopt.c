@@ -200,47 +200,59 @@ static indexlist *
 getindexlist(int *dx, params *p)
 {
   indexlist **n = NULL;
-#pragma omp critical
-  {
-    int nd = p->ndim;
-    n = &(p->indexlist);
-    while(*n!=NULL) {
-      int same = 1;
-      for(int i=0; i<nd; i++) {
-	if(dx[i]!=(*n)->dx[i]) same = 0;
-      }
-      if(same) break;
-    n = &((*n)->next);
+  int nd = p->ndim;
+  n = &(p->indexlist);
+  while(*n!=NULL) {
+    int same = 1;
+    for(int i=0; i<nd; i++) {
+      if(dx[i]!=(*n)->dx[i]) same = 0;
     }
-    if(*n==NULL) {
-      *n = malloc(sizeof(indexlist));
-      (*n)->next = NULL;
-      (*n)->dx = malloc(nd*sizeof(int));
-      int ns = 1;
-      for(int i=0; i<nd; i++) {
-	(*n)->dx[i] = dx[i];
-	ns *= dx[i];
-      }
-      (*n)->i2l[0] = malloc(ns*sizeof(int));
-      (*n)->i2l[1] = malloc(ns*sizeof(int));
-      (*n)->l2i[0] = malloc(ns*sizeof(int));
-      (*n)->l2i[1] = malloc(ns*sizeof(int));
-      geti2l((*n)->i2l[0], 0, dx, nd, ns);
-      geti2l((*n)->i2l[1], 1, dx, nd, ns);
-      invertarray((*n)->l2i[0], (*n)->i2l[0], ns);
-      invertarray((*n)->l2i[1], (*n)->i2l[1], ns);
-#if 0
-      if(QDP_this_node==0&&QDP_thread_num()==0) {
-	for(int i=0; i<ns; i++) {
-	  int l = (*n)->i2l[0][i];
-	  int x[nd];
-	  get_lex_x(x, l, dx, nd);
-	  printf("%i\t%i\t:", i, l);
-	  for(int j=0; j<nd; j++) printf("\t%i", x[j]);
-	  printf("\n");
+    if(same) break;
+    n = &((*n)->next);
+  }
+  if(*n==NULL) {
+#pragma omp critical
+    {
+      n = &(p->indexlist);
+      while(*n!=NULL) {
+	int same = 1;
+	for(int i=0; i<nd; i++) {
+	  if(dx[i]!=(*n)->dx[i]) same = 0;
 	}
+	if(same) break;
+	n = &((*n)->next);
       }
+      if(*n==NULL) {
+	indexlist *t = malloc(sizeof(indexlist));
+	t->next = NULL;
+	t->dx = malloc(nd*sizeof(int));
+	int ns = 1;
+	for(int i=0; i<nd; i++) {
+	  t->dx[i] = dx[i];
+	  ns *= dx[i];
+	}
+	t->i2l[0] = malloc(ns*sizeof(int));
+	t->i2l[1] = malloc(ns*sizeof(int));
+	t->l2i[0] = malloc(ns*sizeof(int));
+	t->l2i[1] = malloc(ns*sizeof(int));
+	geti2l(t->i2l[0], 0, dx, nd, ns);
+	geti2l(t->i2l[1], 1, dx, nd, ns);
+	invertarray(t->l2i[0], t->i2l[0], ns);
+	invertarray(t->l2i[1], t->i2l[1], ns);
+	*n = t;
+#if 0
+	if(QDP_this_node==0&&QDP_thread_num()==0) {
+	  for(int i=0; i<ns; i++) {
+	    int l = (*n)->i2l[0][i];
+	    int x[nd];
+	    get_lex_x(x, l, dx, nd);
+	    printf("%i\t%i\t:", i, l);
+	    for(int j=0; j<nd; j++) printf("\t%i", x[j]);
+	    printf("\n");
+	  }
+	}
 #endif
+      }
     }
   }
   return *n;
