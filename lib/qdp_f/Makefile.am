@@ -64,6 +64,8 @@ QDP_F_C_eq_R_times_C.c \
 QDP_F_C_eq_r_times_C_minus_C.c \
 QDP_F_C_eq_r_times_C_plus_C.c \
 QDP_F_C_eq_sC.c \
+QDP_F_C_eq_collect_C_funca.c \
+QDP_F_C_eq_scatter_C.c \
 QDP_F_C_eq_zero.c \
 QDP_F_C_meq_c1_times_Ca.c \
 QDP_F_C_meq_c1_times_C.c \
@@ -243,6 +245,8 @@ QDP_F_R_eq_sinh_R.c \
 QDP_F_R_eq_sin_R.c \
 QDP_F_R_eq_sqrt_R.c \
 QDP_F_R_eq_sR.c \
+QDP_F_R_eq_collect_R_funca.c \
+QDP_F_R_eq_scatter_R.c \
 QDP_F_R_eq_tanh_R.c \
 QDP_F_R_eq_tan_R.c \
 QDP_F_R_eq_zero.c \
@@ -336,6 +340,8 @@ QDP_F_C_eq_R_times_C.o \
 QDP_F_C_eq_r_times_C_minus_C.o \
 QDP_F_C_eq_r_times_C_plus_C.o \
 QDP_F_C_eq_sC.o \
+QDP_F_C_eq_collect_C_funca.o \
+QDP_F_C_eq_scatter_C.o \
 QDP_F_C_eq_zero.o \
 QDP_F_C_meq_c1_times_Ca.o \
 QDP_F_C_meq_c1_times_C.o \
@@ -515,6 +521,8 @@ QDP_F_R_eq_sinh_R.o \
 QDP_F_R_eq_sin_R.o \
 QDP_F_R_eq_sqrt_R.o \
 QDP_F_R_eq_sR.o \
+QDP_F_R_eq_collect_R_funca.o \
+QDP_F_R_eq_scatter_R.o \
 QDP_F_R_eq_tanh_R.o \
 QDP_F_R_eq_tan_R.o \
 QDP_F_R_eq_zero.o \

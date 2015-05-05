@@ -169,7 +169,8 @@ QDP_finalize_comm(void)
 void
 QDP_abort_comm(void)
 {
-  QMP_finalize_msg_passing();
+  QMP_abort(1);
+  exit(1);
 }
 
 /*

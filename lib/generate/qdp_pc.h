@@ -67,6 +67,15 @@ static inline void *QDP$PC_site_ptr_readwrite_$ABBR($QDPPCTYPE *src, int i);
   void QDP$PC_$ABBR_eq_funciat($QDPPCTYPE *dest, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), int index, void *args), void *args, QDP_Subset subset);
 !END
 
+/* collect and scatter
+ *  zval argument should be $NC$QLAPCTYPE($NCVAR(*zval)), but that would break lib/generate/generic.pl
+ */
+
+!PCARITHTYPES
+void QDP$PC_$ABBR_eq_collect_$ABBR_funca($QDPPCTYPE *dest, QDP_Collect *collect, $QDPPCTYPE *src, void *zval, void (*func)($NC$QLAPCTYPE($NCVAR(*dest)), $QLAPCTYPE($NCVAR(*src)), void *args), void *args, QDP_Subset subset);
+void QDP$PC_$ABBR_eq_scatter_$ABBR($QDPPCTYPE *dest, QDP_Scatter *scatter, $QDPPCTYPE *src, QDP_Subset subset);
+!END
+
 /* shift */
 
 !PCTYPES

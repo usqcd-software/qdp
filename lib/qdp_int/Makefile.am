@@ -44,6 +44,8 @@ QDP_I_eqm_I.c \
 QDP_I_eqm_I_times_I.c \
 QDP_I_eq_not_I.c \
 QDP_I_eq_sI.c \
+QDP_I_eq_collect_I_funca.c \
+QDP_I_eq_scatter_I.c \
 QDP_I_eq_zero.c \
 QDP_I_meq_i1_times_I.c \
 QDP_I_meq_I.c \
@@ -115,6 +117,8 @@ QDP_I_eqm_I.o \
 QDP_I_eqm_I_times_I.o \
 QDP_I_eq_not_I.o \
 QDP_I_eq_sI.o \
+QDP_I_eq_collect_I_funca.o \
+QDP_I_eq_scatter_I.o \
 QDP_I_eq_zero.o \
 QDP_I_meq_i1_times_I.o \
 QDP_I_meq_I.o \

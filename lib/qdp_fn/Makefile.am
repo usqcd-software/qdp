@@ -131,6 +131,8 @@ QDP_FN_D_eq_R_times_D.c \
 QDP_FN_D_eq_r_times_D_minus_D.c \
 QDP_FN_D_eq_r_times_D_plus_D.c \
 QDP_FN_D_eq_sD.c \
+QDP_FN_D_eq_collect_D_funca.c \
+QDP_FN_D_eq_scatter_D.c \
 QDP_FN_D_eq_sMa_times_D.c \
 QDP_FN_D_eq_sMa_times_sD.c \
 QDP_FN_D_eq_sM_times_D.c \
@@ -316,6 +318,8 @@ QDP_FN_H_eq_R_times_H.c \
 QDP_FN_H_eq_r_times_H_minus_H.c \
 QDP_FN_H_eq_r_times_H_plus_H.c \
 QDP_FN_H_eq_sH.c \
+QDP_FN_H_eq_collect_H_funca.c \
+QDP_FN_H_eq_scatter_H.c \
 QDP_FN_H_eq_sMa_times_H.c \
 QDP_FN_H_eq_sMa_times_sH.c \
 QDP_FN_H_eq_sM_times_H.c \
@@ -496,6 +500,8 @@ QDP_FN_M_eq_sMa_times_M.c \
 QDP_FN_M_eq_sMa_times_sMa.c \
 QDP_FN_M_eq_sMa_times_sM.c \
 QDP_FN_M_eq_sM.c \
+QDP_FN_M_eq_collect_M_funca.c \
+QDP_FN_M_eq_scatter_M.c \
 QDP_FN_M_eq_sM_times_Ma.c \
 QDP_FN_M_eq_sM_times_M.c \
 QDP_FN_M_eq_sM_times_sMa.c \
@@ -633,6 +639,8 @@ QDP_FN_D_eq_R_times_D.o \
 QDP_FN_D_eq_r_times_D_minus_D.o \
 QDP_FN_D_eq_r_times_D_plus_D.o \
 QDP_FN_D_eq_sD.o \
+QDP_FN_D_eq_collect_D_funca.o \
+QDP_FN_D_eq_scatter_D.o \
 QDP_FN_D_eq_sMa_times_D.o \
 QDP_FN_D_eq_sMa_times_sD.o \
 QDP_FN_D_eq_sM_times_D.o \
@@ -818,6 +826,8 @@ QDP_FN_H_eq_R_times_H.o \
 QDP_FN_H_eq_r_times_H_minus_H.o \
 QDP_FN_H_eq_r_times_H_plus_H.o \
 QDP_FN_H_eq_sH.o \
+QDP_FN_H_eq_collect_H_funca.o \
+QDP_FN_H_eq_scatter_H.o \
 QDP_FN_H_eq_sMa_times_H.o \
 QDP_FN_H_eq_sMa_times_sH.o \
 QDP_FN_H_eq_sM_times_H.o \
@@ -998,6 +1008,8 @@ QDP_FN_M_eq_sMa_times_M.o \
 QDP_FN_M_eq_sMa_times_sMa.o \
 QDP_FN_M_eq_sMa_times_sM.o \
 QDP_FN_M_eq_sM.o \
+QDP_FN_M_eq_collect_M_funca.o \
+QDP_FN_M_eq_scatter_M.o \
 QDP_FN_M_eq_sM_times_Ma.o \
 QDP_FN_M_eq_sM_times_M.o \
 QDP_FN_M_eq_sM_times_sMa.o \
@@ -1228,6 +1240,8 @@ QDP_FN_P_eq_sMa_times_sP.c \
 QDP_FN_P_eq_sM_times_P.c \
 QDP_FN_P_eq_sM_times_sP.c \
 QDP_FN_P_eq_sP.c \
+QDP_FN_P_eq_collect_P_funca.c \
+QDP_FN_P_eq_scatter_P.c \
 QDP_FN_P_eq_transpose_P.c \
 QDP_FN_P_eq_zero.c \
 QDP_FN_P_meq_c1_times_Pa.c \
@@ -1730,6 +1744,8 @@ QDP_FN_P_eq_sMa_times_sP.o \
 QDP_FN_P_eq_sM_times_P.o \
 QDP_FN_P_eq_sM_times_sP.o \
 QDP_FN_P_eq_sP.o \
+QDP_FN_P_eq_collect_P_funca.o \
+QDP_FN_P_eq_scatter_P.o \
 QDP_FN_P_eq_transpose_P.o \
 QDP_FN_P_eq_zero.o \
 QDP_FN_P_meq_c1_times_Pa.o \
@@ -2018,6 +2034,8 @@ QDP_FN_V_eq_sMa_times_V.c \
 QDP_FN_V_eq_sM_times_sV.c \
 QDP_FN_V_eq_sM_times_V.c \
 QDP_FN_V_eq_sV.c \
+QDP_FN_V_eq_collect_V_funca.c \
+QDP_FN_V_eq_scatter_V.c \
 QDP_FN_V_eq_v1.c \
 QDP_FN_V_eq_V.c \
 QDP_FN_V_eq_V_mask_I.c \
@@ -2109,6 +2127,8 @@ QDP_FN_V_eq_sMa_times_V.o \
 QDP_FN_V_eq_sM_times_sV.o \
 QDP_FN_V_eq_sM_times_V.o \
 QDP_FN_V_eq_sV.o \
+QDP_FN_V_eq_collect_V_funca.o \
+QDP_FN_V_eq_scatter_V.o \
 QDP_FN_V_eq_v1.o \
 QDP_FN_V_eq_V.o \
 QDP_FN_V_eq_V_mask_I.o \

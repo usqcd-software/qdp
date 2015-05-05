@@ -4,6 +4,8 @@
 #include "qdp_types.h"
 #include "qdp_layout.h"
 #include "qdp_subset.h"
+#include "qdp_collect.h"
+#include "qdp_scatter.h"
 #include "qdp_shift.h"
 
 #define QDP_ALIGN_ANY QMP_ALIGN_ANY
