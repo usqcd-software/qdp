@@ -500,8 +500,8 @@ QDP_F2_M_eq_sMa_times_M.c \
 QDP_F2_M_eq_sMa_times_sMa.c \
 QDP_F2_M_eq_sMa_times_sM.c \
 QDP_F2_M_eq_sM.c \
-QDP_F2_M_eq_collect_M_funca.o \
-QDP_F2_M_eq_scatter_M.o \
+QDP_F2_M_eq_collect_M_funca.c \
+QDP_F2_M_eq_scatter_M.c \
 QDP_F2_M_eq_sM_times_Ma.c \
 QDP_F2_M_eq_sM_times_M.c \
 QDP_F2_M_eq_sM_times_sMa.c \
@@ -2222,12 +2222,12 @@ BUILD_SCRIPT_C = $(BUILD_SCRIPT_DIR)/generate_sources
 BUILD_SCRIPT_H = $(BUILD_SCRIPT_DIR)/generate_headers
 
 BUILD_DEPS = \
-	$(BUILD_SCRIPT_DIR)/generate_qdp.pl \
-	$(BUILD_SCRIPT_DIR)/datatypes.pl \
-	$(BUILD_SCRIPT_DIR)/functions.pl \
-	$(BUILD_SCRIPT_DIR)/generate_types.pl \
-	$(BUILD_SCRIPT_DIR)/generic.pl \
-	$(BUILD_SCRIPT_DIR)/profile.pl
+        $(BUILD_SCRIPT_DIR)/generate_qdp.pl \
+        $(BUILD_SCRIPT_DIR)/datatypes.pl \
+        $(BUILD_SCRIPT_DIR)/functions.pl \
+        $(BUILD_SCRIPT_DIR)/generate_types.pl \
+        $(BUILD_SCRIPT_DIR)/generic.pl \
+        $(BUILD_SCRIPT_DIR)/profile.pl
 
 lib_LIBRARIES = ../libqdp_f2.a
 
@@ -2239,57 +2239,57 @@ nodist____libqdp_f2_a_SOURCES = QDP_F2_c1_eq_D_dot_D.c
 nodist_include_HEADERS = $(QDPHDR)
 
 source-stamp-c: $(BUILD_SCRIPT_C) $(BUILD_DEPS)
-	@rm -f source-temp-c
-	@touch source-temp-c
-	$(BUILD_SCRIPT_C) f2
-	@mv -f source-temp-c $@
+        @rm -f source-temp-c
+        @touch source-temp-c
+        $(BUILD_SCRIPT_C) f2
+        @mv -f source-temp-c $@
 
 source-stamp-h: $(BUILD_SCRIPT_H) $(BUILD_DEPS)
-	@rm -f source-temp-h
-	@touch source-temp-h
-	$(BUILD_SCRIPT_H) f2 $(top_builddir)/include
-	@mv -f source-temp-h $@
+        @rm -f source-temp-h
+        @touch source-temp-h
+        $(BUILD_SCRIPT_H) f2 $(top_builddir)/include
+        @mv -f source-temp-h $@
 
 $(QDPSRC): $(QDPHDR) source-stamp-c
-	## Recover from the removal of $@
-	@if test -f $@; then :; else \
-	  trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
-	  if mkdir source-lock-c 2>/dev/null; then \
-	    rm -f source-stamp-c; \
-	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-c; \
-	    rmdir source-lock-c; \
-	  else \
-	    while test -d source-lock-c; do sleep 1; done; \
-	    test -f source-stamp-c; exit $$?; \
-	  fi; \
-	fi
+        ## Recover from the removal of $@
+        @if test -f $@; then :; else \
+          trap 'rm -rf source-lock-c source-stamp-c' 1 2 13 15; \
+          if mkdir source-lock-c 2>/dev/null; then \
+            rm -f source-stamp-c; \
+            $(MAKE) $(AM_MAKEFLAGS) source-stamp-c; \
+            rmdir source-lock-c; \
+          else \
+            while test -d source-lock-c; do sleep 1; done; \
+            test -f source-stamp-c; exit $$?; \
+          fi; \
+        fi
 
 $(QDPHDR): source-stamp-h
-	## Recover from the removal of $@
-	@if test -f $@; then :; else \
-	  trap 'rm -rf source-lock-h source-stamp-h' 1 2 13 15; \
-	  if mkdir source-lock-h 2>/dev/null; then \
-	    rm -f source-stamp-h; \
-	    $(MAKE) $(AM_MAKEFLAGS) source-stamp-h; \
-	    rmdir source-lock-h; \
-	  else \
-	    while test -d source-lock-h; do sleep 1; done; \
-	    test -f source-stamp-h; exit $$?; \
-	  fi; \
-	fi
+        ## Recover from the removal of $@
+        @if test -f $@; then :; else \
+          trap 'rm -rf source-lock-h source-stamp-h' 1 2 13 15; \
+          if mkdir source-lock-h 2>/dev/null; then \
+            rm -f source-stamp-h; \
+            $(MAKE) $(AM_MAKEFLAGS) source-stamp-h; \
+            rmdir source-lock-h; \
+          else \
+            while test -d source-lock-h; do sleep 1; done; \
+            test -f source-stamp-h; exit $$?; \
+          fi; \
+        fi
 
 ../libqdp_f2.a: $(QDPHDR) $(QDPOBJ) ../optimized/Makefile
-	-rm -f ../libqdp_f2.a
-	$(AR) $(ARFLAGS) ../libqdp_f2.a $(QDPOBJ1)
-	$(AR) $(ARFLAGS) ../libqdp_f2.a $(QDPOBJ2)
-	$(AR) $(ARFLAGS) ../libqdp_f2.a $(QDPOBJ3)
-	$(RANLIB) ../libqdp_f2.a
+        -rm -f ../libqdp_f2.a
+        $(AR) $(ARFLAGS) ../libqdp_f2.a $(QDPOBJ1)
+        $(AR) $(ARFLAGS) ../libqdp_f2.a $(QDPOBJ2)
+        $(AR) $(ARFLAGS) ../libqdp_f2.a $(QDPOBJ3)
+        $(RANLIB) ../libqdp_f2.a
 
 clean-local:
-	-rm -f $(QDPHDR) source-stamp-c source-stamp-h
-	-rm -f $(QDPSRC1)
-	-rm -f $(QDPOBJ1)
-	-rm -f $(QDPSRC2)
-	-rm -f $(QDPOBJ2)
-	-rm -f $(QDPSRC3)
-	-rm -f $(QDPOBJ3)
+        -rm -f $(QDPHDR) source-stamp-c source-stamp-h
+        -rm -f $(QDPSRC1)
+        -rm -f $(QDPOBJ1)
+        -rm -f $(QDPSRC2)
+        -rm -f $(QDPOBJ2)
+        -rm -f $(QDPSRC3)
+        -rm -f $(QDPOBJ3)
