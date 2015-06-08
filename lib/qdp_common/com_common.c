@@ -62,6 +62,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <qmp.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 //#define DO_TRACE
 #include "qdp_internal.h"
@@ -262,6 +265,7 @@ QDP_free_gather(QDP_gather *g)
   free_gather_list = g;
 }
 
+#if 1
 static void
 sort_sendlist(int *list, int *key, int n)
 {
@@ -285,6 +289,31 @@ sort_sendlist(int *list, int *key, int n)
     if(flag==0) break;
   }
 }
+#else
+static int
+ascend(const void *a, const void *b)
+{
+  const int ia = *(const int *)a;
+  const int ib = *(const int *)b;
+  return ia - ib;
+}
+static void
+sort_sendlist(int *list, int *key, int n)
+{
+  int *kl = malloc(2*n*sizeof(int));
+#pragma omp parallel for
+  for(int i=0; i<n; i++) {
+    kl[2*i] = key[i];
+    kl[2*i+1] = list[i];
+  }
+  qsort(kl, n, 2*sizeof(int), ascend);
+#pragma omp parallel for
+  for(int i=0; i<n; i++) {
+    key[i] = kl[2*i];
+    list[i] = kl[2*i+1];
+  }
+}
+#endif
 
 static void
 make_gather_map_dir_L(QDP_Lattice *rlat, QDP_Lattice *slat, gather_t *gt,
@@ -674,23 +703,28 @@ make_send_msg(send_msg_t ***ppsm, sendlist_t *sl, QDP_Subset subset,
 	      char *mem, int stride, int size)
 {
   send_msg_t *sm = NULL;
-  int n=0, *x;
-  int c, i, len;
   QDP_Lattice *rlat = QDP_subset_lattice(subset);
+  int ndr = QDP_ndim_L(rlat);
+  int n = 0;
+  int *color = malloc(sl->nsites*sizeof(int));
 
-  x = (int *) malloc(QDP_ndim_L(rlat)*sizeof(int));
-
-  len = 0;
-  //fprintf(stderr, "nsites=%i\n", sl->nsites);
-  for(i=0; i<sl->nsites; i++) {
-    //fprintf(stderr, "i=%i node=%i dest=%i\n", i, sl->node, sl->destlist[i]);
-    QDP_get_coords_L(rlat, x, sl->node, sl->destlist[i]);
-    //fprintf(stderr, "%i %i %i %i\n", x[0], x[1], x[2], x[3]);
-    c = subset->func(rlat, x, subset->args);
-    //fprintf(stderr, "c=%i\n", c);
-    if(c==subset->coloring) ++len;
+  int len = 0;
+  //#pragma omp parallel
+  {
+    int lent = 0;
+    //#pragma omp for
+    for(int i=0; i<sl->nsites; i++) {
+      int x[ndr];
+      QDP_get_coords_L(rlat, x, sl->node, sl->destlist[i]);
+      int c = subset->func(rlat, x, subset->args);
+      color[i] = c;
+      if(c==subset->coloring) ++lent;
+    }
+    //#pragma omp critical
+    {
+      len += lent;
+    }
   }
-  //fprintf(stderr,"len=%i\n", len);
 
   if(len!=0) {
     //send_msg_t *sm;
@@ -716,29 +750,19 @@ make_send_msg(send_msg_t ***ppsm, sendlist_t *sl, QDP_Subset subset,
     n = 1;
     len = 0;
 
-    //if(QDP_this_node==0) printf("begin\n");
-    for(i=0; i<sl->nsites; i++) {
-      //if((QDP_this_node==0)&&(subset==QDP_even))
-      //printf("-- %i %i\n", i, sl->sitelist[i]);
-      QDP_get_coords_L(rlat, x, sl->node, sl->destlist[i]);
-      c = subset->func(rlat, x, subset->args);
-      //if(QDP_this_node==0)
-      //printf("                          %i %i %i %i %i\n", c,
-      //x[0], x[1], x[2], x[3]);
+    for(int i=0; i<sl->nsites; i++) {
+      //int x[ndr];
+      //QDP_get_coords_L(rlat, x, sl->node, sl->destlist[i]);
+      //int c = subset->func(rlat, x, subset->args);
+      int c = color[i];
       if(c==subset->coloring) {
-	//if(QDP_this_node==0)
-	//if((QDP_this_node==0)&&(subset==QDP_even))
-	//printf("%i %i %i %i %i %i\n", sl->sitelist[i], sl->destlist[i],
-	//x[0], x[1], x[2], x[3]);
         sm->gmem->sitelist[len] = sl->sitelist[i];
         sm->gmem->otherlist[len] = sl->destlist[i];
         ++len;
       }
     }
-    //if(QDP_this_node==0) printf("end len=%i\n", len);
   }
-
-  free(x);
+  free(color);
 
   if(sm) resort(sm->gmem, 1);
   return n;
@@ -787,6 +811,7 @@ QDP_declare_strided_gather(
   mtag->prepared = 0;
   mtag->pointers = 0;
 
+  //if(QDP_keep_time) QDP_comm_time -= QDP_time();
   mtag->nrecvs = 0;
   recv_msg_t **rm = &mtag->recv_msgs;
   for(int i=0; i<gt->nrecvs; ++i) {
@@ -794,6 +819,7 @@ QDP_declare_strided_gather(
 				  dest, size, src);
   }
   *rm = NULL;
+  //if(QDP_keep_time) QDP_comm_time += QDP_time();
 
   mtag->nsends = 0;
   send_msg_t **sm = &mtag->send_msgs;
