@@ -2165,7 +2165,7 @@ QDP_clear_to_send(QDP_msg_tag *mtag)
   (zlib format), rfc1951.txt (deflate format) and rfc1952.txt (gzip format).
 */
 
-typedef int uLong;            /* At least 32 bits */
+typedef unsigned int uLong;            /* At least 32 bits */
 typedef unsigned char Byte;
 typedef Byte Bytef;
 typedef uLong uLongf;

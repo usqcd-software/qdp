@@ -18,11 +18,18 @@ extern "C" {
 
   QDP_Writer *QDP_open_write(QDP_String *md, char *filename, int volfmt);
   QDP_Writer *QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt);
+  QDP_Writer *QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt,
+                                       QIO_Filesystem *fs_, QIO_Oflag *oflag_);
   int QDP_close_write(QDP_Writer *qw);
 
   QDP_Reader *QDP_open_read(QDP_String *md, char *filename);
   QDP_Reader *QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename);
+  QDP_Reader *QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, 
+                                      QIO_Filesystem *fs_, QIO_Iflag *iflag_);
   int QDP_close_read(QDP_Reader *qr);
+
+  QIO_Reader *QDP_reader_get_qio(QDP_Reader *qdpr);
+  QIO_Writer *QDP_writer_get_qio(QDP_Writer *qdpw);
 
   int QDP_read_record_info(QDP_Reader *qr, QDP_String *md);
   int QDP_read_qio_record_info(QDP_Reader *qr, QIO_RecordInfo *ri, QDP_String *md);

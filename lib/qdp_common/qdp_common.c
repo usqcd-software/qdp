@@ -298,14 +298,8 @@ master_io_node(void)
 }
 
 QDP_Reader *
-QDP_open_read(QDP_String *md, char *filename)
-{
-  QDP_Lattice *lat = QDP_get_default_lattice();
-  return QDP_open_read_L(lat, md, filename);
-}
-
-QDP_Reader *
-QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
+QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, 
+            QIO_Filesystem *fs_, QIO_Iflag *iflag_)
 {
   QDP_Reader *qdpr;
   TGET;
@@ -332,15 +326,20 @@ QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
       layout.this_node = QDP_this_node;
       layout.number_of_nodes = QDP_numnodes();
 
-      fs.my_io_node = read_io_node;
-      fs.master_io_node = master_io_node;
+      if (NULL == fs_) {
+        fs.my_io_node     = read_io_node;
+        fs.master_io_node = master_io_node;
+        fs_               = &fs;
+      } 
+      if (NULL == iflag_) {
+        iflag.serpar      = QIO_PARALLEL;
+        //iflag.serpar      = QIO_SERIAL;
+        iflag.volfmt      = QIO_SINGLEFILE;
+        //iflag.volfmt      = QIO_UNKNOWN;
+        iflag_            = &iflag;
+      }
 
-      iflag.serpar = QIO_PARALLEL;
-      //iflag.serpar = QIO_SERIAL;
-      iflag.volfmt = QIO_SINGLEFILE;
-      //iflag.volfmt = QIO_UNKNOWN;
-
-      qdpr->qior = QIO_open_read(qio_md, filename, &layout, &fs, &iflag);
+      qdpr->qior = QIO_open_read(qio_md, filename, &layout, fs_, iflag_);
 
       QDP_string_set(md, QIO_string_ptr(qio_md));
       QIO_string_destroy(qio_md);
@@ -362,15 +361,23 @@ QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
   return qdpr;
 }
 
-QDP_Writer *
-QDP_open_write(QDP_String *md, char *filename, int volfmt)
+QDP_Reader *
+QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
 {
-  QDP_Lattice *lat = QDP_get_default_lattice();
-  return QDP_open_write_L(lat, md, filename, volfmt);
+  return QDP_open_read_general_L(lat, md, filename, NULL, NULL);
 }
 
+QDP_Reader *
+QDP_open_read(QDP_String *md, char *filename)
+{
+  QDP_Lattice *lat = QDP_get_default_lattice();
+  return QDP_open_read_L(lat, md, filename);
+}
+
+
 QDP_Writer *
-QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
+QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt,
+                         QIO_Filesystem *fs_, QIO_Oflag *oflag_)
 {
   QDP_Writer *qdpw;
   TGET;
@@ -397,18 +404,23 @@ QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
       layout.this_node = QDP_this_node;
       layout.number_of_nodes = QDP_numnodes();
 
-      fs.my_io_node = write_io_node;
-      fs.master_io_node = master_io_node;
-
-      oflag.serpar = QIO_PARALLEL;
-      //oflag.serpar = QIO_SERIAL;
-      oflag.mode = QIO_TRUNC;
-      oflag.ildgstyle = QIO_ILDGLAT;                                           
-      oflag.ildgLFN = NULL;                                                    
+      if (NULL == fs_) {
+        fs.my_io_node     = write_io_node;
+        fs.master_io_node = master_io_node;
+        fs_               = &fs;
+      }
+      if (NULL == oflag_) {
+        oflag.serpar      = QIO_PARALLEL;
+        //oflag.serpar      = QIO_SERIAL;
+        oflag.mode        = QIO_TRUNC;
+        oflag.ildgstyle   = QIO_ILDGLAT;                                           
+        oflag.ildgLFN     = NULL;
+        oflag_            = &oflag;
+      }
 
       qio_md = QIO_string_create();
       QIO_string_set(qio_md, QDP_string_ptr(md));
-      qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, &layout, &fs, &oflag);
+      qdpw->qiow = QIO_open_write(qio_md, filename, volfmt, &layout, fs_, oflag_);
       QIO_string_destroy(qio_md);
 
       free(layout.latsize);
@@ -426,6 +438,19 @@ QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
   }
   TBARRIER;
   return qdpw;
+}
+
+QDP_Writer *
+QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
+{
+  return QDP_open_write_general_L(lat, md, filename, volfmt, NULL, NULL);  
+}
+
+QDP_Writer *
+QDP_open_write(QDP_String *md, char *filename, int volfmt)
+{
+  QDP_Lattice *lat = QDP_get_default_lattice();
+  return QDP_open_write_L(lat, md, filename, volfmt);
 }
 
 int
@@ -466,6 +491,18 @@ QDP_close_write(QDP_Writer *qdpw)
   }
   TBARRIER;
   return status;
+}
+
+QIO_Reader *
+QDP_reader_get_qio(QDP_Reader *qdpr)
+{
+  return qdpr->qior;
+}
+
+QIO_Writer *
+QDP_writer_get_qio(QDP_Writer *qdpw)
+{
+  return qdpw->qiow;
 }
 
 int
