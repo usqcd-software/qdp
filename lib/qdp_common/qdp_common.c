@@ -224,7 +224,15 @@ QDP_set_mem_flags(int flags)
 }
 
 /* IO routines */
-
+/* [sns 2015/09/10] the following functions and variables will eventually be 
+   removed in noglobal branch :
+   iolat, QDP_set_iolat, 
+   readnodes, QDP_set_read_group_size, 
+   writenodes, QDP_set_write_group_size, 
+   ?? QDP_mem_align, QDP_set_mem_align, QDP_get_mem_align
+   ?? QDP_mem_flags, QDP_set_mem_flags, QDP_get_mem_flags
+   ?? QDP_block_size, QDP_set_block_size, QDP_get_block_size
+*/
 static QDP_Lattice *iolat = NULL;
 
 void
@@ -233,28 +241,48 @@ QDP_set_iolat(QDP_Lattice *lat)
   iolat = lat;
 }
 
+/* QIO_Layout functions using global 'iolat' ; will be removed in noglobal branch */
 static int
 node_number_io(const int x[])
 {
   return QDP_node_number_L(iolat, x);
 }
-
 static int
 index_io(const int x[])
 {
   return QDP_index_L(iolat, x);
 }
-
 static void
 get_coords_io(int x[], int node, int index)
 {
   QDP_get_coords_L(iolat, x, node, index);
 }
-
 static int
 numsites_io(int node)
 {
   return QDP_numsites_L(iolat, node);
+}
+
+/* QIO_Layout functions using 'void *arg' <- &QDP_Lattice */
+static int
+node_number_io_a(const int x[], void *arg)
+{
+  return QDP_node_number_L((QDP_Lattice *)arg, x);
+}
+static int
+index_io_a(const int x[], void *arg)
+{
+  return QDP_index_L((QDP_Lattice *)arg, x);
+}
+static void
+get_coords_io_a(int x[], int node, int index, void *arg)
+{
+  QDP_get_coords_L((QDP_Lattice *)arg, x, node, index);
+}
+static int
+numsites_io_a(int node, void *arg)
+{
+  return QDP_numsites_L((QDP_Lattice *)arg, node);
 }
 
 int
@@ -279,20 +307,22 @@ QDP_set_write_group_size(int nodes)
   return oldnodes;
 }
 
+/* QIO_Filesystem functions using void *arg 
+   these functions still use global vars, but use 'noglobal' QIO interface 
+   eventually 'sparse partfile' functionality will have to be invoked through 
+   explicit setting of QIO_Filesystem */
 static int
-read_io_node(const int node)
+read_io_node_a(const int node, void *fs_arg)
 {
   return readnodes*(node/readnodes);
 }
-
 static int
-write_io_node(const int node)
+write_io_node_a(const int node, void *fs_arg)
 {
   return writenodes*(node/writenodes);
 }
-
 static int
-master_io_node(void)
+master_io_node_a(void *arg)
 {
   return 0;
 }
@@ -314,22 +344,28 @@ QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename,
       qdpr->lat = lat;
       iolat = qdpr->lat;
 
-      layout.node_number = node_number_io;
-      layout.node_index = index_io;
-      layout.get_coords = get_coords_io;
-      layout.num_sites = numsites_io;
-      layout.latdim = QDP_ndim_L(lat);
-      layout.latsize = (int *)malloc(layout.latdim*sizeof(int));
+      layout.node_number    = NULL;
+      layout.node_index     = NULL;
+      layout.get_coords     = NULL;
+      layout.num_sites      = NULL;
+      layout.node_number_a  = node_number_io_a;
+      layout.node_index_a   = index_io_a;
+      layout.get_coords_a   = get_coords_io_a;
+      layout.num_sites_a    = numsites_io_a;
+      layout.arg            = (void *)lat;
+      layout.latdim         = QDP_ndim_L(lat);
+      layout.latsize        = (int *)malloc(layout.latdim*sizeof(int));
       QDP_latsize_L(lat, layout.latsize);
-      layout.volume = QDP_volume_L(lat);
-      layout.sites_on_node = QDP_sites_on_node_L(lat);
-      layout.this_node = QDP_this_node;
+      layout.volume         = QDP_volume_L(lat);
+      layout.sites_on_node  = QDP_sites_on_node_L(lat);
+      layout.this_node      = QDP_this_node;
       layout.number_of_nodes = QDP_numnodes();
 
       if (NULL == fs_) {
-        fs.my_io_node     = read_io_node;
-        fs.master_io_node = master_io_node;
-        fs_               = &fs;
+        fs.my_io_node_a     = read_io_node_a;
+        fs.master_io_node_a = master_io_node_a;
+        fs.arg              = NULL;
+        fs_                 = &fs;
       } 
       if (NULL == iflag_) {
         iflag.serpar      = QIO_PARALLEL;
@@ -392,22 +428,28 @@ QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int v
       qdpw->lat = lat;
       iolat = qdpw->lat;
 
-      layout.node_number = node_number_io;
-      layout.node_index = index_io;
-      layout.get_coords = get_coords_io;
-      layout.num_sites = numsites_io;
-      layout.latdim = QDP_ndim_L(lat);
-      layout.latsize = (int *)malloc(layout.latdim*sizeof(int));
+      layout.node_number    = NULL;
+      layout.node_index     = NULL;
+      layout.get_coords     = NULL;
+      layout.num_sites      = NULL;
+      layout.node_number_a  = node_number_io_a;
+      layout.node_index_a   = index_io_a;
+      layout.get_coords_a   = get_coords_io_a;
+      layout.num_sites_a    = numsites_io_a;
+      layout.arg            = (void *)lat;
+      layout.latdim         = QDP_ndim_L(lat);
+      layout.latsize        = (int *)malloc(layout.latdim*sizeof(int));
       QDP_latsize_L(lat, layout.latsize);
-      layout.volume = QDP_volume_L(lat);
-      layout.sites_on_node = QDP_sites_on_node_L(lat);
-      layout.this_node = QDP_this_node;
+      layout.volume         = QDP_volume_L(lat);
+      layout.sites_on_node  = QDP_sites_on_node_L(lat);
+      layout.this_node      = QDP_this_node;
       layout.number_of_nodes = QDP_numnodes();
 
       if (NULL == fs_) {
-        fs.my_io_node     = write_io_node;
-        fs.master_io_node = master_io_node;
-        fs_               = &fs;
+        fs.my_io_node_a     = write_io_node_a;
+        fs.master_io_node_a = master_io_node_a;
+        fs.arg              = NULL;
+        fs_                 = &fs;
       }
       if (NULL == oflag_) {
         oflag.serpar      = QIO_PARALLEL;
