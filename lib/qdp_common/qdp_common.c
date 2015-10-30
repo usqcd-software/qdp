@@ -25,8 +25,8 @@ int QDP_verbose_level = 1;
 static int qdp_initialized=0;
 static QDP_prof *prof_list=NULL, **prof_last;
 static const char *vs = VERSION;
-static int readnodes = INT_MAX;
-static int writenodes = INT_MAX;
+static int readnodes = 1;//INT_MAX;
+static int writenodes = 1;//INT_MAX;
 
 const char *
 QDP_version_str(void)
