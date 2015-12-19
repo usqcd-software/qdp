@@ -344,10 +344,6 @@ QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename,
       qdpr->lat = lat;
       iolat = qdpr->lat;
 
-      layout.node_number    = NULL;
-      layout.node_index     = NULL;
-      layout.get_coords     = NULL;
-      layout.num_sites      = NULL;
       layout.node_number_a  = node_number_io_a;
       layout.node_index_a   = index_io_a;
       layout.get_coords_a   = get_coords_io_a;
@@ -428,10 +424,6 @@ QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int v
       qdpw->lat = lat;
       iolat = qdpw->lat;
 
-      layout.node_number    = NULL;
-      layout.node_index     = NULL;
-      layout.get_coords     = NULL;
-      layout.num_sites      = NULL;
       layout.node_number_a  = node_number_io_a;
       layout.node_index_a   = index_io_a;
       layout.get_coords_a   = get_coords_io_a;
