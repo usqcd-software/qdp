@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "qdp_internal.h"
 
+#define XFAST
+
 // prevent use of default lattice variables/functions
 #define QDP_sites_on_node ERROR
 #define QDP_ndim() ERROR
@@ -34,8 +36,11 @@ static int prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53};
 static void
 get_lex_x(int *x, int l, int *s, int ndim)
 {
-  //for(int i=0; i<ndim; i++) {
+#ifdef XFAST
+  for(int i=0; i<ndim; i++) {
+#else
   for(int i=ndim-1; i>=0; --i) {
+#endif
     x[i] = l % s[i];
     l = l / s[i];
   }
@@ -274,8 +279,11 @@ layout_hyper_eo_index(QDP_Lattice *lat, const int x[])
   params *p = (params *) QDP_get_lattice_params(lat);
   int s=0, l=0;
 
-  //for(int i=p->ndim-1; i>=0; --i) {
+#ifdef XFAST
+  for(int i=p->ndim-1; i>=0; --i) {
+#else
   for(int i=0; i<p->ndim; ++i) {
+#endif
     int m = (x[i]*p->nsquares[i])/p->len[i];
     int x0 = (m*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];
     int x1 = ((m+1)*p->len[i]+p->nsquares[i]-1)/p->nsquares[i];

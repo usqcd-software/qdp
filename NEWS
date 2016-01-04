@@ -1,3 +1,9 @@
+===========================================================================
+2016-01-04      version 1.11.1
+===========================================================================
+2016-01-04: James Osborn
+	Changed default layout for non-BG/Q back to hyper.
+
 2015-03-20: James Osborn
 	Added thread safe eq_func functions.
     	Set large blocksize if using OpenMP.

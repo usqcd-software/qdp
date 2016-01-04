@@ -19,8 +19,11 @@ static int *def_latsize = NULL;
 void
 QDP_init_layout(void)
 {
-  //def_layout = QDP_layout_hyper_eo;
+#ifdef __bgq__
   def_layout = QDP_layout_shiftopt;
+#else
+  def_layout = QDP_layout_hyper_eo;
+#endif
 }
 
 void
