@@ -266,6 +266,7 @@ QDP_switch_ptr_to_data(QDP_data_common_t *dc)
   ENTER;
   if(*(dc->data)==NULL) {
     //*(dc->data) = (char *) malloc(QDP_sites_on_node*dc->size);
+    if(dc->qmpmem) QMP_free_memory(dc->qmpmem);
     dc->qmpmem = QMP_allocate_aligned_memory( QDP_sites_on_node_L(dc->lat)*dc->size,
 					      QDP_mem_align, QDP_mem_flags );
     if(!dc->qmpmem) {
