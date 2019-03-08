@@ -329,7 +329,7 @@ master_io_node_a(void *arg)
 
 QDP_Reader *
 QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, 
-            QIO_Filesystem *fs_, QIO_Iflag *iflag_)
+            QIO_Filesystem *fs_, QIO_Iflag *iflag_, int this_volume)
 {
   QDP_Reader *qdpr;
   TGET;
@@ -355,6 +355,7 @@ QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename,
       layout.volume         = QDP_volume_L(lat);
       layout.sites_on_node  = QDP_sites_on_node_L(lat);
       layout.this_node      = QDP_this_node;
+      layout.this_volume    = 0 <= this_volume ? this_volume : QDP_this_node;
       layout.number_of_nodes = QDP_numnodes();
 
       if (NULL == fs_) {
@@ -396,7 +397,7 @@ QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename,
 QDP_Reader *
 QDP_open_read_L(QDP_Lattice *lat, QDP_String *md, char *filename)
 {
-  return QDP_open_read_general_L(lat, md, filename, NULL, NULL);
+  return QDP_open_read_general_L(lat, md, filename, NULL, NULL, QDP_this_node);
 }
 
 QDP_Reader *
@@ -409,7 +410,7 @@ QDP_open_read(QDP_String *md, char *filename)
 
 QDP_Writer *
 QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt,
-                         QIO_Filesystem *fs_, QIO_Oflag *oflag_)
+                         QIO_Filesystem *fs_, QIO_Oflag *oflag_, int this_volume)
 {
   QDP_Writer *qdpw;
   TGET;
@@ -435,6 +436,7 @@ QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int v
       layout.volume         = QDP_volume_L(lat);
       layout.sites_on_node  = QDP_sites_on_node_L(lat);
       layout.this_node      = QDP_this_node;
+      layout.this_volume    = 0 <= this_volume ? this_volume : QDP_this_node;
       layout.number_of_nodes = QDP_numnodes();
 
       if (NULL == fs_) {
@@ -477,7 +479,7 @@ QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int v
 QDP_Writer *
 QDP_open_write_L(QDP_Lattice *lat, QDP_String *md, char *filename, int volfmt)
 {
-  return QDP_open_write_general_L(lat, md, filename, volfmt, NULL, NULL);  
+  return QDP_open_write_general_L(lat, md, filename, volfmt, NULL, NULL, QDP_this_node);  
 }
 
 QDP_Writer *
