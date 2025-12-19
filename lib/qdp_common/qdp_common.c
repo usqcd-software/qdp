@@ -269,17 +269,17 @@ node_number_io_a(const int x[], void *arg)
 {
   return QDP_node_number_L((QDP_Lattice *)arg, x);
 }
-static int
+static QIO_Index
 index_io_a(const int x[], void *arg)
 {
   return QDP_index_L((QDP_Lattice *)arg, x);
 }
 static void
-get_coords_io_a(int x[], int node, int index, void *arg)
+get_coords_io_a(int x[], int node, QIO_Index index, void *arg)
 {
   QDP_get_coords_L((QDP_Lattice *)arg, x, node, index);
 }
-static int
+static QIO_Index
 numsites_io_a(int node, void *arg)
 {
   return QDP_numsites_L((QDP_Lattice *)arg, node);
@@ -344,10 +344,14 @@ QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename,
       qdpr->lat = lat;
       iolat = qdpr->lat;
 
-      layout.node_number_a  = node_number_io_a;
-      layout.node_index_a   = index_io_a;
-      layout.get_coords_a   = get_coords_io_a;
-      layout.num_sites_a    = numsites_io_a;
+      layout.node_number    = NULL;
+      layout.node_index     = NULL;
+      layout.get_coords     = NULL;
+      layout.num_sites      = NULL;
+      layout.node_number_ext= node_number_io_a;
+      layout.node_index_ext = index_io_a;
+      layout.get_coords_ext = get_coords_io_a;
+      layout.num_sites_ext  = numsites_io_a;
       layout.arg            = (void *)lat;
       layout.latdim         = QDP_ndim_L(lat);
       layout.latsize        = (int *)malloc(layout.latdim*sizeof(int));
@@ -359,8 +363,8 @@ QDP_open_read_general_L(QDP_Lattice *lat, QDP_String *md, char *filename,
       layout.number_of_nodes = QDP_numnodes();
 
       if (NULL == fs_) {
-        fs.my_io_node_a     = read_io_node_a;
-        fs.master_io_node_a = master_io_node_a;
+        fs.my_io_node_ext     = read_io_node_a;
+        fs.master_io_node_ext = master_io_node_a;
         fs.arg              = NULL;
         fs_                 = &fs;
       } 
@@ -425,10 +429,14 @@ QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int v
       qdpw->lat = lat;
       iolat = qdpw->lat;
 
-      layout.node_number_a  = node_number_io_a;
-      layout.node_index_a   = index_io_a;
-      layout.get_coords_a   = get_coords_io_a;
-      layout.num_sites_a    = numsites_io_a;
+      layout.node_number    = NULL;
+      layout.node_index     = NULL;
+      layout.get_coords     = NULL;
+      layout.num_sites      = NULL;
+      layout.node_number_ext= node_number_io_a;
+      layout.node_index_ext = index_io_a;
+      layout.get_coords_ext = get_coords_io_a;
+      layout.num_sites_ext  = numsites_io_a;
       layout.arg            = (void *)lat;
       layout.latdim         = QDP_ndim_L(lat);
       layout.latsize        = (int *)malloc(layout.latdim*sizeof(int));
@@ -440,8 +448,8 @@ QDP_open_write_general_L(QDP_Lattice *lat, QDP_String *md, char *filename, int v
       layout.number_of_nodes = QDP_numnodes();
 
       if (NULL == fs_) {
-        fs.my_io_node_a     = write_io_node_a;
-        fs.master_io_node_a = master_io_node_a;
+        fs.my_io_node_ext       = write_io_node_a;
+        fs.master_io_node_ext   = master_io_node_a;
         fs.arg              = NULL;
         fs_                 = &fs;
       }
